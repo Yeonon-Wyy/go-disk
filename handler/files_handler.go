@@ -17,6 +17,7 @@ type FilesServiceHandler struct {
 	BashPath string
 }
 
+
 func (f FilesServiceHandler) Init(group *gin.RouterGroup) {
 	group.POST("/upload", uploadFile())
 
@@ -61,13 +62,14 @@ func uploadFile() gin.HandlerFunc {
 		//set file meta
 		fileMeta := meta.FileMeta{
 			FileName: newFile.Name(),
-			Location: "/Volumes/computer/go/go-disk/filestore/" + newFile.Name(),
+			Location: config.FileStoreDir + newFile.Name(),
 			FileSize: fileSize,
 			FileSha1: utils.FileSha1(newFile),
 			UploadAt: time.Now().Format("2006-01-02 15:04:05"),
 		}
 
 		meta.UpdateFileMeta(fileMeta.FileSha1, fileMeta)
+
 		log.Printf("upload file success, file hash is : %s", fileMeta.FileSha1)
 
 		context.JSON(http.StatusOK, common.NewServiceResp(common.RespCodeSuccess, nil))
@@ -76,8 +78,15 @@ func uploadFile() gin.HandlerFunc {
 
 func getFileMeta() gin.HandlerFunc {
 	return func(context *gin.Context) {
-		fileHash := context.Query("file_hash")
-		fileMeta := meta.GetFileMeta(fileHash)
+		var req GetFileMetaReq
+
+		if err := context.ShouldBind(&req); err != nil {
+			log.Printf("bind request parameters error %v", err)
+			context.JSON(http.StatusInternalServerError,
+				common.NewServiceResp(common.RespCodeBindReParamError, nil))
+		}
+
+		fileMeta := meta.GetFileMeta(req.FileHash)
 
 		context.JSON(http.StatusOK, common.NewServiceResp(common.RespCodeSuccess, fileMeta))
 	}

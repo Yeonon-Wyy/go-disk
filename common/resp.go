@@ -3,7 +3,7 @@ package common
 var (
 	//common code (0 ~ 99)
 	RespCodeSuccess  = RespCode{0, "success"}
-	RespCodeError = RespCode{Code: 1, Message:"error"}
+	RespCodeBindReParamError = RespCode{Code: 1, Message: "bind request parameters error"}
 
 	//file service code (100 ~ 199)
 	RespCodeReadFileError =  RespCode{100, "read file error"}
