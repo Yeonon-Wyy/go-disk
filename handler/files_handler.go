@@ -84,10 +84,10 @@ func getFileMeta() gin.HandlerFunc {
 			log.Printf("bind request parameters error %v", err)
 			context.JSON(http.StatusInternalServerError,
 				common.NewServiceResp(common.RespCodeBindReParamError, nil))
+			return
 		}
 
 		fileMeta := meta.GetFileMeta(req.FileHash)
-
 		context.JSON(http.StatusOK, common.NewServiceResp(common.RespCodeSuccess, fileMeta))
 	}
 }
