@@ -8,8 +8,10 @@ var (
 	//file service code (100 ~ 199)
 	RespCodeReadFileError =  RespCode{100, "read file error"}
 	RespCodeOpenFileError =  RespCode{101, "open file error"}
-	RespCodeCreateFileError =  RespCode{101, "create file error"}
-	RespCodeCopyFileError =  RespCode{102, "copy file error"}
+	RespCodeCreateFileError =  RespCode{102, "create file error"}
+	RespCodeCopyFileError =  RespCode{103, "copy file error"}
+	RespCodeFilenameError = RespCode{104, "filename error"}
+	RespCodeRemoveFileError = RespCode{105, "remove file error"}
 )
 
 type RespCode struct {

@@ -16,11 +16,17 @@ func UpdateFileMeta(fileSha1 string, meta FileMeta) {
 	fileMetaMaps[fileSha1] = meta
 }
 
-func GetFileMeta(fileSha1 string) FileMeta {
+func GetFileMeta(fileSha1 string) *FileMeta {
 	if meta, ok := fileMetaMaps[fileSha1]; ok {
-		return meta
+		return &meta
 	}
 	log.Printf("can't get file meta of : %s", fileSha1)
-	return FileMeta{}
+	return nil
 }
+
+func RemoveMeta(fileSha1 string) {
+	delete(fileMetaMaps, fileSha1)
+}
+
+
 

@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"time"
 )
 
@@ -22,6 +23,9 @@ func (f FilesServiceHandler) Init(group *gin.RouterGroup) {
 	group.POST("/upload", uploadFile())
 
 	group.GET("/meta", getFileMeta())
+	group.GET("/download", downloadHandler())
+	group.PUT("/meta", updateFileMeta())
+	group.DELETE("/delete", deleteFile())
 }
 
 func uploadFile() gin.HandlerFunc {
@@ -58,11 +62,11 @@ func uploadFile() gin.HandlerFunc {
 
 		defer newFile.Close()
 		newFile.Seek(0, 0)
-
+		_, fName := filepath.Split(newFile.Name())
 		//set file meta
 		fileMeta := meta.FileMeta{
-			FileName: newFile.Name(),
-			Location: config.FileStoreDir + newFile.Name(),
+			FileName: fName,
+			Location: config.FileStoreDir + fName,
 			FileSize: fileSize,
 			FileSha1: utils.FileSha1(newFile),
 			UploadAt: time.Now().Format("2006-01-02 15:04:05"),
@@ -82,12 +86,95 @@ func getFileMeta() gin.HandlerFunc {
 
 		if err := context.ShouldBind(&req); err != nil {
 			log.Printf("bind request parameters error %v", err)
-			context.JSON(http.StatusInternalServerError,
+			context.JSON(http.StatusBadRequest,
 				common.NewServiceResp(common.RespCodeBindReParamError, nil))
 			return
 		}
 
 		fileMeta := meta.GetFileMeta(req.FileHash)
 		context.JSON(http.StatusOK, common.NewServiceResp(common.RespCodeSuccess, fileMeta))
+	}
+}
+
+func downloadHandler() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		var req DownloadFileReq
+		if err := context.ShouldBind(&req); err != nil {
+			log.Printf("bind request parameters error %v", err)
+			context.JSON(http.StatusBadRequest,
+				common.NewServiceResp(common.RespCodeBindReParamError, nil))
+			return
+		}
+
+		fm := meta.GetFileMeta(req.FileHash)
+
+		context.FileAttachment(fm.Location, fm.FileName)
+
+	}
+}
+
+func updateFileMeta() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		var req UpdateFileMetaReq
+		if err := context.ShouldBind(&req); err != nil {
+			log.Printf("bind request parameters error %v", err)
+			context.JSON(http.StatusBadRequest,
+				common.NewServiceResp(common.RespCodeBindReParamError, nil))
+			return
+		}
+
+		if meta.GetFileMeta(req.FileHash) == nil {
+			log.Printf("can't not found file meta %s", req.FileHash)
+			context.JSON(http.StatusBadRequest,
+				common.NewServiceResp(common.RespCodeBindReParamError, nil))
+			return
+		}
+
+		if req.Filename != "" {
+			fm := meta.GetFileMeta(req.FileHash)
+			fm.FileName = req.Filename
+			meta.UpdateFileMeta(req.FileHash, *fm)
+			context.JSON(http.StatusOK,
+				common.NewServiceResp(common.RespCodeSuccess, fm))
+			return
+		}
+
+		log.Printf("filename cann't equals empty")
+		context.JSON(http.StatusBadRequest,
+			common.NewServiceResp(common.RespCodeFilenameError, nil))
+	}
+}
+
+func deleteFile() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		var req DeleteFileReq
+		if err := context.ShouldBind(&req); err != nil {
+			log.Printf("bind request parameters error %v", err)
+			context.JSON(http.StatusBadRequest,
+				common.NewServiceResp(common.RespCodeBindReParamError, nil))
+			return
+		}
+
+		fm := meta.GetFileMeta(req.FileHash)
+		if fm == nil {
+			log.Printf("can't not found file meta %s", req.FileHash)
+			context.JSON(http.StatusBadRequest,
+				common.NewServiceResp(common.RespCodeBindReParamError, nil))
+			return
+		}
+
+		err := os.Remove(fm.Location)
+		if err != nil {
+			log.Printf("remove file error %v", err)
+			context.JSON(http.StatusInternalServerError,
+				common.NewServiceResp(common.RespCodeRemoveFileError, nil))
+			return
+		}
+
+		meta.RemoveMeta(req.FileHash)
+		context.JSON(http.StatusOK,
+			common.NewServiceResp(common.RespCodeSuccess, nil))
+
+
 	}
 }
