@@ -1,31 +1,61 @@
 package meta
 
-import "log"
+import (
+	mysqldb "go-disk/db"
+	"log"
+	"time"
+)
 
 type FileMeta struct {
 	FileSha1 string
 	FileName string
 	FileSize int64
 	Location string
-	UploadAt string
+	UploadAt time.Time
+	UpdateAt time.Time
+	Status int
 }
 
-var fileMetaMaps = make(map[string]FileMeta)
-
-func UpdateFileMeta(fileSha1 string, meta FileMeta) {
-	fileMetaMaps[fileSha1] = meta
+func UploadFileMetaDB(meta FileMeta) {
+	mysqldb.OnFileUploadFinished(
+		meta.FileSha1,
+		meta.FileName,
+		meta.Location,
+		meta.FileSize,
+		meta.Status,
+		meta.UploadAt,
+		meta.UpdateAt)
 }
 
-func GetFileMeta(fileSha1 string) *FileMeta {
-	if meta, ok := fileMetaMaps[fileSha1]; ok {
-		return &meta
+func UpdateFileMetaDB(meta FileMeta) {
+	mysqldb.OnFileUpdateFinished(meta.FileSha1, meta.FileName)
+}
+
+func GetFileMetaDB(fileSha1 string) *FileMeta {
+	tf, err := mysqldb.GetFileMeta(fileSha1)
+	if err != nil {
+		log.Printf("get file meta error : %v", err)
 	}
-	log.Printf("can't get file meta of : %s", fileSha1)
-	return nil
+
+	if tf == nil {
+		return nil
+	}
+
+	return &FileMeta{
+		FileSha1: tf.FileSha1,
+		FileName: tf.Filename,
+		FileSize: tf.FileSize,
+		Location: tf.FileLocation,
+		UploadAt: tf.CreateAt,
+		UpdateAt: tf.UpdateAt,
+		Status:   tf.Status,
+	}
+
+
 }
 
-func RemoveMeta(fileSha1 string) {
-	delete(fileMetaMaps, fileSha1)
+func RemoveMetaDB(fileSha1 string) {
+	mysqldb.DeleteFileMeta(fileSha1)
 }
 
 

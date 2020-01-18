@@ -69,10 +69,12 @@ func uploadFile() gin.HandlerFunc {
 			Location: config.FileStoreDir + fName,
 			FileSize: fileSize,
 			FileSha1: utils.FileSha1(newFile),
-			UploadAt: time.Now().Format("2006-01-02 15:04:05"),
+			UploadAt: time.Now(),
+			UpdateAt: time.Now(),
+			Status: common.FileStatusAvailable,
 		}
 
-		meta.UpdateFileMeta(fileMeta.FileSha1, fileMeta)
+		meta.UploadFileMetaDB(fileMeta)
 
 		log.Printf("upload file success, file hash is : %s", fileMeta.FileSha1)
 
@@ -91,7 +93,7 @@ func getFileMeta() gin.HandlerFunc {
 			return
 		}
 
-		fileMeta := meta.GetFileMeta(req.FileHash)
+		fileMeta := meta.GetFileMetaDB(req.FileHash)
 		context.JSON(http.StatusOK, common.NewServiceResp(common.RespCodeSuccess, fileMeta))
 	}
 }
@@ -106,7 +108,7 @@ func downloadHandler() gin.HandlerFunc {
 			return
 		}
 
-		fm := meta.GetFileMeta(req.FileHash)
+		fm := meta.GetFileMetaDB(req.FileHash)
 
 		context.FileAttachment(fm.Location, fm.FileName)
 
@@ -123,7 +125,7 @@ func updateFileMeta() gin.HandlerFunc {
 			return
 		}
 
-		if meta.GetFileMeta(req.FileHash) == nil {
+		if meta.GetFileMetaDB(req.FileHash) == nil {
 			log.Printf("can't not found file meta %s", req.FileHash)
 			context.JSON(http.StatusBadRequest,
 				common.NewServiceResp(common.RespCodeBindReParamError, nil))
@@ -131,9 +133,9 @@ func updateFileMeta() gin.HandlerFunc {
 		}
 
 		if req.Filename != "" {
-			fm := meta.GetFileMeta(req.FileHash)
+			fm := meta.GetFileMetaDB(req.FileHash)
 			fm.FileName = req.Filename
-			meta.UpdateFileMeta(req.FileHash, *fm)
+			meta.UpdateFileMetaDB(*fm)
 			context.JSON(http.StatusOK,
 				common.NewServiceResp(common.RespCodeSuccess, fm))
 			return
@@ -155,7 +157,7 @@ func deleteFile() gin.HandlerFunc {
 			return
 		}
 
-		fm := meta.GetFileMeta(req.FileHash)
+		fm := meta.GetFileMetaDB(req.FileHash)
 		if fm == nil {
 			log.Printf("can't not found file meta %s", req.FileHash)
 			context.JSON(http.StatusBadRequest,
@@ -171,10 +173,8 @@ func deleteFile() gin.HandlerFunc {
 			return
 		}
 
-		meta.RemoveMeta(req.FileHash)
+		meta.RemoveMetaDB(req.FileHash)
 		context.JSON(http.StatusOK,
 			common.NewServiceResp(common.RespCodeSuccess, nil))
-
-
 	}
 }

@@ -11,6 +11,7 @@ type DownloadFileReq struct {
 type UpdateFileMetaReq struct {
 	FileHash string `form:"file_hash" bind:"required"`
 	Filename string `form:"filename"`
+	Status string `form:"status"`
 }
 
 type DeleteFileReq struct {
