@@ -28,6 +28,7 @@ type UserServiceHandler struct {
 func (u UserServiceHandler) Init(group *gin.RouterGroup) {
 	group.POST("/register", userRegister())
 	group.POST("/login", userLogin())
+	group.GET("/info", queryUserInfo())
 }
 
 func userRegister() gin.HandlerFunc {
@@ -92,6 +93,36 @@ func userLogin() gin.HandlerFunc {
 
 		context.JSON(http.StatusOK,
 			common.NewServiceResp(common.RespCodeSuccess, token))
+	}
+}
+
+func queryUserInfo() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		var req model.UserQueryReq
+		if err := context.ShouldBind(&req); err != nil {
+			log.Printf("request parameters error : %v", err)
+			context.JSON(http.StatusBadRequest,
+				common.NewServiceResp(common.RespCodeBindReParamError, nil))
+			return
+		}
+
+		token, ok := tokenCache[req.Username]
+		if !ok || token != req.Token {
+			log.Printf("request token error")
+			context.JSON(http.StatusBadRequest,
+				common.NewServiceResp(common.RespCodeUserTokenError, nil))
+			return
+		}
+
+		resp, err := userdb.QueryUser(req.Username)
+		if err != nil {
+			context.JSON(http.StatusBadRequest,
+				common.NewServiceResp(common.RespCodeUserNotFound, nil))
+			return
+		}
+
+		context.JSON(http.StatusOK,
+			common.NewServiceResp(common.RespCodeSuccess, resp))
 	}
 }
 

@@ -17,8 +17,9 @@ var (
 	//user service code (200 ~ 299)
 	RespCodeUserRegisterError = RespCode{200, "user register error"}
 	RespCodeUserNotFound = RespCode{201, "user not found error"}
-	RespCodeUserAlreadyLogin = RespCode{201, "user already login"}
-	RespCodeUserAlreadyRegistered = RespCode{201, "user already registered"}
+	RespCodeUserAlreadyLogin = RespCode{202, "user already login"}
+	RespCodeUserAlreadyRegistered = RespCode{203, "user already registered"}
+	RespCodeUserTokenError = RespCode{204, "user token error"}
 )
 
 type RespCode struct {

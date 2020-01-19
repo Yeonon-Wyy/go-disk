@@ -3,6 +3,7 @@ package db
 import (
 	"go-disk/common"
 	mysqldb "go-disk/db/mysql"
+	"go-disk/model"
 	"log"
 	"time"
 )
@@ -16,6 +17,8 @@ const (
 	existUserByUsernameAndPasswordStatement = "SELECT COUNT(1) AS count FROM tbl_user WHERE user_name = ? AND user_pwd = ?"
 
 	existUserByUsernameStatement = "SELECT COUNT(1) AS count FROM tbl_user WHERE user_name = ?"
+
+	queryUserInfoStatement = "SELECT signup_at FROM tbl_user WHERE user_name = ?"
 )
 
 func InsertUser(username, password string) bool {
@@ -60,4 +63,19 @@ func existUser(sqlStem string, args ...interface{}) bool {
 	}
 
 	return count > 0
+}
+
+func QueryUser(username string) (*model.UserQueryResp, error){
+	statement, err := mysqldb.DBConn().Prepare(queryUserInfoStatement)
+	if err != nil {
+		log.Printf("Failed to prepare statement : %v", err)
+		return nil, err
+	}
+	defer statement.Close()
+
+	var resp model.UserQueryResp
+	statement.QueryRow(username).Scan(&resp.SignupAt)
+	resp.Username = username
+
+	return &resp, nil
 }

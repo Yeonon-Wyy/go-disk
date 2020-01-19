@@ -25,3 +25,13 @@ type UserLoginReq struct {
 	Username string `form:"username" bind:"required"`
 	Password string `form:"password" bind:"required"`
 }
+
+type UserQueryReq struct {
+	Username string `form:"username" bind:"required"`
+	Token string `form:"token" bind:"required"`
+}
+
+type UserQueryResp struct {
+	Username string `json:"username"`
+	SignupAt time.Time `json:"signup_at"`
+}

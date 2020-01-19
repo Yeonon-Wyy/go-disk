@@ -22,6 +22,7 @@ type FilesServiceHandler struct {
 
 func (f FilesServiceHandler) Init(group *gin.RouterGroup) {
 	group.POST("/upload", uploadFile())
+	group.StaticFile("/upload", "./static/view/index.html")
 
 	group.GET("/meta", getFileMeta())
 	group.GET("/download", downloadHandler())

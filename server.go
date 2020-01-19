@@ -9,6 +9,9 @@ import (
 func main() {
 	router := gin.Default()
 
+	router.Static("/static", "./static")
+	router.StaticFile("/hom", "./static/view/home.html")
+
 	filesGroup := router.Group("/files")
 	usersGroup := router.Group("/users")
 
@@ -30,5 +33,4 @@ func DispatchHandlerGroup(rgs ...*gin.RouterGroup) {
 			log.Printf("error handler group: %s", rg.BasePath())
 		}
 	}
-
 }
