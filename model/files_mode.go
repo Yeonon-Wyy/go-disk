@@ -1,4 +1,4 @@
-package handler
+package model
 
 type GetFileMetaReq struct {
 	FileHash string `form:"file_hash" bind:"required"`

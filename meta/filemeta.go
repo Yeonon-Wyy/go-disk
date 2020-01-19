@@ -31,17 +31,17 @@ func UpdateFileMetaDB(meta FileMeta) {
 	mysqldb.OnFileUpdateFinished(meta.FileSha1, meta.FileName)
 }
 
-func GetFileMetaDB(fileSha1 string) *FileMeta {
+func GetFileMetaDB(fileSha1 string) FileMeta {
 	tf, err := mysqldb.GetFileMeta(fileSha1)
 	if err != nil {
 		log.Printf("get file meta error : %v", err)
 	}
 
 	if tf == nil {
-		return nil
+		return FileMeta{}
 	}
 
-	return &FileMeta{
+	return FileMeta{
 		FileSha1: tf.FileSha1,
 		FileName: tf.Filename,
 		FileSize: tf.FileSize,

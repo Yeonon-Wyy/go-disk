@@ -18,19 +18,21 @@ type TableFile struct {
 }
 
 const (
-	insertStatement = "INSERT INTO tbl_file(`file_sha1`,`file_name`,`file_size`," +
+	FileTableName = "tbl_file"
+
+	insertFileStatement = "INSERT INTO tbl_file(`file_sha1`,`file_name`,`file_size`," +
 		"`file_addr`,`status`,`create_at`,`update_at`) VALUES(?,?,?,?,?,?,?)"
 
-	updateStatement = "UPDATE tbl_file SET file_name = ? where file_sha1 = ?"
+	updateFileStatement = "UPDATE tbl_file SET file_name = ? where file_sha1 = ?"
 
-	queryStatement = "SELECT file_sha1,file_name,file_size,file_addr,create_at,update_at,status FROM tbl_file " +
+	queryFileStatement = "SELECT file_sha1,file_name,file_size,file_addr,create_at,update_at,status FROM tbl_file " +
 		"WHERE file_sha1=? AND status=1 limit 1"
 
-	deleteStatement = "UPDATE tbl_file SET status = ? where file_sha1 = ?"
+	deleteFileStatement = "UPDATE tbl_file SET status = ? where file_sha1 = ?"
 )
 
 func OnFileUploadFinished(sha1, filename, location string, size int64, status int, uploadAt, updateAt time.Time) bool {
-	statement, err := mysql.DBConn().Prepare(insertStatement)
+	statement, err := mysql.DBConn().Prepare(insertFileStatement)
 	if err != nil {
 		log.Printf("Failed to prepare statement : %v", err)
 		return false
@@ -44,19 +46,11 @@ func OnFileUploadFinished(sha1, filename, location string, size int64, status in
 		return false
 	}
 
-
-	if rows, err := result.RowsAffected(); err == nil {
-		if rows <= 0 {
-			log.Printf("faied to insert to table %s, error is : %v", "tbl_file", err)
-			return false
-		}
-		return true
-	}
-	return false
+	return validateRow(result, FileTableName)
 }
 
 func OnFileUpdateFinished(sha1, filename string) bool {
-	statement, err := mysql.DBConn().Prepare(updateStatement)
+	statement, err := mysql.DBConn().Prepare(updateFileStatement)
 	if err != nil {
 		log.Printf("Failed to prepare statement : %v", err)
 		return false
@@ -69,19 +63,12 @@ func OnFileUpdateFinished(sha1, filename string) bool {
 		return false
 	}
 
-	if rows, err := result.RowsAffected(); err == nil {
-		if rows <= 0 {
-			log.Printf("faied to insert to table %s, error is : %v", "tbl_file", err)
-			return false
-		}
-		return true
-	}
-	return false
+	return validateRow(result, FileTableName)
 }
 
 
 func GetFileMeta(sha1 string) (*TableFile, error) {
-	statement, err := mysql.DBConn().Prepare(queryStatement)
+	statement, err := mysql.DBConn().Prepare(queryFileStatement)
 	if err != nil {
 		log.Printf("Failed to prepare statement : %v", err)
 		return nil, err
@@ -103,7 +90,7 @@ func GetFileMeta(sha1 string) (*TableFile, error) {
 }
 
 func DeleteFileMeta(sha1 string) bool {
-	statement, err := mysql.DBConn().Prepare(deleteStatement)
+	statement, err := mysql.DBConn().Prepare(deleteFileStatement)
 	if err != nil {
 		log.Printf("Failed to prepare statement : %v", err)
 		return false
@@ -112,15 +99,10 @@ func DeleteFileMeta(sha1 string) bool {
 
 	result, err := statement.Exec(common.FileStatusDelete, sha1)
 
-	if rows, err := result.RowsAffected(); err == nil {
-		if rows <= 0 {
-			log.Printf("faied to insert to table %s, error is : %v", "tbl_file", err)
-			return false
-		}
-		return true
-	}
-	return false
+	return validateRow(result, FileTableName)
 }
+
+
 
 
 

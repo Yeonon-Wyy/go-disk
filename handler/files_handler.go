@@ -5,6 +5,7 @@ import (
 	"go-disk/common"
 	"go-disk/config"
 	"go-disk/meta"
+	"go-disk/model"
 	"go-disk/utils"
 	"io"
 	"log"
@@ -74,6 +75,7 @@ func uploadFile() gin.HandlerFunc {
 			Status: common.FileStatusAvailable,
 		}
 
+
 		meta.UploadFileMetaDB(fileMeta)
 
 		log.Printf("upload file success, file hash is : %s", fileMeta.FileSha1)
@@ -84,7 +86,7 @@ func uploadFile() gin.HandlerFunc {
 
 func getFileMeta() gin.HandlerFunc {
 	return func(context *gin.Context) {
-		var req GetFileMetaReq
+		var req model.GetFileMetaReq
 
 		if err := context.ShouldBind(&req); err != nil {
 			log.Printf("bind request parameters error %v", err)
@@ -94,13 +96,17 @@ func getFileMeta() gin.HandlerFunc {
 		}
 
 		fileMeta := meta.GetFileMetaDB(req.FileHash)
+		if fileMeta.FileSha1 == "" {
+			context.JSON(http.StatusOK, common.NewServiceResp(common.RespCodeSuccess, nil))
+			return
+		}
 		context.JSON(http.StatusOK, common.NewServiceResp(common.RespCodeSuccess, fileMeta))
 	}
 }
 
 func downloadHandler() gin.HandlerFunc {
 	return func(context *gin.Context) {
-		var req DownloadFileReq
+		var req model.DownloadFileReq
 		if err := context.ShouldBind(&req); err != nil {
 			log.Printf("bind request parameters error %v", err)
 			context.JSON(http.StatusBadRequest,
@@ -109,7 +115,10 @@ func downloadHandler() gin.HandlerFunc {
 		}
 
 		fm := meta.GetFileMetaDB(req.FileHash)
-
+		if fm.FileSha1 == "" {
+			context.JSON(http.StatusOK, common.NewServiceResp(common.RespCodeSuccess, nil))
+			return
+		}
 		context.FileAttachment(fm.Location, fm.FileName)
 
 	}
@@ -117,7 +126,7 @@ func downloadHandler() gin.HandlerFunc {
 
 func updateFileMeta() gin.HandlerFunc {
 	return func(context *gin.Context) {
-		var req UpdateFileMetaReq
+		var req model.UpdateFileMetaReq
 		if err := context.ShouldBind(&req); err != nil {
 			log.Printf("bind request parameters error %v", err)
 			context.JSON(http.StatusBadRequest,
@@ -125,17 +134,17 @@ func updateFileMeta() gin.HandlerFunc {
 			return
 		}
 
-		if meta.GetFileMetaDB(req.FileHash) == nil {
+		fm := meta.GetFileMetaDB(req.FileHash)
+		if fm.FileSha1 == "" {
 			log.Printf("can't not found file meta %s", req.FileHash)
 			context.JSON(http.StatusBadRequest,
-				common.NewServiceResp(common.RespCodeBindReParamError, nil))
+				common.NewServiceResp(common.RespCodeNotFoundFileError, nil))
 			return
 		}
 
 		if req.Filename != "" {
-			fm := meta.GetFileMetaDB(req.FileHash)
 			fm.FileName = req.Filename
-			meta.UpdateFileMetaDB(*fm)
+			meta.UpdateFileMetaDB(fm)
 			context.JSON(http.StatusOK,
 				common.NewServiceResp(common.RespCodeSuccess, fm))
 			return
@@ -149,7 +158,7 @@ func updateFileMeta() gin.HandlerFunc {
 
 func deleteFile() gin.HandlerFunc {
 	return func(context *gin.Context) {
-		var req DeleteFileReq
+		var req model.DeleteFileReq
 		if err := context.ShouldBind(&req); err != nil {
 			log.Printf("bind request parameters error %v", err)
 			context.JSON(http.StatusBadRequest,
@@ -158,10 +167,10 @@ func deleteFile() gin.HandlerFunc {
 		}
 
 		fm := meta.GetFileMetaDB(req.FileHash)
-		if fm == nil {
+		if fm.FileSha1 == "" {
 			log.Printf("can't not found file meta %s", req.FileHash)
 			context.JSON(http.StatusBadRequest,
-				common.NewServiceResp(common.RespCodeBindReParamError, nil))
+				common.NewServiceResp(common.RespCodeNotFoundFileError, nil))
 			return
 		}
 

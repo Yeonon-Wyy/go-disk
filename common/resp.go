@@ -12,6 +12,13 @@ var (
 	RespCodeCopyFileError =  RespCode{103, "copy file error"}
 	RespCodeFilenameError = RespCode{104, "filename error"}
 	RespCodeRemoveFileError = RespCode{105, "remove file error"}
+	RespCodeNotFoundFileError = RespCode{106, "not found file error"}
+
+	//user service code (200 ~ 299)
+	RespCodeUserRegisterError = RespCode{200, "user register error"}
+	RespCodeUserNotFound = RespCode{201, "user not found error"}
+	RespCodeUserAlreadyLogin = RespCode{201, "user already login"}
+	RespCodeUserAlreadyRegistered = RespCode{201, "user already registered"}
 )
 
 type RespCode struct {
