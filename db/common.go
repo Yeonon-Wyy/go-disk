@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"go-disk/db/mysql"
 	"log"
 )
 
@@ -14,4 +15,21 @@ func validateRow(result sql.Result, tableName string) bool {
 		return true
 	}
 	return false
+}
+
+func execSql(stemSql string, tableName string, args... interface{}) bool {
+	statement, err := mysql.DBConn().Prepare(stemSql)
+	if err != nil {
+		log.Printf("Failed to prepare statement : %v", err)
+		return false
+	}
+	defer statement.Close()
+
+	result, err := statement.Exec(args...)
+	if err != nil {
+		log.Printf("failed to execute statemnt : %v", err)
+		return false
+	}
+
+	return validateRow(result, tableName)
 }

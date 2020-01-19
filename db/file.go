@@ -32,38 +32,11 @@ const (
 )
 
 func OnFileUploadFinished(sha1, filename, location string, size int64, status int, uploadAt, updateAt time.Time) bool {
-	statement, err := mysql.DBConn().Prepare(insertFileStatement)
-	if err != nil {
-		log.Printf("Failed to prepare statement : %v", err)
-		return false
-	}
-
-	defer statement.Close()
-
-	result, err := statement.Exec(sha1,filename,size,location, status, uploadAt, updateAt)
-	if err != nil {
-		log.Printf("failed to execute statemnt : %v", err)
-		return false
-	}
-
-	return validateRow(result, FileTableName)
+	return execSql(insertFileStatement, FileTableName, sha1, filename, size, location, status, uploadAt, updateAt)
 }
 
 func OnFileUpdateFinished(sha1, filename string) bool {
-	statement, err := mysql.DBConn().Prepare(updateFileStatement)
-	if err != nil {
-		log.Printf("Failed to prepare statement : %v", err)
-		return false
-	}
-	defer statement.Close()
-
-	result, err := statement.Exec(filename, sha1)
-	if err != nil {
-		log.Printf("failed to execute statemnt : %v", err)
-		return false
-	}
-
-	return validateRow(result, FileTableName)
+	return execSql(updateFileStatement, FileTableName, filename, sha1)
 }
 
 
@@ -90,16 +63,7 @@ func GetFileMeta(sha1 string) (*TableFile, error) {
 }
 
 func DeleteFileMeta(sha1 string) bool {
-	statement, err := mysql.DBConn().Prepare(deleteFileStatement)
-	if err != nil {
-		log.Printf("Failed to prepare statement : %v", err)
-		return false
-	}
-	defer statement.Close()
-
-	result, err := statement.Exec(common.FileStatusDelete, sha1)
-
-	return validateRow(result, FileTableName)
+	return execSql(deleteFileStatement, FileTableName,common.FileStatusDelete, sha1)
 }
 
 
