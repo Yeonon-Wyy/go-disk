@@ -33,5 +33,9 @@ type UserQueryReq struct {
 
 type UserQueryResp struct {
 	Username string `json:"username"`
+	Email string `json:"email"`
+	Phone string `json:"phone"`
+	Profile string `json:"profile"`
+	LastActive string `json:"last_active"`
 	SignupAt time.Time `json:"signup_at"`
 }

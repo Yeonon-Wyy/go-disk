@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"go-disk/common"
 	userdb "go-disk/db"
@@ -9,16 +8,10 @@ import (
 	"go-disk/utils"
 	"log"
 	"net/http"
-	"time"
 )
 
 const (
 	pwdSalt = "1104459"
-)
-
-var (
-	//TODO: just temp
-	tokenCache = make(map[string]string)
 )
 
 type UserServiceHandler struct {
@@ -28,7 +21,10 @@ type UserServiceHandler struct {
 func (u UserServiceHandler) Init(group *gin.RouterGroup) {
 	group.POST("/register", userRegister())
 	group.POST("/login", userLogin())
+
+	group.Use(AuthorizeInterceptor())
 	group.GET("/info", queryUserInfo())
+
 }
 
 func userRegister() gin.HandlerFunc {
@@ -73,7 +69,7 @@ func userLogin() gin.HandlerFunc {
 		}
 
 		//TODO: just temp token
-		if _, ok := tokenCache[req.Username]; ok {
+		if ExistToken(req.Username) {
 			log.Printf("user already login")
 			context.JSON(http.StatusBadRequest,
 				common.NewServiceResp(common.RespCodeUserAlreadyLogin, nil))
@@ -87,12 +83,8 @@ func userLogin() gin.HandlerFunc {
 			return
 		}
 
-		token := genToken(req.Username)
-
-		tokenCache[req.Username] = token
-
 		context.JSON(http.StatusOK,
-			common.NewServiceResp(common.RespCodeSuccess, token))
+			common.NewServiceResp(common.RespCodeSuccess, GenToken(req.Username)))
 	}
 }
 
@@ -103,14 +95,6 @@ func queryUserInfo() gin.HandlerFunc {
 			log.Printf("request parameters error : %v", err)
 			context.JSON(http.StatusBadRequest,
 				common.NewServiceResp(common.RespCodeBindReParamError, nil))
-			return
-		}
-
-		token, ok := tokenCache[req.Username]
-		if !ok || token != req.Token {
-			log.Printf("request token error")
-			context.JSON(http.StatusBadRequest,
-				common.NewServiceResp(common.RespCodeUserTokenError, nil))
 			return
 		}
 
@@ -126,10 +110,6 @@ func queryUserInfo() gin.HandlerFunc {
 	}
 }
 
-func genToken(username string) string {
-	ts := fmt.Sprintf("%x", time.Now().Unix())
-	return utils.MD5([]byte(username + ts + "_tokensalt")) + ts[:8]
-}
 
 
 

@@ -18,7 +18,7 @@ const (
 
 	existUserByUsernameStatement = "SELECT COUNT(1) AS count FROM tbl_user WHERE user_name = ?"
 
-	queryUserInfoStatement = "SELECT signup_at FROM tbl_user WHERE user_name = ?"
+	queryBriefUserInfoStatement = "SELECT signup_at FROM tbl_user WHERE user_name = ?"
 )
 
 func InsertUser(username, password string) bool {
@@ -66,7 +66,7 @@ func existUser(sqlStem string, args ...interface{}) bool {
 }
 
 func QueryUser(username string) (*model.UserQueryResp, error){
-	statement, err := mysqldb.DBConn().Prepare(queryUserInfoStatement)
+	statement, err := mysqldb.DBConn().Prepare(queryBriefUserInfoStatement)
 	if err != nil {
 		log.Printf("Failed to prepare statement : %v", err)
 		return nil, err

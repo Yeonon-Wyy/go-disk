@@ -4,6 +4,7 @@ var (
 	//common code (0 ~ 99)
 	RespCodeSuccess  = RespCode{0, "success"}
 	RespCodeBindReParamError = RespCode{Code: 1, Message: "bind request parameters error"}
+	RespCodeUnauthorizedError = RespCode{Code: 2, Message: "user unauthorized"}
 
 	//file service code (100 ~ 199)
 	RespCodeReadFileError =  RespCode{100, "read file error"}

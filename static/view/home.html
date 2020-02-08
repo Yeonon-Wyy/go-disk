@@ -75,7 +75,7 @@
       url: "/users/info?" + queryParams(),
       type: "GET",
       error: function (jqXHR, textStatus, errorThrown) {
-        if (jqXHR.status === 400) {
+        if (jqXHR.status === 400 || jqXHR.status === 401) {
           window.location.href = "/static/view/signin.html"
           return
         }
