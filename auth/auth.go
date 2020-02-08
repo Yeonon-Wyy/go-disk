@@ -1,15 +1,20 @@
-package handler
+package auth
 
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"go-disk/common"
-	"go-disk/model"
 	"go-disk/utils"
 	"log"
 	"net/http"
 	"time"
 )
+
+type AuthReq struct {
+	Username string `form:"username" bind:"required"`
+	Token string `form:"token" bind:"required"`
+}
+
 
 var (
 	//TODO: just temp
@@ -19,7 +24,7 @@ var (
 func AuthorizeInterceptor() gin.HandlerFunc {
 	return func(context *gin.Context) {
 
-		var req model.AuthReq
+		var req AuthReq
 		if err := context.ShouldBind(&req); err != nil {
 			log.Printf("request param error")
 			context.Abort()

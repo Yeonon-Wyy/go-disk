@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	"go-disk/auth"
 	"go-disk/common"
 	userdb "go-disk/db"
 	"go-disk/model"
@@ -22,7 +23,7 @@ func (u UserServiceHandler) Init(group *gin.RouterGroup) {
 	group.POST("/register", userRegister())
 	group.POST("/login", userLogin())
 
-	group.Use(AuthorizeInterceptor())
+	group.Use(auth.AuthorizeInterceptor())
 	group.GET("/info", queryUserInfo())
 
 }
@@ -69,7 +70,7 @@ func userLogin() gin.HandlerFunc {
 		}
 
 		//TODO: just temp token
-		if ExistToken(req.Username) {
+		if auth.ExistToken(req.Username) {
 			log.Printf("user already login")
 			context.JSON(http.StatusBadRequest,
 				common.NewServiceResp(common.RespCodeUserAlreadyLogin, nil))
@@ -84,7 +85,7 @@ func userLogin() gin.HandlerFunc {
 		}
 
 		context.JSON(http.StatusOK,
-			common.NewServiceResp(common.RespCodeSuccess, GenToken(req.Username)))
+			common.NewServiceResp(common.RespCodeSuccess, auth.GenToken(req.Username)))
 	}
 }
 
