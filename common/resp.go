@@ -14,6 +14,8 @@ var (
 	RespCodeFilenameError = RespCode{104, "filename error"}
 	RespCodeRemoveFileError = RespCode{105, "remove file error"}
 	RespCodeNotFoundFileError = RespCode{106, "not found file error"}
+	RespCodeUploadFileError = RespCode{107, "upload file error"}
+	RespCodeQueryFileError = RespCode{108, "query file error"}
 
 	//user service code (200 ~ 299)
 	RespCodeUserRegisterError = RespCode{200, "user register error"}

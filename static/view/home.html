@@ -95,11 +95,12 @@
   }
 
   function updateFileList() {
+    limit = 15
     $.ajax({
-      url: "/files/meta?" + queryParams(),
+      url: "/files/meta?" + queryParams() + "&limit=" + limit,
       type: "POST",
       data: {
-        limit: 15
+
       },
       error: function (jqXHR, textStatus, errorThrown) {
         if (textStatus == "error") {
@@ -112,33 +113,34 @@
         if (!body) {
           return;
         }
-        var data = JSON.parse(body);
+        var data = JSON.parse(JSON.stringify(body)).data;
         if (!data || data.length <= 0) {
           return;
         }
+        console.log(data)
 
         for (var i = 0; i < data.length; i++) {
           var x = document.getElementById('filetbl').insertRow();
           var cell = x.insertCell();
-          cell.innerHTML = data[i].FileHash.substr(0, 20)+"...";
+          cell.innerHTML = data[i].file_hash.substr(0, 20)+"...";
 
           cell = x.insertCell();
-          cell.innerHTML = data[i].FileName;
+          cell.innerHTML = data[i].filename;
 
           cell = x.insertCell();
-          cell.innerHTML = data[i].FileSize;
+          cell.innerHTML = data[i].file_size;
 
           cell = x.insertCell();
-          cell.innerHTML = data[i].UploadAt;
+          cell.innerHTML = data[i].upload_at;
 
           cell = x.insertCell();
-          cell.innerHTML = data[i].LastUpdated;
+          cell.innerHTML = data[i].last_update;
 
           cell = x.insertCell();
           cell.innerHTML = '<button class="btn btn-success" ' +
             'style="height:30px;margin:5px 0;"' +
             'onClick = "downloadFile(\'http://localhost:8080/files/' +
-            'downloadurl?filehash=' + data[i].FileHash + '&' + queryParams() + '\')">下载</button>';
+            'download?filehash=' + data[i].file_hash + '&' + queryParams() + '\')">下载</button>';
         }
       }
     });

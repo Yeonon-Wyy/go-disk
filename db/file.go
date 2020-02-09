@@ -1,7 +1,7 @@
 package db
 
 import (
-	"go-disk/common"
+	"go-disk/common/constant"
 	"go-disk/db/mysql"
 	"log"
 	"time"
@@ -63,7 +63,7 @@ func GetFileMeta(sha1 string) (*TableFile, error) {
 }
 
 func DeleteFileMeta(sha1 string) bool {
-	return execSql(deleteFileStatement, FileTableName,common.FileStatusDelete, sha1)
+	return execSql(deleteFileStatement, FileTableName, constant.FileStatusDelete, sha1)
 }
 
 

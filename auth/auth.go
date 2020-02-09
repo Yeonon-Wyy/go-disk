@@ -10,10 +10,6 @@ import (
 	"time"
 )
 
-type AuthReq struct {
-	Username string `form:"username" bind:"required"`
-	Token string `form:"token" bind:"required"`
-}
 
 
 var (
@@ -24,8 +20,9 @@ var (
 func AuthorizeInterceptor() gin.HandlerFunc {
 	return func(context *gin.Context) {
 
-		var req AuthReq
-		if err := context.ShouldBind(&req); err != nil {
+		username, token := context.Query("username"), context.Query("token")
+
+		if username == "" || token == "" {
 			log.Printf("request param error")
 			context.Abort()
 			context.JSON(http.StatusBadRequest,
@@ -33,7 +30,7 @@ func AuthorizeInterceptor() gin.HandlerFunc {
 			return
 		}
 
-		if !ValidateToken(req.Username, req.Token) {
+		if !ValidateToken(username, token) {
 			log.Printf("token validate error")
 			context.Abort()
 			context.JSON(http.StatusUnauthorized,

@@ -1,7 +1,7 @@
 package db
 
 import (
-	"go-disk/common"
+	"go-disk/common/constant"
 	mysqldb "go-disk/db/mysql"
 	"go-disk/model"
 	"log"
@@ -22,21 +22,7 @@ const (
 )
 
 func InsertUser(username, password string) bool {
-	statement, err := mysqldb.DBConn().Prepare(insertUserStatement)
-	if err != nil {
-		log.Printf("Failed to prepare statement : %v", err)
-		return false
-	}
-
-	defer statement.Close()
-
-	res, err := statement.Exec(username, password, time.Now(), common.UserStatusAvailable)
-	if err != nil {
-		log.Printf("failed to execute statemnt : %v", err)
-		return false
-	}
-
-	return validateRow(res, userTableName)
+	return execSql(insertUserStatement, userTableName, username, password, time.Now(), constant.UserStatusAvailable)
 }
 
 func ExistUserByUsername(username string) bool {
