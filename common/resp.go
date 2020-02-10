@@ -16,6 +16,7 @@ var (
 	RespCodeNotFoundFileError = RespCode{106, "not found file error"}
 	RespCodeUploadFileError = RespCode{107, "upload file error"}
 	RespCodeQueryFileError = RespCode{108, "query file error"}
+	RespCodeFastUploadFailed = RespCode{109, "fast upload failed"}
 
 	//user service code (200 ~ 299)
 	RespCodeUserRegisterError = RespCode{200, "user register error"}

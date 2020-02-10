@@ -33,3 +33,21 @@ func execSql(stemSql string, tableName string, args... interface{}) bool {
 
 	return validateRow(result, tableName)
 }
+
+func exist(sqlStem string, args ...interface{}) bool {
+	statement, err := mysql.DBConn().Prepare(sqlStem)
+	if err != nil {
+		log.Printf("Failed to prepare statement : %v", err)
+		return false
+	}
+	defer statement.Close()
+
+	var count int
+	err = statement.QueryRow(args...).Scan(&count)
+	if err != nil {
+		log.Printf("can't found this row : %v", err)
+		return false
+	}
+
+	return count > 0
+}

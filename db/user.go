@@ -26,30 +26,14 @@ func InsertUser(username, password string) bool {
 }
 
 func ExistUserByUsername(username string) bool {
-	return existUser(existUserByUsernameStatement, username)
+	return exist(existUserByUsernameStatement, username)
 }
 
 func ExistUserByUsernameAndPassword(username, password string) bool {
-	return existUser(existUserByUsernameAndPasswordStatement, username, password)
+	return exist(existUserByUsernameAndPasswordStatement, username, password)
 }
 
-func existUser(sqlStem string, args ...interface{}) bool {
-	statement, err := mysqldb.DBConn().Prepare(sqlStem)
-	if err != nil {
-		log.Printf("Failed to prepare statement : %v", err)
-		return false
-	}
-	defer statement.Close()
 
-	var count int
-	err = statement.QueryRow(args...).Scan(&count)
-	if err != nil {
-		log.Printf("can't found the user : %v", err)
-		return false
-	}
-
-	return count > 0
-}
 
 func QueryUser(username string) (*model.UserQueryResp, error){
 	statement, err := mysqldb.DBConn().Prepare(queryBriefUserInfoStatement)

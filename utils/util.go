@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"hash"
 	"io"
+	"mime/multipart"
 	"os"
 	"path/filepath"
 )
@@ -36,6 +37,14 @@ func FileSha1(file *os.File) string {
 	io.Copy(_sha1, file)
 	return hex.EncodeToString(_sha1.Sum(nil))
 }
+
+func MultipartFileSha1(file *multipart.File) string {
+	_sha1 := sha1.New()
+	io.Copy(_sha1, *file)
+	return hex.EncodeToString(_sha1.Sum(nil))
+}
+
+
 
 func MD5(data []byte) string {
 	_md5 := md5.New()

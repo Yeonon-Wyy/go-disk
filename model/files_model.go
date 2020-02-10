@@ -35,3 +35,10 @@ type UserFileReq struct {
 	Limit int `form:"limit" bind:"required"`
 }
 
+type FastUploadReq struct {
+	Username string `form:"username" bind:"required"`
+	FileSize int64 `form:"file_size" bind:"required"`
+	FileHash string `form:"file_hash" bind:"required"`
+	Filename string `form:"filename" bind:"required"`
+}
+

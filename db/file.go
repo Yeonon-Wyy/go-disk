@@ -29,6 +29,8 @@ const (
 		"WHERE file_sha1=? AND status=1 limit 1"
 
 	deleteFileStatement = "UPDATE tbl_file SET status = ? where file_sha1 = ?"
+
+	existFileStatement = "SELECT COUNT(1) AS count FROM tbl_file WHERE file_sha1 = ?"
 )
 
 func OnFileUploadFinished(sha1, filename, location string, size int64, status int, uploadAt, updateAt time.Time) bool {
@@ -64,6 +66,10 @@ func GetFileMeta(sha1 string) (*TableFile, error) {
 
 func DeleteFileMeta(sha1 string) bool {
 	return execSql(deleteFileStatement, FileTableName, constant.FileStatusDelete, sha1)
+}
+
+func ExistFile(sha1 string) bool {
+	return exist(existFileStatement, sha1)
 }
 
 
