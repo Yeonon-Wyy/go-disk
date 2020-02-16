@@ -5,6 +5,7 @@ var (
 	RespCodeSuccess  = RespCode{0, "success"}
 	RespCodeBindReParamError = RespCode{Code: 1, Message: "bind request parameters error"}
 	RespCodeUnauthorizedError = RespCode{Code: 2, Message: "user unauthorized"}
+	RespCodeTypeError =  RespCode{Code: 2, Message: "data type error"}
 
 	//file service code (100 ~ 199)
 	RespCodeReadFileError =  RespCode{100, "read file error"}
@@ -17,6 +18,9 @@ var (
 	RespCodeUploadFileError = RespCode{107, "upload file error"}
 	RespCodeQueryFileError = RespCode{108, "query file error"}
 	RespCodeFastUploadFailed = RespCode{109, "fast upload failed"}
+	RespCodeConnectFSRedisServerError = RespCode{110, "connect to redis server error"}
+	RespCodeCompleteUploadError = RespCode{110, "complete upload error error"}
+
 
 	//user service code (200 ~ 299)
 	RespCodeUserRegisterError = RespCode{200, "user register error"}

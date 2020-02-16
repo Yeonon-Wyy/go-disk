@@ -69,7 +69,6 @@ func userLogin() gin.HandlerFunc {
 			return
 		}
 
-		//TODO: just temp token
 		if auth.ExistToken(req.Username) {
 			log.Printf("user already login")
 			context.JSON(http.StatusBadRequest,

@@ -3,18 +3,13 @@ package auth
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	redisconn "go-disk/cache/redis"
 	"go-disk/common"
+	"go-disk/config"
 	"go-disk/utils"
 	"log"
 	"net/http"
 	"time"
-)
-
-
-
-var (
-	//TODO: just temp
-	tokenCache = make(map[string]string)
 )
 
 func AuthorizeInterceptor() gin.HandlerFunc {
@@ -45,22 +40,41 @@ func AuthorizeInterceptor() gin.HandlerFunc {
 func GenToken(key string) string {
 	ts := fmt.Sprintf("%x", time.Now().Unix())
 	token := utils.MD5([]byte(key + ts + "_tokensalt")) + ts[:8]
-	tokenCache[key] = token
+	redisClient, err := redisconn.AuthConn()
+	if err != nil {
+		log.Printf("failed to connect redis server : %v", err)
+		return ""
+	}
+	defer redisClient.Close()
+	redisClient.Set(key, token, config.AuthRedisTokenExpireTime)
 	return token
 }
 
 func ExistToken(key string) bool {
-	 _, ok := tokenCache[key]
-	 return ok
+	redisClient, err := redisconn.AuthConn()
+	if err != nil {
+		log.Printf("failed to connect redis server : %v", err)
+		return false
+	}
+	defer redisClient.Close()
+	val := redisClient.Exists(key).Val()
+	return val > 0
 }
 
-//TODO: Token应该是有时效性的，这里暂时不考虑，后续用redis实现
 func ValidateToken(key, ReqToken string) bool {
-	internToken, ok := tokenCache[key]
-	if !ok {
+
+	if !ExistToken(key) {
 		log.Printf("the user not login!")
 		return false
 	}
+	redisClient, err := redisconn.AuthConn()
+	if err != nil {
+		log.Printf("failed to connect redis server : %v", err)
+		return false
+	}
+	defer redisClient.Close()
+
+	internToken := redisClient.Get(key).Val()
 
 	if internToken != ReqToken {
 		log.Printf("token error!")
