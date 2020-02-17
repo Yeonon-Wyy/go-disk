@@ -362,9 +362,18 @@ func uploadPart() gin.HandlerFunc {
 			return
 		}
 
+		f, _, err := context.Request.FormFile("file")
+		if err != nil {
+			log.Printf("file empty cotent : %v", err)
+			context.JSON(http.StatusBadRequest,
+				common.NewServiceResp(common.RespCodeFileEmptyError, nil))
+			return
+		}
+
 		buf := make([]byte, 1024 * 1024)
 		for {
-			n, err := context.Request.Body.Read(buf)
+
+			n, err := f.Read(buf)
 			if err != nil {
 				break
 			}

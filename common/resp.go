@@ -20,6 +20,7 @@ var (
 	RespCodeFastUploadFailed = RespCode{109, "fast upload failed"}
 	RespCodeConnectFSRedisServerError = RespCode{110, "connect to redis server error"}
 	RespCodeCompleteUploadError = RespCode{110, "complete upload error error"}
+	RespCodeFileEmptyError = RespCode{110, "file empty content error"}
 
 
 	//user service code (200 ~ 299)

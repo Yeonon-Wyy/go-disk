@@ -58,14 +58,14 @@ type MPUploadInitReq struct {
 }
 
 type MPUploadPartReq struct {
-	UploadId string `from:"uploadid" bind:"required"`
-	Index string  `from:"index" bind:"required"`
+	UploadId string `form:"uploadid" bind:"required"`
+	Index string  `form:"index" bind:"required"`
 }
 
 type MPUploadCompleteReq struct {
-	UploadId string `from:"uploadid" bind:"required"`
+	UploadId string `form:"uploadid" bind:"required"`
 	Username string `form:"username" bind:"required"`
-	FileSize int64 `form:"filesize" bind:"required"`
-	FileHash string `form:"filehash" bind:"required"`
+	FileSize int64 `form:"file_size" bind:"required"`
+	FileHash string `form:"file_hash" bind:"required"`
 	Filename string `form:"filename" bind:"required"`
 }
