@@ -19,9 +19,9 @@ var (
 	RespCodeQueryFileError = RespCode{108, "query file error"}
 	RespCodeFastUploadFailed = RespCode{109, "fast upload failed"}
 	RespCodeConnectFSRedisServerError = RespCode{110, "connect to redis server error"}
-	RespCodeCompleteUploadError = RespCode{110, "complete upload error error"}
-	RespCodeFileEmptyError = RespCode{110, "file empty content error"}
-
+	RespCodeCompleteUploadError = RespCode{111, "complete upload error error"}
+	RespCodeReadDataError = RespCode{112, "read data error"}
+	RespCodeWriteFileError = RespCode{112, "write file error"}
 
 	//user service code (200 ~ 299)
 	RespCodeUserRegisterError = RespCode{200, "user register error"}

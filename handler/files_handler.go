@@ -13,6 +13,7 @@ import (
 	"go-disk/model"
 	"go-disk/utils"
 	"io"
+	"io/ioutil"
 	"log"
 	"math"
 	"net/http"
@@ -335,9 +336,10 @@ func initialMultipartUpload() gin.HandlerFunc {
 
 func uploadPart() gin.HandlerFunc {
 	return func(context *gin.Context) {
-		var req model.MPUploadPartReq
-		if err := context.ShouldBind(&req); err != nil {
-			log.Printf("bind request parameters error %v", err)
+		uploadId := context.Query("uploadid")
+		index := context.Query("index")
+		if len(uploadId) == 0 || len(index) == 0 {
+			log.Printf("bind request parameters error")
 			context.JSON(http.StatusBadRequest,
 				common.NewServiceResp(common.RespCodeBindReParamError, nil))
 			return
@@ -352,7 +354,7 @@ func uploadPart() gin.HandlerFunc {
 		}
 		defer redisClient.Close()
 
-		fpath := config.FileStoreDir + req.UploadId + "/" + req.Index
+		fpath := config.FileStoreDir + uploadId + "/" + index
 		os.MkdirAll(path.Dir(fpath), 0777)
 		fd, err := os.Create(fpath)
 		if err != nil {
@@ -361,29 +363,26 @@ func uploadPart() gin.HandlerFunc {
 				common.NewServiceResp(common.RespCodeOpenFileError, nil))
 			return
 		}
-
-		f, _, err := context.Request.FormFile("file")
+		defer fd.Close()
+		//buf := make([]byte, 1024 * 1024)
+		data, err := ioutil.ReadAll(context.Request.Body)
 		if err != nil {
-			log.Printf("file empty cotent : %v", err)
-			context.JSON(http.StatusBadRequest,
-				common.NewServiceResp(common.RespCodeFileEmptyError, nil))
+			log.Printf("read request data error : %v", err)
+			context.JSON(http.StatusInternalServerError,
+				common.NewServiceResp(common.RespCodeReadDataError, nil))
 			return
 		}
-
-		buf := make([]byte, 1024 * 1024)
-		for {
-
-			n, err := f.Read(buf)
-			if err != nil {
-				break
-			}
-			_, err = fd.Write(buf[:n])
-			if err != nil {
-				break
-			}
+		n, err := fd.Write(data)
+		if err != nil {
+			log.Printf("write data to file error : %v", err)
+			context.JSON(http.StatusInternalServerError,
+				common.NewServiceResp(common.RespCodeWriteFileError, nil))
+			return
 		}
+		log.Printf("write to file success size : n = %d byte", n)
 
-		redisClient.HSet("MP_" + req.UploadId, "chkidx_" + req.Index, 1)
+
+		redisClient.HSet("MP_" + uploadId, "chkidx_" + index, 1)
 
 		context.JSON(http.StatusOK,
 			common.NewServiceResp(common.RespCodeSuccess, nil))
