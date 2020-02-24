@@ -11,7 +11,9 @@ import (
 	"go-disk/db"
 	"go-disk/meta"
 	"go-disk/model"
+	"go-disk/store/ceph"
 	"go-disk/utils"
+	"gopkg.in/amz.v1/s3"
 	"io"
 	"io/ioutil"
 	"log"
@@ -85,6 +87,8 @@ func uploadFile() gin.HandlerFunc {
 				return
 			}
 
+			file.Seek(0, 0)
+			newFile.Seek(0, 0)
 			_, err = io.Copy(newFile, file)
 
 			if err != nil {
@@ -94,7 +98,7 @@ func uploadFile() gin.HandlerFunc {
 			}
 
 			defer newFile.Close()
-			newFile.Seek(0, 0)
+
 			_, fName := filepath.Split(newFile.Name())
 
 			//set file meta
@@ -108,6 +112,20 @@ func uploadFile() gin.HandlerFunc {
 				Status:   constant.FileStatusAvailable,
 			}
 
+			//同步到ceph中
+			newFile.Seek(0, 0)
+			data, _ := ioutil.ReadAll(newFile)
+			bucket := ceph.GetCephBucket(config.CephFileStoreBucketName)
+			caphPath := "/ceph/" + fileHash
+			err = bucket.Put(caphPath, data, config.CephPutBinDataContentType, s3.PublicReadWrite)
+			if err != nil {
+				log.Printf("put data to ceph error : %v", err)
+				context.JSON(http.StatusInternalServerError,
+					common.NewServiceResp(common.RespCodePutDataToCephError, nil))
+				return
+			}
+
+			fileMeta.Location = caphPath
 
 			meta.UploadFileMetaDB(fileMeta)
 		}
@@ -121,7 +139,6 @@ func uploadFile() gin.HandlerFunc {
 				filename = fmt.Sprintf("%s-%d.%s", filename[0:idx], time.Now().Unix(), filename[idx+1:])
 			}
 		}
-
 
 		//写入userfile 表里
 		username := context.Query("username")

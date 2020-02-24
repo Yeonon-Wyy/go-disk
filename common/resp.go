@@ -21,7 +21,8 @@ var (
 	RespCodeConnectFSRedisServerError = RespCode{110, "connect to redis server error"}
 	RespCodeCompleteUploadError = RespCode{111, "complete upload error error"}
 	RespCodeReadDataError = RespCode{112, "read data error"}
-	RespCodeWriteFileError = RespCode{112, "write file error"}
+	RespCodeWriteFileError = RespCode{113, "write file error"}
+		RespCodePutDataToCephError = RespCode{114, "put data to ceph error"}
 
 	//user service code (200 ~ 299)
 	RespCodeUserRegisterError = RespCode{200, "user register error"}
