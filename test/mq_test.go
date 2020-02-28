@@ -7,5 +7,5 @@ import (
 )
 
 func TestRabbitMQ(t *testing.T) {
-	mq.Publish(config.RabbitExchangeName, config.RabbitCephRoutingKey, []byte("yeonon"))
+	mq.RabbitPublish(config.RabbitExchangeName, config.RabbitCephRoutingKey, []byte("yeonon"))
 }

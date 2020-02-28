@@ -8,3 +8,8 @@ type RabbitMessage struct {
 	DstLocation string
 	DstStoreType common.StoreType
 }
+
+type RabbitErrMessage struct {
+	code int
+	message string
+}

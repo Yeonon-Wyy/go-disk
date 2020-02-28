@@ -1,13 +1,16 @@
 package mq
 
 import (
+	"encoding/json"
+	"errors"
 	"github.com/streadway/amqp"
 	"go-disk/config"
 	"log"
 )
 
-var conn *amqp.Connection
 var channel *amqp.Channel
+var consumerDone chan struct{}
+
 
 func initChannel() bool {
 	if channel != nil {
@@ -29,7 +32,7 @@ func initChannel() bool {
 	return true
 }
 
-func Publish(exchange string, routingKey string, msg []byte) bool {
+func RabbitPublish(exchange string, routingKey string, msg []byte) bool {
 	if !initChannel() {
 		return false
 	}
@@ -51,6 +54,49 @@ func Publish(exchange string, routingKey string, msg []byte) bool {
 	return true
 }
 
-func Consume() {
+func RabbitConsume(queueName string, consumerName string, callBack func([]byte) bool) {
+	if !initChannel() {
+		return
+	}
 
+	msgChannel, err := channel.Consume(
+		queueName,
+		consumerName,
+		true,
+		false,
+		false,
+		false,
+		nil,
+		)
+	if err != nil {
+		log.Printf("start consumer error : %v", err)
+		return
+	}
+
+	consumerDone = make(chan struct{})
+
+	go func() {
+		for msg := range msgChannel {
+			if suc := callBack(msg.Body); !suc {
+				//TODO: push another queue
+			}
+		}
+	}()
+
+	<-consumerDone
+	//close rabbit channel
+	channel.Close()
+}
+
+
+func PublishError(exchange string, routingKey string, errMsg RabbitErrMessage) error {
+	data, err := json.Marshal(errMsg)
+	if err != nil {
+		log.Printf("json marshal error : %v", err)
+		return err
+	}
+	if suc := RabbitPublish(exchange, routingKey, data); !suc {
+		return errors.New("failed to publish message to rabbit mq ")
+	}
+	return nil
 }

@@ -23,12 +23,15 @@ const (
 	insertFileStatement = "INSERT INTO tbl_file(`file_sha1`,`file_name`,`file_size`," +
 		"`file_addr`,`status`,`create_at`,`update_at`) VALUES(?,?,?,?,?,?,?)"
 
-	updateFileStatement = "UPDATE tbl_file SET file_name = ? where file_sha1 = ?"
+	updateFileNameStatement = "UPDATE tbl_file SET file_name = ? where file_sha1 = ?"
+
+	updateFileLocationStatement = "UPDATE tbl_file SET file_addr = ? where file_sha1 = ?"
 
 	queryFileStatement = "SELECT file_sha1,file_name,file_size,file_addr,create_at,update_at,status FROM tbl_file " +
 		"WHERE file_sha1=? AND status=1 limit 1"
 
 	deleteFileStatement = "UPDATE tbl_file SET status = ? where file_sha1 = ?"
+
 
 	existFileStatement = "SELECT COUNT(1) AS count FROM tbl_file WHERE file_sha1 = ?"
 )
@@ -38,7 +41,7 @@ func OnFileUploadFinished(sha1, filename, location string, size int64, status in
 }
 
 func OnFileUpdateFinished(sha1, filename string) bool {
-	return execSql(updateFileStatement, FileTableName, filename, sha1)
+	return execSql(updateFileNameStatement, FileTableName, filename, sha1)
 }
 
 
@@ -70,6 +73,10 @@ func DeleteFileMeta(sha1 string) bool {
 
 func ExistFile(sha1 string) bool {
 	return exist(existFileStatement, sha1)
+}
+
+func UpdateFileLocation(sha1 string, location string) bool {
+	return execSql(updateFileLocationStatement, FileTableName, location, sha1)
 }
 
 

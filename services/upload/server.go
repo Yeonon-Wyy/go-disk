@@ -10,6 +10,7 @@ func main() {
 	router := gin.Default()
 
 	router.Static("/static", "./static")
+
 	router.StaticFile("/hom", "./static/view/home.html")
 
 	filesGroup := router.Group("/files")

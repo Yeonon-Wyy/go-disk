@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"go-disk/auth"
@@ -11,9 +12,8 @@ import (
 	"go-disk/db"
 	"go-disk/meta"
 	"go-disk/model"
-	"go-disk/store/ceph"
+	"go-disk/mq"
 	"go-disk/utils"
-	"gopkg.in/amz.v1/s3"
 	"io"
 	"io/ioutil"
 	"log"
@@ -113,19 +113,36 @@ func uploadFile() gin.HandlerFunc {
 			}
 
 			//同步到ceph中
-			newFile.Seek(0, 0)
-			data, _ := ioutil.ReadAll(newFile)
-			bucket := ceph.GetCephBucket(config.CephFileStoreBucketName)
-			caphPath := "/ceph/" + fileHash
-			err = bucket.Put(caphPath, data, config.CephPutBinDataContentType, s3.PublicReadWrite)
+			//newFile.Seek(0, 0)
+			//data, _ := ioutil.ReadAll(newFile)
+			//bucket := ceph.GetCephBucket(config.CephFileStoreBucketName)
+			//caphPath := "/ceph/" + fileHash
+			//err = bucket.Put(caphPath, data, config.CephPutBinDataContentType, s3.PublicReadWrite)
+
+			//publish message of upload file to ceph
+			msgData := mq.RabbitMessage{
+				FileHash:     fileHash,
+				SrcLocation:  fileMeta.Location,
+				DstLocation:  "/ceph/" + fileHash,
+				DstStoreType: common.StoreCeph,
+			}
+			msgDataJson, err := json.Marshal(msgData)
 			if err != nil {
+				log.Printf("json marsha1 error : %v", err)
+				context.JSON(http.StatusInternalServerError,
+					common.NewServiceResp(common.RespCodeJsonError, nil))
+				return
+			}
+			suc := mq.RabbitPublish(
+				config.RabbitExchangeName,
+				config.RabbitCephRoutingKey,
+				msgDataJson)
+			if !suc {
 				log.Printf("put data to ceph error : %v", err)
 				context.JSON(http.StatusInternalServerError,
 					common.NewServiceResp(common.RespCodePutDataToCephError, nil))
 				return
 			}
-
-			fileMeta.Location = caphPath
 
 			meta.UploadFileMetaDB(fileMeta)
 		}
