@@ -140,7 +140,7 @@
           cell.innerHTML = '<button class="btn btn-success" ' +
             'style="height:30px;margin:5px 0;"' +
             'onClick = "downloadFile(\'http://localhost:8080/files/' +
-            'download?filehash=' + data[i].file_hash + '&' + queryParams() + '\')">下载</button>';
+            'download?file_hash=' + data[i].file_hash + '&' + queryParams() + '\')">下载</button>';
         }
       }
     });
@@ -151,28 +151,33 @@
   }
 
   function downloadFile(durl) {
-    $.ajax({
-      url: durl,
-      type: "POST",
-      error: function (jqXHR, textStatus, errorThrown) {
-        if (textStatus == "error") {
-          alert(textStatus + " : " + errorThrown);
-        } else {
-          alert(textStatus);
-        }
-      },
-      success: function (body, textStatus, jqXHR) {
-        try {
-          alert("文件即将下载自: " + body);
-          var elemIF = document.createElement("iframe");
-          elemIF.src = body;
-          elemIF.style.display = "none";
-          document.body.appendChild(elemIF);
-        } catch (e) {
-          alert(e);
-        }
-      }
-    });
+    // $.ajax({
+    //   url: durl,
+    //   type: "POST",
+    //   error: function (jqXHR, textStatus, errorThrown) {
+    //     if (textStatus == "error") {
+    //       alert(textStatus + " : " + errorThrown);
+    //     } else {
+    //       alert(textStatus);
+    //     }
+    //   },
+    //   success: function (body, textStatus, jqXHR) {
+    //     console.log(body)
+    //     try {
+    //       alert("文件即将下载自: " + body);
+    //       var elemIF = document.createElement("iframe");
+    //       elemIF.src = body;
+    //       elemIF.style.display = "none";
+    //       document.body.appendChild(elemIF);
+    //     } catch (e) {
+    //       alert(e);
+    //     }
+    //   }
+    // });
+    var elemIF = document.createElement("iframe");
+    elemIF.src=durl;
+    elemIF.style.display = "none";
+    document.body.appendChild(elemIF);
   }
 </script>
 

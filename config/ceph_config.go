@@ -5,7 +5,7 @@ const (
 	CephSecretKey = "kHOAsvDkSFg5ay6JcNEmINHg1eVWUmkSeuZMZYLs"
 
 	CephRegionName = "default"
-	CephEndpoint = "http://192.168.47.130:9080"
+	CephEndpoint = "http://192.168.47.131:9080"
 	CephS3LocationConstraint = false
 	CephS3LowercaseBucket = false
 

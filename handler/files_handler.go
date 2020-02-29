@@ -13,6 +13,7 @@ import (
 	"go-disk/meta"
 	"go-disk/model"
 	"go-disk/mq"
+	"go-disk/store/ceph"
 	"go-disk/utils"
 	"io"
 	"io/ioutil"
@@ -46,7 +47,7 @@ func (f FilesServiceHandler) Init(group *gin.RouterGroup) {
 	group.POST("/meta", queryFileList())
 
 	group.DELETE("/delete", deleteFile())
-	group.POST("/download", downloadHandler())
+	group.GET("/download", downloadHandler())
 
 	//multipart upload
 	group.POST("/mpupload/init", initialMultipartUpload())
@@ -195,20 +196,28 @@ func getFileMeta() gin.HandlerFunc {
 
 func downloadHandler() gin.HandlerFunc {
 	return func(context *gin.Context) {
-		var req model.DownloadFileReq
-		if err := context.ShouldBind(&req); err != nil {
-			log.Printf("bind request parameters error %v", err)
-			context.JSON(http.StatusBadRequest,
-				common.NewServiceResp(common.RespCodeBindReParamError, nil))
-			return
-		}
+		//var req model.DownloadFileReq
+		//if err := context.ShouldBind(&req); err != nil {
+		//	log.Printf("bind request parameters error %v", err)
+		//	context.JSON(http.StatusBadRequest,
+		//		common.NewServiceResp(common.RespCodeBindReParamError, nil))
+		//	return
+		//}
+		fileHash := context.Query("file_hash")
 
-		fm := meta.GetFileMetaDB(req.FileHash)
+		fm := meta.GetFileMetaDB(fileHash)
 		if fm.FileSha1 == "" {
 			context.JSON(http.StatusOK, common.NewServiceResp(common.RespCodeSuccess, nil))
 			return
 		}
-		context.FileAttachment(fm.Location, fm.FileName)
+
+		bucket := ceph.GetCephBucket(config.CephFileStoreBucketName)
+		fileData, _ := bucket.Get(fm.Location)
+
+		context.Writer.Header().Set("Content-Type", "application/octet-stream")
+		context.Writer.Header().Set("Content-Disposition", "attachment; filename=\""+fm.FileName+"\"")
+		context.Writer.Header().Set("Content-Length", strconv.Itoa(len(fileData)))
+		context.Writer.Write(fileData)
 
 	}
 }
