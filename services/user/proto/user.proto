@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package proto;
+
+service UserService {
+    rpc userRegister(RegisterReq) returns (RegisterResp);
+//    rpc userLogin()
+}
+
+message RegisterReq {
+    string username = 1;
+    string password = 2;
+}
+
+message RegisterResp {
+    int64 code = 1;
+    string message = 2;
+}
+
+//use this cmd
+//protoc.exe --proto_path=services/user/proto --go_out=services/user/proto --micro_out=services/user/proto services/user/proto/user.proto

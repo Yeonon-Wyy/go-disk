@@ -9,31 +9,12 @@ import (
 
 func main() {
 	router := gin.Default()
-
-	router.Static("/static", "./static")
-
-	router.StaticFile("/hom", "./static/view/home.html")
-
 	router.Use(midware.Cors())
-	filesGroup := router.Group("/files")
-	usersGroup := router.Group("/users")
 
-	DispatchHandlerGroup(filesGroup, usersGroup)
+	group := router.Group("/files")
+	(&handler.UploadServiceHandler{BashPath: group.BasePath()}).Init(group)
 
-	if err := router.Run(":8080"); err != nil {
+	if err := router.Run(":6000"); err != nil {
 		log.Fatal(err)
-	}
-}
-
-func DispatchHandlerGroup(rgs ...*gin.RouterGroup) {
-	for _, rg := range rgs {
-		switch rg.BasePath() {
-		case "/files":
-			handler.FilesServiceHandler{BashPath: rg.BasePath()}.Init(rg)
-		case "/users":
-			handler.UserServiceHandler{BashPath: rg.BasePath()}.Init(rg)
-		default:
-			log.Printf("error handler group: %s", rg.BasePath())
-		}
 	}
 }
