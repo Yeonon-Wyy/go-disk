@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"go-disk/auth"
 	redisconn "go-disk/cache/redis"
 	"go-disk/common"
 	"go-disk/common/constant"
 	"go-disk/config"
 	"go-disk/db"
 	"go-disk/meta"
+	"go-disk/midware"
 	"go-disk/model"
 	"go-disk/mq"
 	"go-disk/store/ceph"
@@ -36,7 +36,7 @@ type FilesServiceHandler struct {
 func (f FilesServiceHandler) Init(group *gin.RouterGroup) {
 
 
-	group.Use(auth.AuthorizeInterceptor())
+	group.Use(midware.AuthorizeInterceptor())
 	group.StaticFile("/upload", "./static/view/index.html")
 	group.POST("/upload", uploadFile())
 	group.POST("/fastupload", tryFastUpload())

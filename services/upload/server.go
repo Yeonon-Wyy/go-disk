@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"go-disk/handler"
+	"go-disk/midware"
 	"log"
 )
 
@@ -13,6 +14,7 @@ func main() {
 
 	router.StaticFile("/hom", "./static/view/home.html")
 
+	router.Use(midware.Cors())
 	filesGroup := router.Group("/files")
 	usersGroup := router.Group("/users")
 
