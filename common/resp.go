@@ -6,6 +6,7 @@ var (
 	RespCodeBindReParamError = RespCode{Code: 1, Message: "bind request parameters error"}
 	RespCodeUnauthorizedError = RespCode{Code: 2, Message: "user unauthorized"}
 	RespCodeJsonError = RespCode{Code: 3, Message: "json translate error"}
+	RespCodeRpcCallError = RespCode{Code: 4, Message: "rpc call error"}
 
 	//file service code (100 ~ 199)
 	RespCodeReadFileError =  RespCode{100, "read file error"}
@@ -38,13 +39,13 @@ type RespCode struct {
 }
 
 type ServiceResp struct {
-	RespCode RespCode `json:"resp_code"`
+	code RespCode `json:"code"`
 	Data interface{} `json:"data"`
 }
 
 func NewServiceResp(respCode RespCode, data interface{}) *ServiceResp {
 	return &ServiceResp{
-		RespCode: respCode,
+		code: respCode,
 		Data: data,
 	}
 }

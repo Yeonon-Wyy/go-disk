@@ -9,15 +9,6 @@ import (
 )
 
 func main() {
-	//router := gin.Default()
-	//router.Use(midware.Cors())
-	//
-	//group := router.Group("/users")
-	//(&handler.UserServiceHandler{BashPath: group.BasePath()}).Init(group)
-	//
-	//if err := router.Run(":5000"); err != nil {
-	//	log.Fatal(err)
-	//}
 	reg := consul.NewRegistry(func(options *registry.Options) {
 		options.Addrs = []string{
 			"192.168.47.131:8500",

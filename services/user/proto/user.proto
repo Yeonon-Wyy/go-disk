@@ -2,9 +2,13 @@ syntax = "proto3";
 
 package proto;
 
+//use this cmd
+//protoc.exe --proto_path=services/user/proto --go_out=services/user/proto --micro_out=services/user/proto services/user/proto/user.proto
+
 service UserService {
-    rpc userRegister(RegisterReq) returns (RegisterResp);
-//    rpc userLogin()
+    rpc UserRegister(RegisterReq) returns (RegisterResp);
+    rpc UserLogin(LoginReq) returns (LoginResp);
+    rpc QueryUserInfo(QueryUserInfoReq) returns(QueryUserInfoResp);
 }
 
 message RegisterReq {
@@ -17,5 +21,42 @@ message RegisterResp {
     string message = 2;
 }
 
-//use this cmd
-//protoc.exe --proto_path=services/user/proto --go_out=services/user/proto --micro_out=services/user/proto services/user/proto/user.proto
+message LoginReq {
+    string username = 1;
+    string password = 2;
+}
+
+message LoginResp {
+    int64 code = 1;
+    string message = 2;
+    message Data {
+        string accessToken = 1;
+    }
+    Data data = 3;
+
+}
+
+message QueryUserInfoReq {
+    string username = 1;
+    string accessToken = 2;
+}
+
+message QueryUserInfoResp {
+    int64 code = 1;
+    string message = 2;
+
+    message Data {
+        string username = 1;
+        string email = 2;
+        string phone = 3;
+        string profile = 4;
+        string lastActive = 5;
+        string signupAt = 6;
+    }
+
+    Data data = 3;
+}
+
+
+
+

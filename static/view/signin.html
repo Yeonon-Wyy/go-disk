@@ -92,7 +92,10 @@
       },
       success: function (body, textStatus, jqXHR) {
         var resp = JSON.parse(JSON.stringify(body));
-        localStorage.setItem("token", resp.data)
+
+        console.log(resp)
+        console.log(resp.data.accessToken)
+        localStorage.setItem("token", body.data.accessToken)
         localStorage.setItem("username", username.value)
         window.location.href = "/hom";
       }

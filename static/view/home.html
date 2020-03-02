@@ -88,7 +88,8 @@
       success: function (body, textStatus, jqXHR) {
         var resp = JSON.parse(JSON.stringify(body));
         document.getElementById("username").innerHTML = resp.data.username;
-        document.getElementById("regtime").innerHTML = resp.data.signup_at;
+        document.getElementById("regtime").innerHTML = resp.data.signupAt;
+        console.log(resp.data.signupAt)
         updateFileList();
       }
     });

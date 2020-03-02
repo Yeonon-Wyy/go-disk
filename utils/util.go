@@ -46,6 +46,7 @@ func MultipartFileSha1(file *multipart.File) string {
 
 
 
+
 func MD5(data []byte) string {
 	_md5 := md5.New()
 	_md5.Write(data)
