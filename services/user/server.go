@@ -4,6 +4,7 @@ import (
 	"github.com/micro/go-micro"
 	"github.com/micro/go-micro/registry"
 	"github.com/micro/go-micro/registry/consul"
+	"go-disk/config"
 	rpcHandler "go-disk/services/user/handler"
 	"go-disk/services/user/proto"
 )
@@ -11,7 +12,7 @@ import (
 func main() {
 	reg := consul.NewRegistry(func(options *registry.Options) {
 		options.Addrs = []string{
-			"192.168.47.131:8500",
+			config.ConsulAddress,
 		}
 	})
 	service := micro.NewService(

@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+//protoc.exe --proto_path=services/upload/proto --go_out=services/upload/proto --micro_out=services/upload/proto services/upload/proto/upload.proto
+
+package proto;
+
+service UploadService {
+    rpc UploadEndPoint(UploadEndPointReq) returns(UploadEndPointResp);
+}
+
+message UploadEndPointReq {
+
+}
+
+message UploadEndPointResp {
+    int64 code = 1;
+    string message = 2;
+    message Data {
+        string endpoint = 3;
+    }
+    Data data = 3;
+}
+

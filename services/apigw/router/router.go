@@ -16,10 +16,17 @@ func Router() *gin.Engine {
 
 	//create and init group
 	userGroup := router.Group("/users")
-	userServiceRoute(userGroup)
+	uploadGroup := router.Group("/files/upload")
 
+	userServiceRoute(userGroup)
+	uploadServiceRoute(uploadGroup)
 
 	return router
+}
+
+func uploadServiceRoute(group *gin.RouterGroup) {
+	group.StaticFile("/", "./static/view/index.html")
+	group.GET("/endpoint", handler.GetUploadServiceEndpoint())
 }
 
 func userServiceRoute(group *gin.RouterGroup) {

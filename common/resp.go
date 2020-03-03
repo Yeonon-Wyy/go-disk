@@ -6,7 +6,6 @@ var (
 	RespCodeBindReParamError = RespCode{Code: 1, Message: "bind request parameters error"}
 	RespCodeUnauthorizedError = RespCode{Code: 2, Message: "user unauthorized"}
 	RespCodeJsonError = RespCode{Code: 3, Message: "json translate error"}
-	RespCodeRpcCallError = RespCode{Code: 4, Message: "rpc call error"}
 
 	//file service code (100 ~ 199)
 	RespCodeReadFileError =  RespCode{100, "read file error"}

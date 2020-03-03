@@ -1,20 +1,48 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-	"go-disk/handler"
-	"go-disk/midware"
+	"github.com/micro/go-micro"
+	"github.com/micro/go-micro/registry"
+	"github.com/micro/go-micro/registry/consul"
+	"go-disk/config"
+	"go-disk/services/upload/proto"
+	"go-disk/services/upload/router"
+	"go-disk/services/upload/rpc"
 	"log"
 )
 
 func main() {
-	router := gin.Default()
-	router.Use(midware.Cors())
+	uploadRouter := router.Router()
 
-	group := router.Group("/files")
-	(&handler.UploadServiceHandler{BashPath: group.BasePath()}).Init(group)
+	go startRpcService()
 
-	if err := router.Run(":6000"); err != nil {
-		log.Fatal(err)
+	err := uploadRouter.Run(":9000")
+	if err != nil {
+		panic(err)
 	}
+}
+
+func startRpcService() {
+	reg := consul.NewRegistry(func(options *registry.Options) {
+		options.Addrs = []string{
+			config.ConsulAddress,
+		}
+	})
+	service := micro.NewService(
+		micro.Registry(reg),
+		micro.Name("go.micro.service.upload"))
+
+	service.Init()
+
+	err := proto.RegisterUploadServiceHandler(service.Server(), new(rpc.EndPoint))
+	if err != nil {
+		panic(err)
+	}
+
+	err = service.Run()
+	if err != nil {
+		panic(err)
+	}
+
+	log.Printf("start upload service success")
 }

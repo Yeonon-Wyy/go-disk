@@ -14,6 +14,7 @@ import (
 
 func processTransfer(msg []byte) bool {
 	//parse msg
+
 	msgData := mq.RabbitMessage{}
 	err := json.Unmarshal(msg, &msgData)
 	if err != nil {
@@ -46,6 +47,7 @@ func processTransfer(msg []byte) bool {
 		return false
 	}
 
+
 	return true
 
 }
@@ -55,4 +57,5 @@ func main() {
 		config.RabbitCephQueueName,
 		"transfer_ceph",
 		processTransfer)
+	//fmt.Printf("a")
 }

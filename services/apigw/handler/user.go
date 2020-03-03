@@ -7,19 +7,20 @@ import (
 	"github.com/micro/go-micro/registry"
 	"github.com/micro/go-micro/registry/consul"
 	"go-disk/common"
+	"go-disk/config"
 	"go-disk/model"
-	"go-disk/services/user/proto"
+	userproto "go-disk/services/user/proto"
 	"log"
 	"net/http"
 )
 
-var userCli proto.UserService
+var userCli userproto.UserService
 
 func init() {
 
 	reg := consul.NewRegistry(func(options *registry.Options) {
 		options.Addrs = []string{
-			"192.168.47.131:8500",
+			config.ConsulAddress,
 		}
 	})
 	service := micro.NewService(
@@ -29,7 +30,7 @@ func init() {
 
 	service.Init()
 
-	userCli = proto.NewUserService("go.micro.service.user", service.Client())
+	userCli = userproto.NewUserService("go.micro.service.user", service.Client())
 }
 
 func RegisterUser() gin.HandlerFunc {
@@ -37,18 +38,19 @@ func RegisterUser() gin.HandlerFunc {
 		var req model.UserRegisterReq
 		if err := ctx.ShouldBind(&req); err != nil {
 			log.Printf("request parameters error : %v", err)
-			ctx.JSON(http.StatusBadRequest,nil)
+			ctx.JSON(http.StatusBadRequest,
+				common.NewServiceResp(common.RespCodeBindReParamError, nil))
 			return
 		}
 
-		resp, err := userCli.UserRegister(context.TODO(), &proto.RegisterReq{
+		resp, err := userCli.UserRegister(context.TODO(), &userproto.RegisterReq{
 			Username:             req.Username,
 			Password:             req.Password,
 		})
 
 		if err != nil {
 			log.Printf("rpc call (user register) error : %v", err)
-			ctx.JSON(http.StatusInternalServerError,nil)
+			ctx.JSON(http.StatusBadRequest, *resp)
 			return
 		}
 
@@ -66,7 +68,7 @@ func UserLogin() gin.HandlerFunc {
 			return
 		}
 
-		resp, err := userCli.UserLogin(context.TODO(), &proto.LoginReq{
+		resp, err := userCli.UserLogin(context.TODO(), &userproto.LoginReq{
 			Username: req.Username,
 			Password: req.Password,
 		})
@@ -91,7 +93,7 @@ func QueryUserInfo() gin.HandlerFunc {
 			return
 		}
 
-		resp, err := userCli.QueryUserInfo(context.TODO(), &proto.QueryUserInfoReq{
+		resp, err := userCli.QueryUserInfo(context.TODO(), &userproto.QueryUserInfoReq{
 			Username: req.Username,
 			AccessToken: req.Token,
 		})

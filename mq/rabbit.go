@@ -59,6 +59,7 @@ func RabbitConsume(queueName string, consumerName string, callBack func([]byte) 
 		return
 	}
 
+
 	msgChannel, err := channel.Consume(
 		queueName,
 		consumerName,
@@ -77,6 +78,7 @@ func RabbitConsume(queueName string, consumerName string, callBack func([]byte) 
 
 	go func() {
 		for msg := range msgChannel {
+			log.Println("consumer process success")
 			if suc := callBack(msg.Body); !suc {
 				//TODO: push another queue
 			}
