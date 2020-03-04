@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 	"go-disk/common"
+	userrpcinterface "go-disk/common/rpcinterface/userinterface"
 	"go-disk/config"
 	userdb "go-disk/db"
 	"go-disk/midware"
-	"go-disk/services/user/proto"
 	"go-disk/utils"
 )
 
@@ -16,8 +16,7 @@ type UserHandler struct {
 }
 
 
-
-func (u UserHandler) UserRegister(ctx context.Context, req *proto.RegisterReq, resp *proto.RegisterResp) error {
+func (u UserHandler) UserRegister(ctx context.Context, req *userrpcinterface.RegisterReq, resp *userrpcinterface.RegisterResp) error {
 
 	if userdb.ExistUserByUsername(req.Username) {
 		resp.Code = int64(common.RespCodeUserNotFound.Code)
@@ -38,7 +37,7 @@ func (u UserHandler) UserRegister(ctx context.Context, req *proto.RegisterReq, r
 	return nil
 }
 
-func (u UserHandler) UserLogin(ctx context.Context, req *proto.LoginReq, resp *proto.LoginResp) error {
+func (u UserHandler) UserLogin(ctx context.Context, req *userrpcinterface.LoginReq, resp *userrpcinterface.LoginResp) error {
 	if midware.ExistToken(req.Username) {
 		resp.Code = int64(common.RespCodeUserAlreadyLogin.Code)
 		resp.Message = common.RespCodeUserAlreadyLogin.Message
@@ -54,12 +53,12 @@ func (u UserHandler) UserLogin(ctx context.Context, req *proto.LoginReq, resp *p
 
 	resp.Code = int64(common.RespCodeSuccess.Code)
 	resp.Message = common.RespCodeSuccess.Message
-	resp.Data = &proto.LoginResp_Data{AccessToken: midware.GenToken(req.Username)}
+	resp.Data = &userrpcinterface.LoginResp_Data{AccessToken: midware.GenToken(req.Username)}
 
 	return nil
 }
 
-func (u UserHandler) QueryUserInfo(ctx context.Context, req *proto.QueryUserInfoReq, resp *proto.QueryUserInfoResp) error {
+func (u UserHandler) QueryUserInfo(ctx context.Context, req *userrpcinterface.QueryUserInfoReq, resp *userrpcinterface.QueryUserInfoResp) error {
 
 	result, err := userdb.QueryUser(req.Username)
 	if err != nil {
@@ -70,7 +69,7 @@ func (u UserHandler) QueryUserInfo(ctx context.Context, req *proto.QueryUserInfo
 
 	resp.Code = int64(common.RespCodeSuccess.Code)
 	resp.Message = common.RespCodeSuccess.Message
-	resp.Data = &proto.QueryUserInfoResp_Data{
+	resp.Data = &userrpcinterface.QueryUserInfoResp_Data{
 		Username:             result.Username,
 		Email:                result.Email,
 		Phone:                result.Phone,

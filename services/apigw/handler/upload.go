@@ -6,13 +6,13 @@ import (
 	"github.com/micro/go-micro"
 	"github.com/micro/go-micro/registry"
 	"github.com/micro/go-micro/registry/consul"
+	"go-disk/common/rpcinterface/uploadinterface"
 	"go-disk/config"
-	uploadproto "go-disk/services/upload/proto"
 	"log"
 	"net/http"
 )
 
-var uploadCli uploadproto.UploadService
+var uploadCli uploadinterface.UploadService
 
 func init() {
 
@@ -28,12 +28,12 @@ func init() {
 
 	service.Init()
 
-	uploadCli = uploadproto.NewUploadService("go.micro.service.upload", service.Client())
+	uploadCli = uploadinterface.NewUploadService("go.micro.service.upload", service.Client())
 }
 
 func GetUploadServiceEndpoint() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		resp, err := uploadCli.UploadEndPoint(context.TODO(), &uploadproto.UploadEndPointReq{})
+		resp, err := uploadCli.UploadEndPoint(context.TODO(), &uploadinterface.UploadEndPointReq{})
 		if err != nil {
 			log.Printf("rpc call (get upload service endpoint) error : %v", err)
 			ctx.JSON(http.StatusBadRequest, *resp)

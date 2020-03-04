@@ -7,14 +7,14 @@ import (
 	"github.com/micro/go-micro/registry"
 	"github.com/micro/go-micro/registry/consul"
 	"go-disk/common"
+	"go-disk/common/rpcinterface/userinterface"
 	"go-disk/config"
 	"go-disk/model"
-	userproto "go-disk/services/user/proto"
 	"log"
 	"net/http"
 )
 
-var userCli userproto.UserService
+var userCli userinterface.UserService
 
 func init() {
 
@@ -30,7 +30,7 @@ func init() {
 
 	service.Init()
 
-	userCli = userproto.NewUserService("go.micro.service.user", service.Client())
+	userCli = userinterface.NewUserService("go.micro.service.user", service.Client())
 }
 
 func RegisterUser() gin.HandlerFunc {
@@ -43,7 +43,7 @@ func RegisterUser() gin.HandlerFunc {
 			return
 		}
 
-		resp, err := userCli.UserRegister(context.TODO(), &userproto.RegisterReq{
+		resp, err := userCli.UserRegister(context.TODO(), &userinterface.RegisterReq{
 			Username:             req.Username,
 			Password:             req.Password,
 		})
@@ -68,7 +68,7 @@ func UserLogin() gin.HandlerFunc {
 			return
 		}
 
-		resp, err := userCli.UserLogin(context.TODO(), &userproto.LoginReq{
+		resp, err := userCli.UserLogin(context.TODO(), &userinterface.LoginReq{
 			Username: req.Username,
 			Password: req.Password,
 		})
@@ -93,7 +93,7 @@ func QueryUserInfo() gin.HandlerFunc {
 			return
 		}
 
-		resp, err := userCli.QueryUserInfo(context.TODO(), &userproto.QueryUserInfoReq{
+		resp, err := userCli.QueryUserInfo(context.TODO(), &userinterface.QueryUserInfoReq{
 			Username: req.Username,
 			AccessToken: req.Token,
 		})

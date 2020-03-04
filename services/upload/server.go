@@ -4,8 +4,8 @@ import (
 	"github.com/micro/go-micro"
 	"github.com/micro/go-micro/registry"
 	"github.com/micro/go-micro/registry/consul"
+	"go-disk/common/rpcinterface/uploadinterface"
 	"go-disk/config"
-	"go-disk/services/upload/proto"
 	"go-disk/services/upload/router"
 	"go-disk/services/upload/rpc"
 	"log"
@@ -34,7 +34,7 @@ func startRpcService() {
 
 	service.Init()
 
-	err := proto.RegisterUploadServiceHandler(service.Server(), new(rpc.EndPoint))
+	err := uploadinterface.RegisterUploadServiceHandler(service.Server(), new(rpc.EndPoint))
 	if err != nil {
 		panic(err)
 	}

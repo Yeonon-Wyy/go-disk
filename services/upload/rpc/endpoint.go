@@ -3,18 +3,18 @@ package rpc
 import (
 	"context"
 	"go-disk/common"
+	"go-disk/common/rpcinterface/uploadinterface"
 	"go-disk/services/upload/config"
-	"go-disk/services/upload/proto"
 )
 
 type EndPoint struct {
 
 }
 
-func (e *EndPoint) UploadEndPoint(ctx context.Context, req *proto.UploadEndPointReq, resp *proto.UploadEndPointResp) error {
+func (e *EndPoint) UploadEndPoint(ctx context.Context, req *uploadinterface.UploadEndPointReq, resp *uploadinterface.UploadEndPointResp) error {
 	resp.Code = int64(common.RespCodeSuccess.Code)
 	resp.Message = common.RespCodeSuccess.Message
-	resp.Data = &proto.UploadEndPointResp_Data{Endpoint:config.UploadServiceEndpoint}
+	resp.Data = &uploadinterface.UploadEndPointResp_Data{Endpoint:config.UploadServiceEndpoint}
 	return nil
 }
 

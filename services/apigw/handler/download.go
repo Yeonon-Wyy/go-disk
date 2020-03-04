@@ -6,13 +6,14 @@ import (
 	"github.com/micro/go-micro"
 	"github.com/micro/go-micro/registry"
 	"github.com/micro/go-micro/registry/consul"
+	"go-disk/common/rpcinterface/downloadinterface"
 	"go-disk/config"
-	downloadProto "go-disk/services/download/proto"
+
 	"log"
 	"net/http"
 )
 
-var downloadCli downloadProto.DownloadService
+var downloadCli downloadinterface.DownloadService
 
 func init() {
 	reg := consul.NewRegistry(func(options *registry.Options) {
@@ -27,12 +28,12 @@ func init() {
 
 	service.Init()
 
-	downloadCli = downloadProto.NewDownloadService("go.micro.service.download", service.Client())
+	downloadCli = downloadinterface.NewDownloadService("go.micro.service.download", service.Client())
 }
 
 func GetDownloadServiceEndpoint() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		resp, err :=downloadCli.DownloadEndPoint(context.TODO(), &downloadProto.DownloadEndpointReq{})
+		resp, err :=downloadCli.DownloadEndPoint(context.TODO(), &downloadinterface.DownloadEndpointReq{})
 		if err != nil {
 			log.Printf("rpc call (get download service endpoint) error : %v", err)
 			ctx.JSON(http.StatusBadRequest, *resp)

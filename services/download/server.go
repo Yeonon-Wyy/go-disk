@@ -4,8 +4,8 @@ import (
 	"github.com/micro/go-micro"
 	"github.com/micro/go-micro/registry"
 	"github.com/micro/go-micro/registry/consul"
+	"go-disk/common/rpcinterface/downloadinterface"
 	"go-disk/config"
-	"go-disk/services/download/proto"
 	"go-disk/services/download/router"
 	"go-disk/services/download/rpc"
 	"log"
@@ -34,7 +34,7 @@ func startRpcService() {
 
 	service.Init()
 
-	err := proto.RegisterDownloadServiceHandler(service.Server(), new(rpc.Download))
+	err := downloadinterface.RegisterDownloadServiceHandler(service.Server(), new(rpc.Download))
 	if err != nil {
 		panic(err)
 	}

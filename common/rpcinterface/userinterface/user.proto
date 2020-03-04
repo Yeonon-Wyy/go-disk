@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-package proto;
+package userinterface;
 
 //use this cmd
-//protoc.exe --proto_path=services/user/proto --go_out=services/user/proto --micro_out=services/user/proto services/user/proto/user.proto
+//protoc.exe --proto_path=common/rpcinterface/userinterface --go_out=common/rpcinterface/userinterface --micro_out=common/rpcinterface/userinterface common/rpcinterface/userinterface/user.proto
 
 service UserService {
     rpc UserRegister(RegisterReq) returns (RegisterResp);
