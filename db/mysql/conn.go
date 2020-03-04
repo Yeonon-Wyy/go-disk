@@ -9,8 +9,6 @@ import (
 	"net/url"
 )
 
-
-
 const (
 	DriverName = "mysql"
 )
@@ -25,9 +23,6 @@ var (
 		config.FileDBName,
 		url.QueryEscape(config.FileDBTimeLoc))
 )
-
-
-
 
 func DBConn() *sql.DB {
 	db, err := sql.Open(DriverName, dbUrl)

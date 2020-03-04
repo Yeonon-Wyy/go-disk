@@ -17,11 +17,16 @@ func Router() *gin.Engine {
 	//create and init group
 	userGroup := router.Group("/users")
 	uploadGroup := router.Group("/files/upload")
+	downloadGroup := router.Group("/files/download")
 
 	userServiceRoute(userGroup)
 	uploadServiceRoute(uploadGroup)
-
+	downloadServiceRoute(downloadGroup)
 	return router
+}
+
+func downloadServiceRoute(group *gin.RouterGroup) {
+	group.POST("/endpoint", handler.GetDownloadServiceEndpoint())
 }
 
 func uploadServiceRoute(group *gin.RouterGroup) {
@@ -36,3 +41,5 @@ func userServiceRoute(group *gin.RouterGroup) {
 	group.Use(midware.AuthorizeInterceptor())
 	group.GET("/info", handler.QueryUserInfo())
 }
+
+

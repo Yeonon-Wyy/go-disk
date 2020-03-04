@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+//protoc.exe --proto_path=services/download/proto --go_out=services/download/proto --micro_out=services/download/proto services/download/proto/download.proto
+
+package proto;
+
+service DownloadService {
+    rpc DownloadEndPoint(DownloadEndpointReq) returns(DownloadEndpointResp);
+}
+
+message DownloadEndpointReq {
+
+}
+
+message DownloadEndpointResp {
+    int64 code = 1;
+    string message = 2;
+    message Data {
+        string endpoint = 3;
+    }
+    Data data = 3;
+}
