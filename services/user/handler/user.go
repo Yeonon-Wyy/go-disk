@@ -5,7 +5,8 @@ import (
 	"errors"
 	"go-disk/common"
 	userrpcinterface "go-disk/common/rpcinterface/userinterface"
-	"go-disk/config"
+	"go-disk/services/user/config"
+
 	userdb "go-disk/db"
 	"go-disk/midware"
 	"go-disk/utils"

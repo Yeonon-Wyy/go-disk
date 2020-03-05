@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package fileinterface;
+
+//protoc.exe --proto_path=common/rpcinterface/fileinterface --go_out=common/rpcinterface/fileinterface --micro_out=common/rpcinterface/fileinterface common/rpcinterface/fileinterface/file.proto
+
+service FileService {
+    rpc GetFileMeta(GetFileMetaReq) returns (GetFileMetaResp);
+    rpc UpdateFileMeta(UpdateFileMetaReq) returns (UpdateFileMetaResp);
+    rpc GetFileList(GetFileListReq) returns (GetFileListResp);
+    rpc DeleteFile(DeleteFileReq) returns (DeleteFileResp);
+}
+
+message GetFileMetaReq {
+    string fileHash = 1;
+}
+
+message GetFileMetaResp {
+    int64 code = 1;
+    string message = 2;
+
+    message Data {
+        string fileSha1 = 1;
+        string filename = 2;
+        int64 fileSize = 3;
+        string location = 4;
+        string uploadAt = 5;
+        string updateAt = 6;
+        int64 status = 7;
+    }
+
+    Data data = 3;
+}
+
+message UpdateFileMetaReq {
+    string username = 1;
+    string fileHash = 2;
+    string filename = 3;
+    int64 status = 4;
+}
+
+message UpdateFileMetaResp {
+    int64 code = 1;
+    string message = 2;
+}
+
+message GetFileListReq {
+    string username = 1;
+    int64 limit = 2;
+}
+
+message GetFileListResp {
+    int64 code = 1;
+    string message = 2;
+
+    message Data {
+        string username = 1;
+        string filename = 2;
+        string fileHash = 3;
+        int64 fileSize = 4;
+        string uploadAt = 5;
+        string lastUpdate = 6;
+    }
+
+    repeated Data dataList = 3;
+}
+
+message DeleteFileReq {
+    string fileHash = 1;
+}
+
+message DeleteFileResp {
+    int64 code = 1;
+    string message = 2;
+}
+
+
+

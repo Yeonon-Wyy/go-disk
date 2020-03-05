@@ -18,11 +18,23 @@ func Router() *gin.Engine {
 	userGroup := router.Group("/users")
 	uploadGroup := router.Group("/files/upload")
 	downloadGroup := router.Group("/files/download")
+	fileMetaGroup := router.Group("/files")
 
 	userServiceRoute(userGroup)
 	uploadServiceRoute(uploadGroup)
 	downloadServiceRoute(downloadGroup)
+	fileMetaServiceRoute(fileMetaGroup)
 	return router
+}
+
+func fileMetaServiceRoute(group *gin.RouterGroup) {
+	group.Use(midware.AuthorizeInterceptor())
+	group.GET("/meta", handler.GetFileMeta())
+
+	group.PUT("/meta", handler.UpdateFileMeta())
+	group.POST("/meta", handler.GetFileList())
+
+	group.DELETE("/delete", handler.DeleteFile())
 }
 
 func downloadServiceRoute(group *gin.RouterGroup) {
