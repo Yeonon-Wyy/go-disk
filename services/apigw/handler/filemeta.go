@@ -9,7 +9,7 @@ import (
 	"go-disk/common"
 	"go-disk/common/rpcinterface/fileinterface"
 	"go-disk/config"
-	"go-disk/model"
+	"go-disk/services/apigw/vo"
 	"log"
 	"net/http"
 )
@@ -34,7 +34,7 @@ func init() {
 
 func GetFileMeta() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var req model.GetFileMetaReq
+		var req vo.GetFileMetaReq
 
 		if err := ctx.ShouldBind(&req); err != nil {
 			log.Printf("bind request parameters error %v", err)
@@ -58,7 +58,7 @@ func GetFileMeta() gin.HandlerFunc {
 
 func UpdateFileMeta() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var req model.UpdateFileMetaReq
+		var req vo.UpdateFileMetaReq
 		if err := ctx.ShouldBind(&req); err != nil {
 			log.Printf("bind request parameters error %v", err)
 			ctx.JSON(http.StatusBadRequest,
@@ -80,7 +80,7 @@ func UpdateFileMeta() gin.HandlerFunc {
 
 func GetFileList() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var req model.UserFileReq
+		var req vo.UserFileReq
 		if err := ctx.ShouldBind(&req); err != nil {
 			log.Printf("bind request parameters error %v", err)
 			ctx.JSON(http.StatusBadRequest,
@@ -105,7 +105,7 @@ func GetFileList() gin.HandlerFunc {
 
 func DeleteFile() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var req model.DeleteFileReq
+		var req vo.DeleteFileReq
 		if err := ctx.ShouldBind(&req); err != nil {
 			log.Printf("bind request parameters error %v", err)
 			ctx.JSON(http.StatusBadRequest,

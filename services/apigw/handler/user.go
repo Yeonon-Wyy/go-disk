@@ -9,7 +9,7 @@ import (
 	"go-disk/common"
 	"go-disk/common/rpcinterface/userinterface"
 	"go-disk/config"
-	"go-disk/model"
+	"go-disk/services/apigw/vo"
 	"log"
 	"net/http"
 )
@@ -35,7 +35,7 @@ func init() {
 
 func RegisterUser() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var req model.UserRegisterReq
+		var req vo.UserRegisterReq
 		if err := ctx.ShouldBind(&req); err != nil {
 			log.Printf("request parameters error : %v", err)
 			ctx.JSON(http.StatusBadRequest,
@@ -60,7 +60,7 @@ func RegisterUser() gin.HandlerFunc {
 
 func UserLogin() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var req model.UserLoginReq
+		var req vo.UserLoginReq
 		if err := ctx.ShouldBind(&req); err != nil {
 			log.Printf("request parameters error : %v", err)
 			ctx.JSON(http.StatusBadRequest,
@@ -85,7 +85,7 @@ func UserLogin() gin.HandlerFunc {
 
 func QueryUserInfo() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var req model.UserQueryReq
+		var req vo.UserQueryReq
 		if err := ctx.ShouldBind(&req); err != nil {
 			log.Printf("request parameters error : %v", err)
 			ctx.JSON(http.StatusBadRequest,

@@ -1,7 +1,7 @@
 package db
 
 import (
-	"go-disk/db/mysql"
+	"go-disk/services/download/db/mysql"
 	"log"
 	"time"
 )

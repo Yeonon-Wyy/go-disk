@@ -1,8 +1,8 @@
 package db
 
 import (
-	mydb "go-disk/db/mysql"
 	"go-disk/services/file/dao"
+	mydb "go-disk/services/file/db/mysql"
 	"log"
 )
 

@@ -1,4 +1,4 @@
-package model
+package vo
 
 type UserRegisterReq struct {
 	Username string `form:"username" bind:"required"`
@@ -14,3 +14,4 @@ type UserQueryReq struct {
 	Username string `form:"username" bind:"required"`
 	Token string `form:"token" bind:"required"`
 }
+
