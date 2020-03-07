@@ -95,7 +95,7 @@
     });
 
     $.ajax({
-      url: "/files/upload/endpoint?",
+      url: "/files/upload/endpoint?" + queryParams(),
       type: "GET",
       error: function (jqXHR, textStatus, errorThrown) {
         if (jqXHR.status === 400 || jqXHR.status === 401) {
@@ -115,7 +115,7 @@
     });
 
     $.ajax({
-      url: "/files/download/endpoint",
+      url: "/files/download/endpoint?" + queryParams(),
       type: "GET",
       error: function (jqXHR, textStatus, errorThrown) {
         if (jqXHR.status === 400 || jqXHR.status === 401) {

@@ -2,7 +2,7 @@ package common
 
 var (
 	//common code (0 ~ 99)
-	RespCodeSuccess  = RespCode{0, "success"}
+	RespCodeSuccess  = RespCode{1000, "success"}
 	RespCodeBindReParamError = RespCode{Code: 1, Message: "bind request parameters error"}
 	RespCodeUnauthorizedError = RespCode{Code: 2, Message: "user unauthorized"}
 	RespCodeJsonError = RespCode{Code: 3, Message: "json translate error"}
