@@ -5,7 +5,7 @@ import (
 	"errors"
 	"go-disk/common"
 	"go-disk/common/rpcinterface/fileinterface"
-	"go-disk/db"
+	"go-disk/services/file/db"
 	"log"
 	"os"
 )

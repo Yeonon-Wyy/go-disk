@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-disk/common"
 	"go-disk/config"
-	"go-disk/db"
+	"go-disk/services/download/db"
 	"go-disk/store/ceph"
 	"net/http"
 	"strconv"

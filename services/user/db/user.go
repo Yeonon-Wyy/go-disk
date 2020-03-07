@@ -2,8 +2,8 @@ package db
 
 import (
 	"go-disk/common/constant"
-	mysqldb "go-disk/db/mysql"
-	"go-disk/model"
+	userdao "go-disk/services/user/dao"
+	mysqldb "go-disk/services/user/db/mysql"
 	"log"
 	"time"
 )
@@ -35,7 +35,7 @@ func ExistUserByUsernameAndPassword(username, password string) bool {
 
 
 
-func QueryUser(username string) (*model.UserQueryResp, error){
+func QueryUser(username string) (*userdao.UserQueryDao, error){
 	statement, err := mysqldb.DBConn().Prepare(queryBriefUserInfoStatement)
 	if err != nil {
 		log.Printf("Failed to prepare statement : %v", err)
@@ -43,7 +43,7 @@ func QueryUser(username string) (*model.UserQueryResp, error){
 	}
 	defer statement.Close()
 
-	var resp model.UserQueryResp
+	var resp userdao.UserQueryDao
 	statement.QueryRow(username).Scan(&resp.SignupAt)
 	resp.Username = username
 

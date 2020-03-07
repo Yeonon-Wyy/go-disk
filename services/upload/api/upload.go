@@ -8,11 +8,12 @@ import (
 	"go-disk/common"
 	"go-disk/common/constant"
 	commonconfig "go-disk/config"
-	"go-disk/db"
-	"go-disk/model"
 	"go-disk/mq"
-	"go-disk/services/file/config"
+	"go-disk/services/upload/config"
 	uploadconfig "go-disk/services/upload/config"
+	"go-disk/services/upload/dao"
+	"go-disk/services/upload/db"
+	"go-disk/services/upload/vo"
 	"go-disk/utils"
 	"io"
 	"io/ioutil"
@@ -75,7 +76,7 @@ func UploadFile() gin.HandlerFunc {
 			_, fName := filepath.Split(newFile.Name())
 
 			//set file meta
-			tblFile := db.TableFile{
+			tblFile := dao.TableFile{
 				FileSha1:     fileHash,
 				Filename:     fName,
 				FileSize:     fileSize,
@@ -147,7 +148,7 @@ func UploadFile() gin.HandlerFunc {
 
 func TryFastUpload() gin.HandlerFunc {
 	return func(context *gin.Context) {
-		var req model.FastUploadReq
+		var req vo.FastUploadReq
 		if err := context.ShouldBind(&req); err != nil {
 			log.Printf("bind request parameters error %v", err)
 			context.JSON(http.StatusBadRequest,
@@ -176,7 +177,7 @@ func TryFastUpload() gin.HandlerFunc {
 
 func InitialMultipartUpload() gin.HandlerFunc {
 	return func(context *gin.Context) {
-		var req model.MPUploadInitReq
+		var req vo.MPUploadInitReq
 		if err := context.ShouldBind(&req); err != nil {
 			log.Printf("bind request parameters error %v", err)
 			context.JSON(http.StatusBadRequest,
@@ -193,7 +194,7 @@ func InitialMultipartUpload() gin.HandlerFunc {
 		}
 		defer redisClient.Close()
 
-		mpUploadInfo := model.MPUploadInfo{
+		mpUploadInfo := vo.MPUploadInfo{
 			FileHash:   req.FileHash,
 			FileSize:   req.FileSize,
 			UploadId:   req.Username + fmt.Sprintf("%x", time.Now().UnixNano()),
@@ -266,7 +267,7 @@ func UploadPart() gin.HandlerFunc {
 
 func CompleteUpload() gin.HandlerFunc {
 	return func(context *gin.Context) {
-		var req model.MPUploadCompleteReq
+		var req vo.MPUploadCompleteReq
 		if err := context.ShouldBind(&req); err != nil {
 			log.Printf("bind request parameters error %v", err)
 			context.JSON(http.StatusBadRequest,

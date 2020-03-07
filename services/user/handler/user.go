@@ -7,8 +7,8 @@ import (
 	userrpcinterface "go-disk/common/rpcinterface/userinterface"
 	"go-disk/services/apigw/auth"
 	"go-disk/services/user/config"
+	"go-disk/services/user/db"
 
-	userdb "go-disk/db"
 	"go-disk/utils"
 )
 
@@ -19,7 +19,7 @@ type UserHandler struct {
 
 func (u UserHandler) UserRegister(ctx context.Context, req *userrpcinterface.RegisterReq, resp *userrpcinterface.RegisterResp) error {
 
-	if userdb.ExistUserByUsername(req.Username) {
+	if db.ExistUserByUsername(req.Username) {
 		resp.Code = int64(common.RespCodeUserNotFound.Code)
 		resp.Message = common.RespCodeUserNotFound.Message
 		return errors.New("user already register")
@@ -27,7 +27,7 @@ func (u UserHandler) UserRegister(ctx context.Context, req *userrpcinterface.Reg
 
 	pwd := utils.Sha1([]byte(req.Password + config.PwdSalt))
 
-	if !userdb.InsertUser(req.Username, pwd) {
+	if !db.InsertUser(req.Username, pwd) {
 		resp.Code = int64(common.RespCodeUserRegisterError.Code)
 		resp.Message = common.RespCodeUserRegisterError.Message
 		return errors.New("user register error")
@@ -45,7 +45,7 @@ func (u UserHandler) UserLogin(ctx context.Context, req *userrpcinterface.LoginR
 		return errors.New("user already login")
 	}
 
-	exist := userdb.ExistUserByUsernameAndPassword(req.Username, utils.Sha1([]byte(req.Password + config.PwdSalt)))
+	exist := db.ExistUserByUsernameAndPassword(req.Username, utils.Sha1([]byte(req.Password + config.PwdSalt)))
 	if !exist {
 		resp.Code = int64(common.RespCodeUserNotFound.Code)
 		resp.Message = common.RespCodeUserNotFound.Message
@@ -61,7 +61,7 @@ func (u UserHandler) UserLogin(ctx context.Context, req *userrpcinterface.LoginR
 
 func (u UserHandler) QueryUserInfo(ctx context.Context, req *userrpcinterface.QueryUserInfoReq, resp *userrpcinterface.QueryUserInfoResp) error {
 
-	result, err := userdb.QueryUser(req.Username)
+	result, err := db.QueryUser(req.Username)
 	if err != nil {
 		resp.Code = int64(common.RespCodeUserNotFound.Code)
 		resp.Message = common.RespCodeUserNotFound.Message
