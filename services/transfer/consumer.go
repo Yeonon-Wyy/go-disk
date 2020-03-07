@@ -47,6 +47,9 @@ func processTransfer(msg []byte) bool {
 		return false
 	}
 
+	//close file before remove file
+	fd.Close()
+
 	//delete file from temp store location
 	err = os.Remove(msgData.SrcLocation)
 	if err != nil {

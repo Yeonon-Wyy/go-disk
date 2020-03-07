@@ -9,7 +9,6 @@ import (
 	"go-disk/services/file/db"
 	"go-disk/store/ceph"
 	"log"
-	"os"
 )
 
 type FileService struct {
@@ -110,7 +109,7 @@ func (f FileService) DeleteFile(ctx context.Context, req *fileinterface.DeleteFi
 	}
 
 	bucket := ceph.GetCephBucket(config.CephFileStoreBucketName)
-	err = bucket.Del(config.CephFilePathPrefix + req.FileHash)
+	err = bucket.Del(config.CephFilePathPrefix + tblFile.FileSha1)
 
 
 	if err != nil {

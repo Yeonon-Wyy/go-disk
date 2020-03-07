@@ -73,9 +73,12 @@ func UploadFile() gin.HandlerFunc {
 				return
 			}
 
-			defer newFile.Close()
+
 
 			_, fName := filepath.Split(newFile.Name())
+
+			//手动关闭 file，防止异步进程无法删除文件
+			newFile.Close()
 
 			//set file meta
 			tblFile := dao.TableFile{
@@ -296,6 +299,7 @@ func CompleteUpload() gin.HandlerFunc {
 		}
 
 		//TODO: 需要分块合并操作，文件名应该是config.FileStoreDir + req.Filename
+		//TODO: 分开操作执行完毕后，记得关闭文件，防止后续异步进程无法删除文件
 
 		//同步到ceph中
 		//TODO: 暂时确定文件名为这个，需要和上述合并操作联调
