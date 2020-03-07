@@ -1,6 +1,5 @@
 package config
 
-//db const
 const (
 	FileDBUsername = "root"
 	FileDBPassword = "124563"

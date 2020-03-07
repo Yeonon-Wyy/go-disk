@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
-	"go-disk/config"
+	"go-disk/services/upload/config"
 	"log"
 	"net/url"
 )
