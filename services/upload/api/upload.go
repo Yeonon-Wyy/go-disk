@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	redisconn "go-disk/cache/redis"
@@ -11,6 +12,7 @@ import (
 	"go-disk/mq"
 	"go-disk/services/upload/config"
 	uploadconfig "go-disk/services/upload/config"
+
 	"go-disk/services/upload/dao"
 	"go-disk/services/upload/db"
 	"go-disk/services/upload/vo"
@@ -87,24 +89,8 @@ func UploadFile() gin.HandlerFunc {
 			}
 
 			//同步到ceph中
-			msgData := mq.RabbitMessage{
-				FileHash:     fileHash,
-				SrcLocation:  tblFile.FileLocation,
-				DstLocation:  "/ceph/" + fileHash,
-				DstStoreType: common.StoreCeph,
-			}
-			msgDataJson, err := json.Marshal(msgData)
+			err = transFileToCeph(fileHash, tblFile.FileLocation)
 			if err != nil {
-				log.Printf("json marsha1 error : %v", err)
-				context.JSON(http.StatusInternalServerError,
-					common.NewServiceResp(common.RespCodeJsonError, nil))
-				return
-			}
-			suc := mq.RabbitPublish(
-				commonconfig.RabbitExchangeName,
-				commonconfig.RabbitCephRoutingKey,
-				msgDataJson)
-			if !suc {
 				log.Printf("put data to ceph error : %v", err)
 				context.JSON(http.StatusInternalServerError,
 					common.NewServiceResp(common.RespCodePutDataToCephError, nil))
@@ -120,6 +106,7 @@ func UploadFile() gin.HandlerFunc {
 				tblFile.UpdateAt,
 				tblFile.UpdateAt,
 				)
+
 		}
 
 		//如果file已经上传过了，那么久需要修改文件名，避免重名
@@ -308,7 +295,17 @@ func CompleteUpload() gin.HandlerFunc {
 			return
 		}
 
-		//TODO: 需要分块合并操作
+		//TODO: 需要分块合并操作，文件名应该是config.FileStoreDir + req.Filename
+
+		//同步到ceph中
+		//TODO: 暂时确定文件名为这个，需要和上述合并操作联调
+		err = transFileToCeph(req.FileHash, config.FileStoreDir + req.Filename)
+		if err != nil {
+			log.Printf("put data to ceph error : %v", err)
+			context.JSON(http.StatusInternalServerError,
+				common.NewServiceResp(common.RespCodePutDataToCephError, nil))
+			return
+		}
 
 		//写入数据库
 		db.OnFileUploadFinished(
@@ -328,8 +325,34 @@ func CompleteUpload() gin.HandlerFunc {
 
 		redisClient.Del("MP_" + req.UploadId)
 
+		//delete temp dir
+		fpath := config.FileStoreDir + req.UploadId + "/"
+		os.RemoveAll(fpath)
+
 		context.JSON(http.StatusOK,
 			common.NewServiceResp(common.RespCodeSuccess, nil))
 
 	}
+}
+
+func transFileToCeph(fileHash string, fileLocation string) error {
+	msgData := mq.RabbitMessage{
+		FileHash:     fileHash,
+		SrcLocation:  fileLocation,
+		DstLocation:  commonconfig.CephFilePathPrefix + fileHash,
+		DstStoreType: common.StoreCeph,
+	}
+	msgDataJson, err := json.Marshal(msgData)
+	if err != nil {
+		return err
+	}
+	suc := mq.RabbitPublish(
+		commonconfig.RabbitExchangeName,
+		commonconfig.RabbitCephRoutingKey,
+		msgDataJson)
+
+	if !suc {
+		return errors.New("push message to rabbit mq error")
+	}
+	return nil
 }

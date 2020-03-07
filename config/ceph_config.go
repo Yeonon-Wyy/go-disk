@@ -12,4 +12,6 @@ const (
 	CephFileStoreBucketName = "files"
 
 	CephPutBinDataContentType = "octet-stream"
+
+	CephFilePathPrefix = "/ceph/"
 )
