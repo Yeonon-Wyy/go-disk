@@ -2,7 +2,6 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-disk/midware"
 	"go-disk/services/download/api"
 )
 
@@ -11,8 +10,7 @@ func Router() *gin.Engine {
 
 	downloadGroup := route.Group("/files")
 
-	downloadGroup.Use(midware.AuthorizeInterceptor())
-	downloadGroup.POST("/download", api.DownloadHandler())
+	downloadGroup.GET("/download", api.DownloadHandler())
 
 	return route
 }

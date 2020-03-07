@@ -5,10 +5,10 @@ import (
 	"errors"
 	"go-disk/common"
 	userrpcinterface "go-disk/common/rpcinterface/userinterface"
+	"go-disk/services/apigw/auth"
 	"go-disk/services/user/config"
 
 	userdb "go-disk/db"
-	"go-disk/midware"
 	"go-disk/utils"
 )
 
@@ -39,7 +39,7 @@ func (u UserHandler) UserRegister(ctx context.Context, req *userrpcinterface.Reg
 }
 
 func (u UserHandler) UserLogin(ctx context.Context, req *userrpcinterface.LoginReq, resp *userrpcinterface.LoginResp) error {
-	if midware.ExistToken(req.Username) {
+	if auth.ExistToken(req.Username) {
 		resp.Code = int64(common.RespCodeUserAlreadyLogin.Code)
 		resp.Message = common.RespCodeUserAlreadyLogin.Message
 		return errors.New("user already login")
@@ -54,7 +54,7 @@ func (u UserHandler) UserLogin(ctx context.Context, req *userrpcinterface.LoginR
 
 	resp.Code = int64(common.RespCodeSuccess.Code)
 	resp.Message = common.RespCodeSuccess.Message
-	resp.Data = &userrpcinterface.LoginResp_Data{AccessToken: midware.GenToken(req.Username)}
+	resp.Data = &userrpcinterface.LoginResp_Data{AccessToken: auth.GenToken(req.Username)}
 
 	return nil
 }

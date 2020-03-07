@@ -62,7 +62,7 @@ message GetFileListResp {
         string lastUpdate = 6;
     }
 
-    repeated Data dataList = 3;
+    repeated Data data = 3;
 }
 
 message DeleteFileReq {

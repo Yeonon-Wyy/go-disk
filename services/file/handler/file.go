@@ -93,7 +93,7 @@ func (f FileService) GetFileList(ctx context.Context, req *fileinterface.GetFile
 
 	resp.Code = int64(common.RespCodeSuccess.Code)
 	resp.Message = common.RespCodeSuccess.Message
-	resp.DataList = dataList
+	resp.Data = dataList
 
 	return nil
 }

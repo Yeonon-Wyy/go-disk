@@ -16,7 +16,7 @@ func main() {
 
 	go startRpcService()
 
-	err := route.Run()
+	err := route.Run(":8000")
 	if err != nil {
 		panic(err)
 	}

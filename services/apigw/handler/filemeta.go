@@ -52,7 +52,7 @@ func GetFileMeta() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, common.NewServiceResp(common.RespCodeSuccess, *resp))
+		ctx.JSON(http.StatusOK, *resp)
 	}
 }
 
@@ -74,7 +74,7 @@ func UpdateFileMeta() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, common.NewServiceResp(common.RespCodeSuccess, *resp))
+		ctx.JSON(http.StatusOK, *resp)
 	}
 }
 
@@ -99,7 +99,7 @@ func GetFileList() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, common.NewServiceResp(common.RespCodeSuccess, *resp))
+		ctx.JSON(http.StatusOK, *resp)
 	}
 }
 
@@ -123,7 +123,7 @@ func DeleteFile() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, common.NewServiceResp(common.RespCodeSuccess, *resp))
+		ctx.JSON(http.StatusOK, *resp)
 
 	}
 }

@@ -113,6 +113,26 @@
         localStorage.setItem("uploadEndPoint", resp.data.endpoint)
       }
     });
+
+    $.ajax({
+      url: "/files/download/endpoint",
+      type: "GET",
+      error: function (jqXHR, textStatus, errorThrown) {
+        if (jqXHR.status === 400 || jqXHR.status === 401) {
+          window.location.href = "/static/view/signin.html"
+          return
+        }
+        if (textStatus == "error") {
+          alert(textStatus + " : " + errorThrown);
+        } else {
+          alert(textStatus);
+        }
+      },
+      success: function (body, textStatus, jqXHR) {
+        var resp = JSON.parse(JSON.stringify(body));
+        localStorage.setItem("downloadEndPoint", resp.data.endpoint)
+      }
+    });
   }
 
   function updateFileList() {
@@ -143,32 +163,35 @@
         for (var i = 0; i < data.length; i++) {
           var x = document.getElementById('filetbl').insertRow();
           var cell = x.insertCell();
-          cell.innerHTML = data[i].file_hash.substr(0, 20)+"...";
+          cell.innerHTML = data[i].fileHash.substr(0, 20)+"...";
 
           cell = x.insertCell();
           cell.innerHTML = data[i].filename;
 
           cell = x.insertCell();
-          cell.innerHTML = data[i].file_size;
+          cell.innerHTML = data[i].fileSize;
 
           cell = x.insertCell();
-          cell.innerHTML = data[i].upload_at;
+          cell.innerHTML = data[i].uploadAt;
 
           cell = x.insertCell();
-          cell.innerHTML = data[i].last_update;
+          cell.innerHTML = data[i].lastUpdate;
 
           cell = x.insertCell();
+          downloadUrl = localStorage.getItem("downloadEndPoint") + "/files/"
           cell.innerHTML = '<button class="btn btn-success" ' +
             'style="height:30px;margin:5px 0;"' +
-            'onClick = "downloadFile(\'http://localhost:8080/files/' +
-            'download?file_hash=' + data[i].file_hash + '&' + queryParams() + '\')">下载</button>';
+            'onClick = "downloadFile(\'' + downloadUrl +
+            'download?file_hash=' + data[i].fileHash + '&' + queryParams() + '\')">下载</button>';
         }
       }
     });
   }
 
   function toUploadFile() {
-    window.location.href = '/files/upload?' + queryParams();
+    var endPoint = localStorage.getItem("uploadEndPoint")
+
+    window.location.href = endPoint + '/files/upload?' + queryParams();
   }
 
   function downloadFile(durl) {

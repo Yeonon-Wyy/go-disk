@@ -2,14 +2,11 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-disk/midware"
 	"go-disk/services/upload/api"
 )
 
 func Router() *gin.Engine {
 	router := gin.Default()
-
-	router.Use(midware.Cors())
 
 	//create and init group
 	uploadGroup := router.Group("/files")
@@ -18,7 +15,8 @@ func Router() *gin.Engine {
 }
 
 func uploadServiceRoute(group *gin.RouterGroup) {
-	group.Use(midware.AuthorizeInterceptor())
+
+	group.StaticFile("/upload", "./static/view/index.html")
 	group.POST("/upload", api.UploadFile())
 	group.POST("/fastupload", api.TryFastUpload())
 
