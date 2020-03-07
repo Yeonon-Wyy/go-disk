@@ -20,8 +20,8 @@ type UserHandler struct {
 func (u UserHandler) UserRegister(ctx context.Context, req *userrpcinterface.RegisterReq, resp *userrpcinterface.RegisterResp) error {
 
 	if db.ExistUserByUsername(req.Username) {
-		resp.Code = int64(common.RespCodeUserNotFound.Code)
-		resp.Message = common.RespCodeUserNotFound.Message
+		resp.Code = int64(common.RespCodeUserAlreadyRegistered.Code)
+		resp.Message = common.RespCodeUserAlreadyRegistered.Message
 		return errors.New("user already register")
 	}
 
