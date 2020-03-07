@@ -7,11 +7,12 @@ import (
 	redisconn "go-disk/cache/redis"
 	"go-disk/common"
 	"go-disk/common/constant"
-	"go-disk/config"
+	commonconfig "go-disk/config"
 	"go-disk/db"
-	"go-disk/meta"
 	"go-disk/model"
 	"go-disk/mq"
+	"go-disk/services/file/config"
+	uploadconfig "go-disk/services/upload/config"
 	"go-disk/utils"
 	"io"
 	"io/ioutil"
@@ -52,7 +53,7 @@ func UploadFile() gin.HandlerFunc {
 
 		//如果唯一file表中不存在重复的文件，才需要拷贝上传到存储器中去
 		if !exist {
-			newFile, err := os.Create(config.FileStoreDir + fh.Filename)
+			newFile, err := os.Create(uploadconfig.FileStoreDir + fh.Filename)
 			if err != nil {
 				log.Printf("create file error : %v", err)
 				context.JSON(http.StatusInternalServerError, common.NewServiceResp(common.RespCodeCreateFileError, nil))
@@ -74,20 +75,20 @@ func UploadFile() gin.HandlerFunc {
 			_, fName := filepath.Split(newFile.Name())
 
 			//set file meta
-			fileMeta := meta.FileMeta{
-				FileName: fName,
-				Location: config.FileStoreDir + fName,
-				FileSize: fileSize,
-				FileSha1: fileHash,  //TODO file hash计算可能是个耗时的操作，后续考虑拆分
-				UploadAt: time.Now(),
-				UpdateAt: time.Now(),
-				Status:   constant.FileStatusAvailable,
+			tblFile := db.TableFile{
+				FileSha1:     fileHash,
+				Filename:     fName,
+				FileSize:     fileSize,
+				FileLocation: config.FileStoreDir + fName,
+				CreateAt:     time.Now(),
+				UpdateAt:     time.Now(),
+				Status:       constant.FileStatusAvailable,
 			}
 
 			//同步到ceph中
 			msgData := mq.RabbitMessage{
 				FileHash:     fileHash,
-				SrcLocation:  fileMeta.Location,
+				SrcLocation:  tblFile.FileLocation,
 				DstLocation:  "/ceph/" + fileHash,
 				DstStoreType: common.StoreCeph,
 			}
@@ -99,8 +100,8 @@ func UploadFile() gin.HandlerFunc {
 				return
 			}
 			suc := mq.RabbitPublish(
-				config.RabbitExchangeName,
-				config.RabbitCephRoutingKey,
+				commonconfig.RabbitExchangeName,
+				commonconfig.RabbitCephRoutingKey,
 				msgDataJson)
 			if !suc {
 				log.Printf("put data to ceph error : %v", err)
@@ -109,7 +110,15 @@ func UploadFile() gin.HandlerFunc {
 				return
 			}
 
-			meta.UploadFileMetaDB(fileMeta)
+			db.OnFileUploadFinished(
+				tblFile.FileSha1,
+				tblFile.Filename,
+				tblFile.FileLocation,
+				tblFile.FileSize,
+				tblFile.Status,
+				tblFile.UpdateAt,
+				tblFile.UpdateAt,
+				)
 		}
 
 		//如果file已经上传过了，那么久需要修改文件名，避免重名
@@ -146,10 +155,9 @@ func TryFastUpload() gin.HandlerFunc {
 			return
 		}
 
-		fm := meta.GetFileMetaDB(req.FileHash)
-		if fm.FileSha1 == "" {
+		if exist := db.ExistFile(req.FileHash); !exist {
 			log.Printf("not exist this file %s, failed to fast upload", req.FileHash)
-			context.JSON(http.StatusOK,
+			context.JSON(http.StatusNoContent,
 				common.NewServiceResp(common.RespCodeFastUploadFailed, nil))
 			return
 		}
@@ -161,7 +169,7 @@ func TryFastUpload() gin.HandlerFunc {
 			return
 		}
 
-		context.JSON(http.StatusOK,
+		context.JSON(http.StatusNoContent,
 			common.NewServiceResp(common.RespCodeSuccess, nil))
 	}
 }
