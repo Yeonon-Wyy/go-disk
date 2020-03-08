@@ -14,14 +14,15 @@ const (
 )
 
 var (
+	DSConfig = config.Conf.DataSource
 
 	dbUrl = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&loc=%s&parseTime=true",
-		config.FileDBUsername,
-		config.FileDBPassword,
-		config.FileDBHost,
-		config.FileDBPort,
-		config.FileDBName,
-		url.QueryEscape(config.FileDBTimeLoc))
+		DSConfig.Mysql.Username,
+		DSConfig.Mysql.Password,
+		DSConfig.Mysql.Host,
+		DSConfig.Mysql.Port,
+		DSConfig.Mysql.Database,
+		url.QueryEscape(DSConfig.Mysql.TimeLoc))
 )
 
 func DBConn() *sql.DB {

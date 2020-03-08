@@ -8,7 +8,7 @@ import (
 	"github.com/micro/go-micro/registry/consul"
 	"go-disk/common"
 	"go-disk/common/rpcinterface/userinterface"
-	"go-disk/config"
+	"go-disk/services/apigw/config"
 	"go-disk/services/apigw/vo"
 	"log"
 	"net/http"
@@ -20,7 +20,7 @@ func init() {
 
 	reg := consul.NewRegistry(func(options *registry.Options) {
 		options.Addrs = []string{
-			config.ConsulAddress,
+			config.Conf.Micro.Registration.Consul.Addr,
 		}
 	})
 	service := micro.NewService(

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"go-disk/common"
-	"go-disk/config"
-	redisconn "go-disk/midware/cache/redis"
+	"go-disk/services/apigw/config"
+	redisconn "go-disk/services/apigw/redis"
 	"go-disk/utils"
 	"log"
 	"net/http"
@@ -46,7 +46,8 @@ func GenToken(key string) string {
 		return ""
 	}
 	defer redisClient.Close()
-	redisClient.Set(key, token, config.AuthRedisTokenExpireTime)
+
+	redisClient.Set(key, token, time.Duration(config.Conf.DataSource.Redis.TokenExpireTime) * time.Hour)
 	return token
 }
 

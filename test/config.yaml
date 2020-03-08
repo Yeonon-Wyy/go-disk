@@ -1,0 +1,3 @@
+dataSource:
+  mysql:
+    username: root

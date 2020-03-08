@@ -2,9 +2,10 @@ package main
 
 import (
 	"encoding/json"
-	"go-disk/config"
-	"go-disk/midware/mq"
+	"go-disk/common/mqproto"
+	"go-disk/services/transfer/config"
 	mydb "go-disk/services/transfer/db"
+	"go-disk/services/transfer/mq"
 	"go-disk/store/ceph"
 	"gopkg.in/amz.v1/s3"
 	"io/ioutil"
@@ -12,10 +13,15 @@ import (
 	"os"
 )
 
+var (
+	mqConfig = config.Conf.Mq
+	storeConfig = config.Conf.Store
+)
+
 func processTransfer(msg []byte) bool {
 	//parse msg
 
-	msgData := mq.RabbitMessage{}
+	msgData := mqproto.RabbitMessage{}
 	err := json.Unmarshal(msg, &msgData)
 	if err != nil {
 		log.Printf("json unmarshal error : %v", err)
@@ -28,14 +34,14 @@ func processTransfer(msg []byte) bool {
 		return false
 	}
 	//upload file to ceph
-	bucket := ceph.GetCephBucket(config.CephFileStoreBucketName)
+	bucket := ceph.GetCephBucket(storeConfig.Ceph.FileStoreBucketName)
 	fd.Seek(0, 0)
 	fileData, err := ioutil.ReadAll(fd)
 	if err != nil {
 		log.Printf("read file error : %v", err)
 		return false
 	}
-	err = bucket.Put(msgData.DstLocation, fileData, config.CephPutBinDataContentType, s3.PublicReadWrite)
+	err = bucket.Put(msgData.DstLocation, fileData, storeConfig.Ceph.PutBinDataContentType, s3.PublicReadWrite)
 	if err != nil {
 		log.Printf("upload file to ceph error : %v", err)
 		return false
@@ -62,7 +68,7 @@ func processTransfer(msg []byte) bool {
 
 func main() {
 	mq.RabbitConsume(
-		config.RabbitCephQueueName,
+		mqConfig.Rabbit.CephQueueName,
 		"transfer_ceph",
 		processTransfer)
 	//fmt.Printf("a")

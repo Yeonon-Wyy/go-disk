@@ -10,8 +10,8 @@ import (
 func Router() *gin.Engine {
 	router := gin.Default()
 
-	router.Static("/static", "./static")
-	router.StaticFile("/hom", "./static/view/home.html")
+	router.Static("/static", "../../static")
+	router.StaticFile("/hom", "../../static/view/home.html")
 
 	router.Use(cors.Cors())
 

@@ -1,0 +1,29 @@
+dataSource:
+  mysql:
+    username: root
+    password: 124563
+    host: 127.0.0.1
+    port: 3306
+    timeLoc: Asia/Shanghai
+    database: fileserver
+
+mq:
+  rabbit:
+    url: amqp://guest:guest@192.168.47.132:5672/
+    exchangeName: uploadserver.trans
+    cephQueueName: uploadserver.trans.ceph
+    cephErrQueueName: uploadserver.trans.ceph.err
+    cephRoutingKey: ceph
+    cephErrRoutingKey: ceph.err
+
+store:
+  ceph:
+    accessKey: HC6D02PA698NDEGHDNGU
+    secretKey: kHOAsvDkSFg5ay6JcNEmINHg1eVWUmkSeuZMZYLs
+    regionName : default
+    endpoint: http://192.168.47.132:9080
+    S3LocationConstraint: false
+    S3LowercaseBucket: false
+    fileStoreBucketName: files
+    putBinDataContentType: octet-stream
+    filePathPrefix: /ceph/

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"go-disk/common"
 	"go-disk/common/rpcinterface/fileinterface"
-	"go-disk/config"
+	"go-disk/services/file/config"
 	"go-disk/services/file/db"
 	"go-disk/store/ceph"
 	"log"
@@ -108,8 +108,8 @@ func (f FileService) DeleteFile(ctx context.Context, req *fileinterface.DeleteFi
 		return errors.New("can't find file")
 	}
 
-	bucket := ceph.GetCephBucket(config.CephFileStoreBucketName)
-	err = bucket.Del(config.CephFilePathPrefix + tblFile.FileSha1)
+	bucket := ceph.GetCephBucket(config.Conf.Store.Ceph.FileStoreBucketName)
+	err = bucket.Del(config.Conf.Store.Ceph.FilePathPrefix + tblFile.FileSha1)
 
 
 	if err != nil {

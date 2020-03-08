@@ -3,7 +3,7 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	"go-disk/common"
-	"go-disk/config"
+	"go-disk/services/download/config"
 	"go-disk/services/download/db"
 	"go-disk/store/ceph"
 	"net/http"
@@ -20,7 +20,7 @@ func DownloadHandler() gin.HandlerFunc {
 			return
 		}
 
-		bucket := ceph.GetCephBucket(config.CephFileStoreBucketName)
+		bucket := ceph.GetCephBucket(config.Conf.Store.Ceph.FileStoreBucketName)
 		fileData, _ := bucket.Get(tblFile.FileLocation)
 
 		context.Writer.Header().Set("Content-Type", "application/octet-stream")

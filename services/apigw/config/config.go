@@ -33,8 +33,26 @@ type Config struct {
 			TimeLoc string `yaml:"timeLoc"`
 			Database string `yaml:"database"`
 		} `yaml:"mysql"`
+
+
+		Redis struct {
+			Addr string `yaml:"addr"`
+			Password string `yaml:"password"`
+			Database int `yaml:"database"`
+			TokenExpireTime int `yaml:"tokenExpireTime"`
+		} `yaml:"redis"`
 	} `yaml:"dataSource"`
 
+	Mq struct {
+		Rabbit struct {
+			Url string `yaml:"url"`
+			ExchangeName string `yaml:"exchangeName"`
+			CephQueueName string `yaml:"cephQueueName"`
+			CephErrQueueName string `yaml:"cephErrQueueName"`
+			CephRoutingKey string `yaml:"cephRoutingKey"`
+			CephErrRoutingKey string `yaml:"cephErrRoutingKey"`
+		} `yaml:"rabbit"`
+	} `yaml:"mq"`
 
 	Store struct {
 		Ceph struct {
@@ -51,7 +69,8 @@ type Config struct {
 	} `yaml:"store"`
 
 	Business struct {
-		DownloadServiceEndpoint string `yaml:"downloadServiceEndpoint"`
+		UploadServiceEndpoint string `yaml:"uploadServiceEndpoint"`
+		FileStorePath string `yaml:"fileStorePath"`
 	} `yaml:"business"`
 
 	Micro struct {

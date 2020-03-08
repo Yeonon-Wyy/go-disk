@@ -1,4 +1,4 @@
-package mq
+package mqproto
 
 import "go-disk/common"
 
@@ -13,3 +13,4 @@ type RabbitErrMessage struct {
 	code int
 	message string
 }
+

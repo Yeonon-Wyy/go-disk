@@ -7,7 +7,7 @@ import (
 	"github.com/micro/go-micro/registry"
 	"github.com/micro/go-micro/registry/consul"
 	"go-disk/common/rpcinterface/downloadinterface"
-	"go-disk/config"
+	"go-disk/services/apigw/config"
 
 	"log"
 	"net/http"
@@ -18,7 +18,7 @@ var downloadCli downloadinterface.DownloadService
 func init() {
 	reg := consul.NewRegistry(func(options *registry.Options) {
 		options.Addrs = []string{
-			config.ConsulAddress,
+			config.Conf.Micro.Registration.Consul.Addr,
 		}
 	})
 	service := micro.NewService(

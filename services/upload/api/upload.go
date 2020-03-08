@@ -7,14 +7,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-disk/common"
 	"go-disk/common/constant"
-	commonconfig "go-disk/config"
-	redisconn "go-disk/midware/cache/redis"
-	"go-disk/midware/mq"
+	"go-disk/common/mqproto"
 	"go-disk/services/upload/config"
-	uploadconfig "go-disk/services/upload/config"
-
 	"go-disk/services/upload/dao"
 	"go-disk/services/upload/db"
+	"go-disk/services/upload/midware/mq"
+	redisconn "go-disk/services/upload/midware/redis"
 	"go-disk/services/upload/vo"
 	"go-disk/utils"
 	"io"
@@ -28,6 +26,12 @@ import (
 	"strconv"
 	"strings"
 	"time"
+)
+
+var (
+	businessConfig = config.Conf.Business
+	storeConfig = config.Conf.Store
+	mqConfig = config.Conf.Mq
 )
 
 func UploadFile() gin.HandlerFunc {
@@ -56,7 +60,7 @@ func UploadFile() gin.HandlerFunc {
 
 		//如果唯一file表中不存在重复的文件，才需要拷贝上传到存储器中去
 		if !exist {
-			newFile, err := os.Create(uploadconfig.FileStoreDir + fh.Filename)
+			newFile, err := os.Create(businessConfig.FileStorePath + fh.Filename)
 			if err != nil {
 				log.Printf("create file error : %v", err)
 				context.JSON(http.StatusInternalServerError, common.NewServiceResp(common.RespCodeCreateFileError, nil))
@@ -85,7 +89,7 @@ func UploadFile() gin.HandlerFunc {
 				FileSha1:     fileHash,
 				Filename:     fName,
 				FileSize:     fileSize,
-				FileLocation: config.FileStoreDir + fName,
+				FileLocation: businessConfig.FileStorePath + fName,
 				CreateAt:     time.Now(),
 				UpdateAt:     time.Now(),
 				Status:       constant.FileStatusAvailable,
@@ -220,7 +224,7 @@ func UploadPart() gin.HandlerFunc {
 		}
 		defer redisClient.Close()
 
-		fpath := config.FileStoreDir + uploadId + "/" + index
+		fpath := businessConfig.FileStorePath + uploadId + "/" + index
 		os.MkdirAll(path.Dir(fpath), 0777)
 		fd, err := os.Create(fpath)
 		if err != nil {
@@ -303,7 +307,7 @@ func CompleteUpload() gin.HandlerFunc {
 
 		//同步到ceph中
 		//TODO: 暂时确定文件名为这个，需要和上述合并操作联调
-		err = transFileToCeph(req.FileHash, config.FileStoreDir + req.Filename)
+		err = transFileToCeph(req.FileHash, businessConfig.FileStorePath + req.Filename)
 		if err != nil {
 			log.Printf("put data to ceph error : %v", err)
 			context.JSON(http.StatusInternalServerError,
@@ -330,7 +334,7 @@ func CompleteUpload() gin.HandlerFunc {
 		redisClient.Del("MP_" + req.UploadId)
 
 		//delete temp dir
-		fpath := config.FileStoreDir + req.UploadId + "/"
+		fpath := businessConfig.FileStorePath + req.UploadId + "/"
 		os.RemoveAll(fpath)
 
 		context.JSON(http.StatusOK,
@@ -340,10 +344,10 @@ func CompleteUpload() gin.HandlerFunc {
 }
 
 func transFileToCeph(fileHash string, fileLocation string) error {
-	msgData := mq.RabbitMessage{
+	msgData := mqproto.RabbitMessage{
 		FileHash:     fileHash,
 		SrcLocation:  fileLocation,
-		DstLocation:  commonconfig.CephFilePathPrefix + fileHash,
+		DstLocation:  storeConfig.Ceph.FilePathPrefix + fileHash,
 		DstStoreType: common.StoreCeph,
 	}
 	msgDataJson, err := json.Marshal(msgData)
@@ -351,8 +355,8 @@ func transFileToCeph(fileHash string, fileLocation string) error {
 		return err
 	}
 	suc := mq.RabbitPublish(
-		commonconfig.RabbitExchangeName,
-		commonconfig.RabbitCephRoutingKey,
+		mqConfig.Rabbit.ExchangeName,
+		mqConfig.Rabbit.CephRoutingKey,
 		msgDataJson)
 
 	if !suc {

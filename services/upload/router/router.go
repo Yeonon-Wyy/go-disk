@@ -16,7 +16,7 @@ func Router() *gin.Engine {
 
 func uploadServiceRoute(group *gin.RouterGroup) {
 
-	group.StaticFile("/upload", "./static/view/index.html")
+	group.StaticFile("/upload", "../../static/view/index.html")
 	group.POST("/upload", api.UploadFile())
 	group.POST("/fastupload", api.TryFastUpload())
 

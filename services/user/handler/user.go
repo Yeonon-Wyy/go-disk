@@ -25,7 +25,7 @@ func (u UserHandler) UserRegister(ctx context.Context, req *userrpcinterface.Reg
 		return errors.New("user already register")
 	}
 
-	pwd := utils.Sha1([]byte(req.Password + config.PwdSalt))
+	pwd := utils.Sha1([]byte(req.Password + config.Conf.Business.UserPasswordSalt))
 
 	if !db.InsertUser(req.Username, pwd) {
 		resp.Code = int64(common.RespCodeUserRegisterError.Code)
@@ -45,7 +45,7 @@ func (u UserHandler) UserLogin(ctx context.Context, req *userrpcinterface.LoginR
 		return errors.New("user already login")
 	}
 
-	exist := db.ExistUserByUsernameAndPassword(req.Username, utils.Sha1([]byte(req.Password + config.PwdSalt)))
+	exist := db.ExistUserByUsernameAndPassword(req.Username, utils.Sha1([]byte(req.Password + config.Conf.Business.UserPasswordSalt)))
 	if !exist {
 		resp.Code = int64(common.RespCodeUserNotFound.Code)
 		resp.Message = common.RespCodeUserNotFound.Message
