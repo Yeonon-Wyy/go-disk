@@ -6,7 +6,7 @@ import (
 	"go-disk/services/transfer/config"
 	mydb "go-disk/services/transfer/db"
 	"go-disk/services/transfer/mq"
-	"go-disk/store/ceph"
+	"go-disk/services/transfer/store/ceph"
 	"gopkg.in/amz.v1/s3"
 	"io/ioutil"
 	"log"

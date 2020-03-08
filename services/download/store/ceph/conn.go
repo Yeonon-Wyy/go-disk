@@ -1,17 +1,21 @@
 package ceph
 
 import (
-	"go-disk/config"
+	"go-disk/services/transfer/config"
 	"gopkg.in/amz.v1/aws"
 	"gopkg.in/amz.v1/s3"
 	"log"
+)
+
+var (
+	CephConfig = config.Conf.Store.Ceph
 )
 
 var cephConn *s3.S3
 
 func init() {
 	//create bucket
-	createCephBucket(config.CephFileStoreBucketName)
+	createCephBucket(CephConfig.FileStoreBucketName)
 }
 
 func Conn() *s3.S3 {
@@ -19,8 +23,8 @@ func Conn() *s3.S3 {
 		return cephConn
 	}
 
-	accessKey := config.CephAccessKey
-	secretKey := config.CephSecretKey
+	accessKey := CephConfig.AccessKey
+	secretKey := CephConfig.SecretKey
 
 	auth := aws.Auth{
 		AccessKey:accessKey,
@@ -28,12 +32,12 @@ func Conn() *s3.S3 {
 	}
 
 	region := aws.Region{
-		Name: config.CephRegionName,
-		EC2Endpoint: config.CephEndpoint,
-		S3Endpoint: config.CephEndpoint,
+		Name: CephConfig.RegionName,
+		EC2Endpoint: CephConfig.Endpoint,
+		S3Endpoint: CephConfig.Endpoint,
 		S3BucketEndpoint: "",
-		S3LocationConstraint: config.CephS3LocationConstraint,
-		S3LowercaseBucket: config.CephS3LowercaseBucket,
+		S3LocationConstraint: CephConfig.S3LocationConstraint,
+		S3LowercaseBucket: CephConfig.S3LowercaseBucket,
 		Sign: aws.SignV2,
 	}
 

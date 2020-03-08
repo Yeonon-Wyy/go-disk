@@ -5,7 +5,7 @@ import (
 	"go-disk/common"
 	"go-disk/services/download/config"
 	"go-disk/services/download/db"
-	"go-disk/store/ceph"
+	"go-disk/services/download/store/ceph"
 	"net/http"
 	"strconv"
 )

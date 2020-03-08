@@ -17,18 +17,17 @@ var (
 
 	DSConfig = config.Conf.DataSource
 
-)
-
-func DBConn() *sql.DB {
-	dbUrl := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&loc=%s&parseTime=true",
+	dbUrl = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&loc=%s&parseTime=true",
 		DSConfig.Mysql.Username,
 		DSConfig.Mysql.Password,
 		DSConfig.Mysql.Host,
 		DSConfig.Mysql.Port,
 		DSConfig.Mysql.Database,
 		url.QueryEscape(DSConfig.Mysql.TimeLoc))
+)
 
-	log.Println(dbUrl)
+func DBConn() *sql.DB {
+
 	db, err := sql.Open(DriverName, dbUrl)
 	if err != nil {
 		log.Fatalf("open mysql connection error : %v", err)

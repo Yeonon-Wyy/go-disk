@@ -7,7 +7,7 @@ import (
 	"go-disk/common/rpcinterface/fileinterface"
 	"go-disk/services/file/config"
 	"go-disk/services/file/db"
-	"go-disk/store/ceph"
+	"go-disk/services/file/store/ceph"
 	"log"
 )
 
