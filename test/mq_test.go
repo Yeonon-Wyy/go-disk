@@ -2,7 +2,7 @@ package test
 
 import (
 	"go-disk/config"
-	"go-disk/mq"
+	"go-disk/midware/mq"
 	"testing"
 )
 

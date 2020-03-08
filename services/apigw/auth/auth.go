@@ -3,9 +3,9 @@ package auth
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	redisconn "go-disk/cache/redis"
 	"go-disk/common"
 	"go-disk/config"
+	redisconn "go-disk/midware/cache/redis"
 	"go-disk/utils"
 	"log"
 	"net/http"

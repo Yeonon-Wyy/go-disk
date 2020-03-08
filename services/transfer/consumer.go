@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"go-disk/config"
-	"go-disk/mq"
+	"go-disk/midware/mq"
 	mydb "go-disk/services/transfer/db"
 	"go-disk/store/ceph"
 	"gopkg.in/amz.v1/s3"

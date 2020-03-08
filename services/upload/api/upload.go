@@ -5,11 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	redisconn "go-disk/cache/redis"
 	"go-disk/common"
 	"go-disk/common/constant"
 	commonconfig "go-disk/config"
-	"go-disk/mq"
+	redisconn "go-disk/midware/cache/redis"
+	"go-disk/midware/mq"
 	"go-disk/services/upload/config"
 	uploadconfig "go-disk/services/upload/config"
 
