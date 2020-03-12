@@ -50,7 +50,7 @@ func RegisterUser() gin.HandlerFunc {
 			Password:             req.Password,
 		})
 
-		if err != nil {
+		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code) {
 			log.Printf("rpc call (user register) error : %v", err)
 			ctx.JSON(http.StatusBadRequest, *resp)
 			return
@@ -76,10 +76,9 @@ func UserLogin() gin.HandlerFunc {
 		})
 
 
-		if err != nil || resp.Data == nil {
+		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code) {
 			log.Printf("rpc call (user login) error : %v", err)
-			ctx.JSON(http.StatusInternalServerError,
-				common.NewServiceResp(common.RespCodeUserLoginError, nil))
+			ctx.JSON(http.StatusInternalServerError, *resp)
 			return
 		}
 
@@ -103,10 +102,9 @@ func QueryUserInfo() gin.HandlerFunc {
 			AccessToken: req.Token,
 		})
 
-		if err != nil {
+		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code) {
 			log.Printf("rpc call (query user info) error : %v", err)
-			ctx.JSON(http.StatusBadRequest,
-				common.NewServiceResp(common.RespCodeBindReParamError, nil))
+			ctx.JSON(http.StatusBadRequest, *resp)
 			return
 		}
 

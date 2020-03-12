@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"errors"
 	"go-disk/common"
 	userrpcinterface "go-disk/common/rpcinterface/userinterface"
 	"go-disk/common/utils"
@@ -21,7 +20,7 @@ func (u UserHandler) UserRegister(ctx context.Context, req *userrpcinterface.Reg
 	if db.ExistUserByUsername(req.Username) {
 		resp.Code = int64(common.RespCodeUserAlreadyRegistered.Code)
 		resp.Message = common.RespCodeUserAlreadyRegistered.Message
-		return errors.New("user already register")
+		return nil
 	}
 
 	pwd := utils.Sha1([]byte(req.Password + config.Conf.Business.UserPasswordSalt))
@@ -29,7 +28,7 @@ func (u UserHandler) UserRegister(ctx context.Context, req *userrpcinterface.Reg
 	if !db.InsertUser(req.Username, pwd) {
 		resp.Code = int64(common.RespCodeUserRegisterError.Code)
 		resp.Message = common.RespCodeUserRegisterError.Message
-		return errors.New("user register error")
+		return nil
 	}
 
 	resp.Code = int64(common.RespCodeSuccess.Code)
@@ -43,7 +42,7 @@ func (u UserHandler) QueryUserInfo(ctx context.Context, req *userrpcinterface.Qu
 	if err != nil {
 		resp.Code = int64(common.RespCodeUserNotFound.Code)
 		resp.Message = common.RespCodeUserNotFound.Message
-		return errors.New("user not found")
+		return nil
 	}
 
 	resp.Code = int64(common.RespCodeSuccess.Code)

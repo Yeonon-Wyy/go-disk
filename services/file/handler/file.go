@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"errors"
 	"go-disk/common"
 	"go-disk/common/rpcinterface/fileinterface"
 	"go-disk/services/file/config"
@@ -20,7 +19,7 @@ func (f FileService) GetFileMeta(ctx context.Context, req *fileinterface.GetFile
 	if err != nil {
 		resp.Code = int64(common.RespCodeNotFoundFileError.Code)
 		resp.Message = common.RespCodeNotFoundFileError.Message
-		return errors.New("can't find file")
+		return nil
 	}
 	resp.Code = int64(common.RespCodeSuccess.Code)
 	resp.Message = common.RespCodeSuccess.Message
@@ -43,7 +42,7 @@ func (f FileService) UpdateFileMeta(ctx context.Context, req *fileinterface.Upda
 	if err != nil {
 		resp.Code = int64(common.RespCodeNotFoundFileError.Code)
 		resp.Message = common.RespCodeNotFoundFileError.Message
-		return errors.New("can't find file")
+		return nil
 	}
 
 	if req.Filename != "" {
@@ -73,7 +72,7 @@ func (f FileService) GetFileList(ctx context.Context, req *fileinterface.GetFile
 	if !ok {
 		resp.Code = int64(common.RespCodeQueryFileError.Code)
 		resp.Message = common.RespCodeQueryFileError.Message
-		return errors.New("can't find file")
+		return nil
 	}
 
 	//transfer data to rpc data type
@@ -105,7 +104,7 @@ func (f FileService) DeleteFile(ctx context.Context, req *fileinterface.DeleteFi
 	if err != nil {
 		resp.Code = int64(common.RespCodeNotFoundFileError.Code)
 		resp.Message = common.RespCodeNotFoundFileError.Message
-		return errors.New("can't find file")
+		return nil
 	}
 
 	bucket := ceph.GetCephBucket(config.Conf.Store.Ceph.FileStoreBucketName)
@@ -115,7 +114,7 @@ func (f FileService) DeleteFile(ctx context.Context, req *fileinterface.DeleteFi
 	if err != nil {
 		resp.Code = int64(common.RespCodeRemoveFileError.Code)
 		resp.Message = common.RespCodeRemoveFileError.Message
-		return errors.New("remove file error")
+		return nil
 	}
 
 	db.DeleteFileMeta(req.FileHash)

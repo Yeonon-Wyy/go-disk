@@ -46,7 +46,7 @@ func GetFileMeta() gin.HandlerFunc {
 		resp, err := fileMetaCli.GetFileMeta(context.TODO(), &fileinterface.GetFileMetaReq{
 			FileHash:             req.FileHash,
 		})
-		if err != nil {
+		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code){
 			log.Printf("rpc call (get metat ) error : %v", err)
 			ctx.JSON(http.StatusBadRequest, *resp)
 			return
@@ -68,7 +68,7 @@ func UpdateFileMeta() gin.HandlerFunc {
 
 		resp, err := fileMetaCli.UpdateFileMeta(context.TODO(), &fileinterface.UpdateFileMetaReq{})
 
-		if err != nil {
+		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code){
 			log.Printf("rpc call ( update metat ) error : %v", err)
 			ctx.JSON(http.StatusBadRequest, *resp)
 			return
@@ -93,7 +93,7 @@ func GetFileList() gin.HandlerFunc {
 			Limit: int64(req.Limit),
 		})
 
-		if err != nil {
+		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code){
 			log.Printf("rpc call  get metat list) error : %v", err)
 			ctx.JSON(http.StatusBadRequest, *resp)
 			return
@@ -117,7 +117,7 @@ func DeleteFile() gin.HandlerFunc {
 			FileHash: req.FileHash,
 		})
 
-		if err != nil {
+		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code){
 			log.Printf("rpc call  get metat list) error : %v", err)
 			ctx.JSON(http.StatusBadRequest, *resp)
 			return
