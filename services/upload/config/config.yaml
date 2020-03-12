@@ -6,6 +6,10 @@ dataSource:
     port: 3306
     timeLoc: Asia/Shanghai
     database: fileserver
+  redis:
+    addr: localhost:6379
+    password: ""
+    database: 0
 
 mq:
   rabbit:
@@ -27,10 +31,6 @@ store:
     fileStoreBucketName: files
     putBinDataContentType: octet-stream
     filePathPrefix: /ceph/
-  redis:
-    addr: localhost:6379
-    password: ""
-    database: 0
 
 business:
   uploadServiceEndpoint: http://localhost:9000

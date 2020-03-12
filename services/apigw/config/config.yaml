@@ -27,11 +27,6 @@ store:
     fileStoreBucketName: files
     putBinDataContentType: octet-stream
     filePathPrefix: /ceph/
-  redis:
-    addr: localhost:6379
-    password: ""
-    database: 1
-    tokenExpireTime: 72 #hour
 
 business:
   uploadServiceEndpoint: http://localhost:9000

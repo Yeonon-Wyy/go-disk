@@ -5,16 +5,15 @@ import (
 	"errors"
 	"go-disk/common"
 	userrpcinterface "go-disk/common/rpcinterface/userinterface"
-	"go-disk/services/apigw/auth"
 	"go-disk/services/user/config"
 	"go-disk/services/user/db"
-
 	"go-disk/utils"
 )
 
 type UserHandler struct {
 
 }
+
 
 
 func (u UserHandler) UserRegister(ctx context.Context, req *userrpcinterface.RegisterReq, resp *userrpcinterface.RegisterResp) error {
@@ -35,27 +34,6 @@ func (u UserHandler) UserRegister(ctx context.Context, req *userrpcinterface.Reg
 
 	resp.Code = int64(common.RespCodeSuccess.Code)
 	resp.Message = common.RespCodeSuccess.Message
-	return nil
-}
-
-func (u UserHandler) UserLogin(ctx context.Context, req *userrpcinterface.LoginReq, resp *userrpcinterface.LoginResp) error {
-	if auth.ExistToken(req.Username) {
-		resp.Code = int64(common.RespCodeUserAlreadyLogin.Code)
-		resp.Message = common.RespCodeUserAlreadyLogin.Message
-		return errors.New("user already login")
-	}
-
-	exist := db.ExistUserByUsernameAndPassword(req.Username, utils.Sha1([]byte(req.Password + config.Conf.Business.UserPasswordSalt)))
-	if !exist {
-		resp.Code = int64(common.RespCodeUserNotFound.Code)
-		resp.Message = common.RespCodeUserNotFound.Message
-		return errors.New("not this user")
-	}
-
-	resp.Code = int64(common.RespCodeSuccess.Code)
-	resp.Message = common.RespCodeSuccess.Message
-	resp.Data = &userrpcinterface.LoginResp_Data{AccessToken: auth.GenToken(req.Username)}
-
 	return nil
 }
 

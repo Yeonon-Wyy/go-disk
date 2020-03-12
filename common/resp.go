@@ -5,7 +5,7 @@ var (
 	RespCodeSuccess  = RespCode{1000, "success"}
 	RespCodeBindReParamError = RespCode{Code: 1, Message: "bind request parameters error"}
 	RespCodeUnauthorizedError = RespCode{Code: 2, Message: "user unauthorized"}
-	RespCodeJsonError = RespCode{Code: 3, Message: "json translate error"}
+
 
 	//file service code (100 ~ 199)
 	RespCodeReadFileError =  RespCode{100, "read file error"}
@@ -22,14 +22,18 @@ var (
 	RespCodeCompleteUploadError = RespCode{111, "complete upload error error"}
 	RespCodeReadDataError = RespCode{112, "read data error"}
 	RespCodeWriteFileError = RespCode{113, "write file error"}
-		RespCodePutDataToCephError = RespCode{114, "put data to ceph error"}
+	RespCodePutDataToCephError = RespCode{114, "put data to ceph error"}
 
 	//user service code (200 ~ 299)
 	RespCodeUserRegisterError = RespCode{200, "user register error"}
 	RespCodeUserNotFound = RespCode{201, "user not found error"}
-	RespCodeUserAlreadyLogin = RespCode{202, "user already login"}
+	RespCodeUserLoginError = RespCode{202, "user login error"}
 	RespCodeUserAlreadyRegistered = RespCode{203, "user already registered"}
-	RespCodeUserTokenError = RespCode{204, "user token error"}
+
+	//auth service code(300 ~ 399)
+	RespCodeGenTokenError = RespCode{301, "gen token error"}
+	RespCodeValidateTokenError = RespCode{302, "validate token error"}
+	RespCodeDeleteTokenError = RespCode{303, "delete token error"}
 )
 
 type RespCode struct {

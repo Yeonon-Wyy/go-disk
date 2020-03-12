@@ -2,7 +2,8 @@ package redis
 
 import (
 	"github.com/go-redis/redis/v7"
-	"go-disk/services/apigw/config"
+	"go-disk/services/auth/config"
+	"log"
 )
 
 var (
@@ -10,6 +11,7 @@ var (
 )
 
 func AuthConn() (*redis.Client, error) {
+	log.Printf("[DEBUG] redisConfig : %v", redisConfig)
 	client := redis.NewClient(&redis.Options{
 		Addr: redisConfig.Addr,
 		Password: redisConfig.Password,

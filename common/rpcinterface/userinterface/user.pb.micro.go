@@ -35,7 +35,6 @@ var _ server.Option
 
 type UserService interface {
 	UserRegister(ctx context.Context, in *RegisterReq, opts ...client.CallOption) (*RegisterResp, error)
-	UserLogin(ctx context.Context, in *LoginReq, opts ...client.CallOption) (*LoginResp, error)
 	QueryUserInfo(ctx context.Context, in *QueryUserInfoReq, opts ...client.CallOption) (*QueryUserInfoResp, error)
 }
 
@@ -67,16 +66,6 @@ func (c *userService) UserRegister(ctx context.Context, in *RegisterReq, opts ..
 	return out, nil
 }
 
-func (c *userService) UserLogin(ctx context.Context, in *LoginReq, opts ...client.CallOption) (*LoginResp, error) {
-	req := c.c.NewRequest(c.name, "UserService.UserLogin", in)
-	out := new(LoginResp)
-	err := c.c.Call(ctx, req, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *userService) QueryUserInfo(ctx context.Context, in *QueryUserInfoReq, opts ...client.CallOption) (*QueryUserInfoResp, error) {
 	req := c.c.NewRequest(c.name, "UserService.QueryUserInfo", in)
 	out := new(QueryUserInfoResp)
@@ -91,14 +80,12 @@ func (c *userService) QueryUserInfo(ctx context.Context, in *QueryUserInfoReq, o
 
 type UserServiceHandler interface {
 	UserRegister(context.Context, *RegisterReq, *RegisterResp) error
-	UserLogin(context.Context, *LoginReq, *LoginResp) error
 	QueryUserInfo(context.Context, *QueryUserInfoReq, *QueryUserInfoResp) error
 }
 
 func RegisterUserServiceHandler(s server.Server, hdlr UserServiceHandler, opts ...server.HandlerOption) error {
 	type userService interface {
 		UserRegister(ctx context.Context, in *RegisterReq, out *RegisterResp) error
-		UserLogin(ctx context.Context, in *LoginReq, out *LoginResp) error
 		QueryUserInfo(ctx context.Context, in *QueryUserInfoReq, out *QueryUserInfoResp) error
 	}
 	type UserService struct {
@@ -114,10 +101,6 @@ type userServiceHandler struct {
 
 func (h *userServiceHandler) UserRegister(ctx context.Context, in *RegisterReq, out *RegisterResp) error {
 	return h.UserServiceHandler.UserRegister(ctx, in, out)
-}
-
-func (h *userServiceHandler) UserLogin(ctx context.Context, in *LoginReq, out *LoginResp) error {
-	return h.UserServiceHandler.UserLogin(ctx, in, out)
 }
 
 func (h *userServiceHandler) QueryUserInfo(ctx context.Context, in *QueryUserInfoReq, out *QueryUserInfoResp) error {

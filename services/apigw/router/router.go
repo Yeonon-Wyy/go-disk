@@ -2,7 +2,7 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-disk/services/apigw/auth"
+	"go-disk/services/apigw/interceptor"
 	"go-disk/services/apigw/cors"
 	"go-disk/services/apigw/handler"
 )
@@ -29,7 +29,7 @@ func Router() *gin.Engine {
 }
 
 func fileMetaServiceRoute(group *gin.RouterGroup) {
-	group.Use(auth.AuthorizeInterceptor())
+	group.Use(interceptor.AuthorizeInterceptor())
 	group.GET("/meta", handler.GetFileMeta())
 
 	group.PUT("/meta", handler.UpdateFileMeta())
@@ -39,12 +39,12 @@ func fileMetaServiceRoute(group *gin.RouterGroup) {
 }
 
 func downloadServiceRoute(group *gin.RouterGroup) {
-	group.Use(auth.AuthorizeInterceptor())
+	group.Use(interceptor.AuthorizeInterceptor())
 	group.GET("/endpoint", handler.GetDownloadServiceEndpoint())
 }
 
 func uploadServiceRoute(group *gin.RouterGroup) {
-	group.Use(auth.AuthorizeInterceptor())
+	group.Use(interceptor.AuthorizeInterceptor())
 	group.GET("/endpoint", handler.GetUploadServiceEndpoint())
 }
 
@@ -52,7 +52,7 @@ func userServiceRoute(group *gin.RouterGroup) {
 	group.POST("/register", handler.RegisterUser())
 	group.POST("/login", handler.UserLogin())
 
-	group.Use(auth.AuthorizeInterceptor())
+	group.Use(interceptor.AuthorizeInterceptor())
 	group.GET("/info", handler.QueryUserInfo())
 }
 

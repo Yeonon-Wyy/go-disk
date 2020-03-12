@@ -7,7 +7,6 @@ package userinterface;
 
 service UserService {
     rpc UserRegister(RegisterReq) returns (RegisterResp);
-    rpc UserLogin(LoginReq) returns (LoginResp);
     rpc QueryUserInfo(QueryUserInfoReq) returns(QueryUserInfoResp);
 }
 
@@ -19,21 +18,6 @@ message RegisterReq {
 message RegisterResp {
     int64 code = 1;
     string message = 2;
-}
-
-message LoginReq {
-    string username = 1;
-    string password = 2;
-}
-
-message LoginResp {
-    int64 code = 1;
-    string message = 2;
-    message Data {
-        string accessToken = 1;
-    }
-    Data data = 3;
-
 }
 
 message QueryUserInfoReq {

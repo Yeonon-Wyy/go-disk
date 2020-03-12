@@ -14,8 +14,6 @@ const (
 	insertUserStatement = "INSERT INTO tbl_user(`user_name`,`user_pwd`, `signup_at`, `status`) " +
 		"VALUES(?,?,?,?)"
 
-	existUserByUsernameAndPasswordStatement = "SELECT COUNT(1) AS count FROM tbl_user WHERE user_name = ? AND user_pwd = ?"
-
 	existUserByUsernameStatement = "SELECT COUNT(1) AS count FROM tbl_user WHERE user_name = ?"
 
 	queryBriefUserInfoStatement = "SELECT signup_at FROM tbl_user WHERE user_name = ?"
@@ -28,11 +26,6 @@ func InsertUser(username, password string) bool {
 func ExistUserByUsername(username string) bool {
 	return exist(existUserByUsernameStatement, username)
 }
-
-func ExistUserByUsernameAndPassword(username, password string) bool {
-	return exist(existUserByUsernameAndPasswordStatement, username, password)
-}
-
 
 
 func QueryUser(username string) (*userdao.UserQueryDao, error){

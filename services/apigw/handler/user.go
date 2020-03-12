@@ -7,9 +7,11 @@ import (
 	"github.com/micro/go-micro/registry"
 	"github.com/micro/go-micro/registry/consul"
 	"go-disk/common"
+	"go-disk/common/rpcinterface/authinterface"
 	"go-disk/common/rpcinterface/userinterface"
 	"go-disk/services/apigw/config"
 	"go-disk/services/apigw/vo"
+	"go-disk/services/user/rpc"
 	"log"
 	"net/http"
 )
@@ -68,18 +70,21 @@ func UserLogin() gin.HandlerFunc {
 			return
 		}
 
-		resp, err := userCli.UserLogin(context.TODO(), &userinterface.LoginReq{
+		resp, err := rpc.AuthCli.Authorize(context.TODO(), &authinterface.AuthorizeReq{
 			Username: req.Username,
 			Password: req.Password,
 		})
 
-		if err != nil {
+
+		if err != nil || resp.Data == nil {
 			log.Printf("rpc call (user login) error : %v", err)
-			ctx.JSON(http.StatusInternalServerError, *resp)
+			ctx.JSON(http.StatusInternalServerError,
+				common.NewServiceResp(common.RespCodeUserLoginError, nil))
 			return
 		}
 
-		ctx.JSON(http.StatusOK,*resp)
+		ctx.JSON(http.StatusOK,
+			common.NewServiceResp(common.RespCodeSuccess, *resp))
 	}
 }
 

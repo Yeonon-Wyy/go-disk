@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+//protoc.exe --proto_path=common/rpcinterface/authinterface --go_out=common/rpcinterface/authinterface --micro_out=common/rpcinterface/authinterface common/rpcinterface/authinterface/auth.proto
+package authinterface;
+
+service AuthService {
+    rpc Authentication(AuthenticationReq) returns(AuthenticationResp);
+    rpc Authorize(AuthorizeReq) returns(AuthorizeResp);
+    rpc UnAuthorize(UnAuthorizeReq) returns(UnAuthorizeResp);
+}
+
+message AuthenticationReq {
+    string accessToken = 1;
+}
+
+message AuthenticationResp {
+    int64 code = 1;
+    string message = 2;
+}
+
+message AuthorizeReq {
+    string username = 1;
+    string password = 2;
+}
+
+message AuthorizeResp {
+    int64 code = 1;
+    string message = 2;
+    message Data {
+        string accessToken = 1;
+    }
+
+    Data data = 3;
+
+}
+
+message UnAuthorizeReq {
+    string accessToken = 1;
+}
+
+message UnAuthorizeResp {
+    int64 code = 1;
+    string message = 2;
+}
+

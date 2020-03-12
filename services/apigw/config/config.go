@@ -33,14 +33,6 @@ type Config struct {
 			TimeLoc string `yaml:"timeLoc"`
 			Database string `yaml:"database"`
 		} `yaml:"mysql"`
-
-
-		Redis struct {
-			Addr string `yaml:"addr"`
-			Password string `yaml:"password"`
-			Database int `yaml:"database"`
-			TokenExpireTime int `yaml:"tokenExpireTime"`
-		} `yaml:"redis"`
 	} `yaml:"dataSource"`
 
 	Mq struct {
