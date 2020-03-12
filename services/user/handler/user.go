@@ -5,9 +5,9 @@ import (
 	"errors"
 	"go-disk/common"
 	userrpcinterface "go-disk/common/rpcinterface/userinterface"
+	"go-disk/common/utils"
 	"go-disk/services/user/config"
 	"go-disk/services/user/db"
-	"go-disk/utils"
 )
 
 type UserHandler struct {

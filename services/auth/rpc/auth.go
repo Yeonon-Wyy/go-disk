@@ -5,10 +5,10 @@ import (
 	"go-disk/common"
 	"go-disk/common/jwt"
 	"go-disk/common/rpcinterface/authinterface"
+	"go-disk/common/utils"
 	"go-disk/services/auth/config"
 	"go-disk/services/auth/db"
 	redisconn "go-disk/services/auth/redis"
-	"go-disk/utils"
 	"log"
 	"time"
 )
