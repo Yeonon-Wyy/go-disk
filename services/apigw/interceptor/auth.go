@@ -12,8 +12,7 @@ import (
 
 func AuthorizeInterceptor() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-
-		token := ctx.Query("token")
+		token := ctx.GetHeader("Authorization")
 
 		if token == "" {
 			log.Printf("request param error")
