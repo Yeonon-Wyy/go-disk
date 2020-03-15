@@ -1,4 +1,4 @@
-package handler
+package api
 
 import (
 	"github.com/micro/go-micro"
@@ -8,7 +8,7 @@ import (
 	"go-disk/services/apigw/config"
 )
 
-var authCli authinterface.AuthService
+var AuthCli authinterface.AuthService
 
 func init() {
 	reg := consul.NewRegistry(func(options *registry.Options) {
@@ -23,7 +23,7 @@ func init() {
 
 	service.Init()
 
-	authCli = authinterface.NewAuthService("go.micro.service.download", service.Client())
+	AuthCli = authinterface.NewAuthService("go.micro.service.download", service.Client())
 }
 
 

@@ -6,7 +6,7 @@ import (
 	"github.com/micro/go-micro/registry/consul"
 	"go-disk/common/rpcinterface/fileinterface"
 	"go-disk/services/file/config"
-	"go-disk/services/file/handler"
+	"go-disk/services/file/rpc"
 )
 
 func main() {
@@ -21,7 +21,7 @@ func main() {
 
 	service.Init()
 
-	err := fileinterface.RegisterFileServiceHandler(service.Server(), new(handler.FileService))
+	err := fileinterface.RegisterFileServiceHandler(service.Server(), new(rpc.FileService))
 	if err != nil {
 		panic(err)
 	}

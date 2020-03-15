@@ -1,4 +1,4 @@
-package handler
+package api
 
 import (
 	"context"
@@ -6,16 +6,16 @@ import (
 	"github.com/micro/go-micro"
 	"github.com/micro/go-micro/registry"
 	"github.com/micro/go-micro/registry/consul"
-	"go-disk/common/rpcinterface/downloadinterface"
+	"go-disk/common/rpcinterface/uploadinterface"
 	"go-disk/services/apigw/config"
-
 	"log"
 	"net/http"
 )
 
-var downloadCli downloadinterface.DownloadService
+var uploadCli uploadinterface.UploadService
 
 func init() {
+
 	reg := consul.NewRegistry(func(options *registry.Options) {
 		options.Addrs = []string{
 			config.Conf.Micro.Registration.Consul.Addr,
@@ -23,19 +23,19 @@ func init() {
 	})
 	service := micro.NewService(
 		micro.Registry(reg),
-		micro.Name("go.micro.service.download"),
+		micro.Name("go.micro.service.upload"),
 	)
 
 	service.Init()
 
-	downloadCli = downloadinterface.NewDownloadService("go.micro.service.download", service.Client())
+	uploadCli = uploadinterface.NewUploadService("go.micro.service.upload", service.Client())
 }
 
-func GetDownloadServiceEndpoint() gin.HandlerFunc {
+func GetUploadServiceEndpoint() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		resp, err :=downloadCli.DownloadEndPoint(context.TODO(), &downloadinterface.DownloadEndpointReq{})
+		resp, err := uploadCli.UploadEndPoint(context.TODO(), &uploadinterface.UploadEndPointReq{})
 		if err != nil {
-			log.Printf("rpc call (get download service endpoint) error : %v", err)
+			log.Printf("rpc call (get upload service endpoint) error : %v", err)
 			ctx.JSON(http.StatusBadRequest, *resp)
 			return
 		}

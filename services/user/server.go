@@ -6,7 +6,7 @@ import (
 	"github.com/micro/go-micro/registry/consul"
 	"go-disk/common/rpcinterface/userinterface"
 	"go-disk/services/user/config"
-	rpcHandler "go-disk/services/user/handler"
+	"go-disk/services/user/rpc"
 )
 
 func main() {
@@ -21,7 +21,7 @@ func main() {
 
 	service.Init()
 
-	err := userinterface.RegisterUserServiceHandler(service.Server(), new(rpcHandler.UserHandler))
+	err := userinterface.RegisterUserServiceHandler(service.Server(), new(rpc.UserHandler))
 	if err != nil {
 		panic(err)
 	}

@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-disk/services/apigw/interceptor"
 	"go-disk/services/apigw/cors"
-	"go-disk/services/apigw/handler"
+	"go-disk/services/apigw/api"
 )
 
 func Router() *gin.Engine {
@@ -30,30 +30,30 @@ func Router() *gin.Engine {
 
 func fileMetaServiceRoute(group *gin.RouterGroup) {
 	group.Use(interceptor.AuthorizeInterceptor())
-	group.GET("/meta", handler.GetFileMeta())
+	group.GET("/meta", api.GetFileMeta())
 
-	group.PUT("/meta", handler.UpdateFileMeta())
-	group.POST("/meta", handler.GetFileList())
+	group.PUT("/meta", api.UpdateFileMeta())
+	group.POST("/meta", api.GetFileList())
 
-	group.DELETE("/delete", handler.DeleteFile())
+	group.DELETE("/delete", api.DeleteFile())
 }
 
 func downloadServiceRoute(group *gin.RouterGroup) {
 	group.Use(interceptor.AuthorizeInterceptor())
-	group.GET("/endpoint", handler.GetDownloadServiceEndpoint())
+	group.GET("/endpoint", api.GetDownloadServiceEndpoint())
 }
 
 func uploadServiceRoute(group *gin.RouterGroup) {
 	group.Use(interceptor.AuthorizeInterceptor())
-	group.GET("/endpoint", handler.GetUploadServiceEndpoint())
+	group.GET("/endpoint", api.GetUploadServiceEndpoint())
 }
 
 func userServiceRoute(group *gin.RouterGroup) {
-	group.POST("/register", handler.RegisterUser())
-	group.POST("/login", handler.UserLogin())
+	group.POST("/register", api.RegisterUser())
+	group.POST("/login", api.UserLogin())
 
 	group.Use(interceptor.AuthorizeInterceptor())
-	group.GET("/info", handler.QueryUserInfo())
+	group.GET("/info", api.QueryUserInfo())
 }
 
 
