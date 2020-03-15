@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"go-disk/services/upload/api"
+	"go-disk/services/upload/interceptor"
 )
 
 func Router() *gin.Engine {
@@ -16,6 +17,7 @@ func Router() *gin.Engine {
 
 func uploadServiceRoute(group *gin.RouterGroup) {
 
+	group.Use(interceptor.AuthorizeInterceptor())
 	group.StaticFile("/upload", "../../static/view/index.html")
 	group.POST("/upload", api.UploadFile())
 	group.POST("/fastupload", api.TryFastUpload())

@@ -40,3 +40,6 @@ micro:
   registration:
     consul:
       addr: 192.168.47.132:8500
+  client:
+    auth:
+      serviceName: go.micro.service.auth
