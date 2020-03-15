@@ -16,18 +16,6 @@ mq:
     cephRoutingKey: ceph
     cephErrRoutingKey: ceph.err
 
-store:
-  ceph:
-    accessKey: HC6D02PA698NDEGHDNGU
-    secretKey: kHOAsvDkSFg5ay6JcNEmINHg1eVWUmkSeuZMZYLs
-    regionName : default
-    endpoint: http://192.168.47.132:9080
-    S3LocationConstraint: false
-    S3LowercaseBucket: false
-    fileStoreBucketName: files
-    putBinDataContentType: octet-stream
-    filePathPrefix: /ceph/
-
 business:
   uploadServiceEndpoint: http://localhost:9000
   fileStorePath: E:/go/go-disk/filestore/
@@ -36,3 +24,14 @@ micro:
   registration:
     consul:
       addr: 192.168.47.132:8500
+  client:
+    auth:
+      serviceName: go.micro.service.auth
+    download:
+      serviceName: go.micro.service.download
+    file:
+      serviceName: go.micro.service.file
+    upload:
+      serviceName: go.micro.service.upload
+    user:
+      serviceName: go.micro.service.user

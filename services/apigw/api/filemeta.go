@@ -3,34 +3,14 @@ package api
 import (
 	"context"
 	"github.com/gin-gonic/gin"
-	"github.com/micro/go-micro"
-	"github.com/micro/go-micro/registry"
-	"github.com/micro/go-micro/registry/consul"
 	"go-disk/common"
 	"go-disk/common/rpcinterface/fileinterface"
-	"go-disk/services/apigw/config"
+	"go-disk/services/apigw/rpc"
 	"go-disk/services/apigw/vo"
 	"log"
 	"net/http"
 )
 
-var fileMetaCli fileinterface.FileService
-
-func init() {
-	reg := consul.NewRegistry(func(options *registry.Options) {
-		options.Addrs = []string{
-			config.Conf.Micro.Registration.Consul.Addr,
-		}
-	})
-	service := micro.NewService(
-		micro.Registry(reg),
-		micro.Name("go.micro.service.file"),
-	)
-
-	service.Init()
-
-	fileMetaCli = fileinterface.NewFileService("go.micro.service.file", service.Client())
-}
 
 func GetFileMeta() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -43,7 +23,7 @@ func GetFileMeta() gin.HandlerFunc {
 			return
 		}
 
-		resp, err := fileMetaCli.GetFileMeta(context.TODO(), &fileinterface.GetFileMetaReq{
+		resp, err := rpc.GetFileCli().GetFileMeta(context.TODO(), &fileinterface.GetFileMetaReq{
 			FileHash:             req.FileHash,
 		})
 		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code){
@@ -66,7 +46,7 @@ func UpdateFileMeta() gin.HandlerFunc {
 			return
 		}
 
-		resp, err := fileMetaCli.UpdateFileMeta(context.TODO(), &fileinterface.UpdateFileMetaReq{})
+		resp, err := rpc.GetFileCli().UpdateFileMeta(context.TODO(), &fileinterface.UpdateFileMetaReq{})
 
 		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code){
 			log.Printf("rpc call ( update metat ) error : %v", err)
@@ -88,7 +68,7 @@ func GetFileList() gin.HandlerFunc {
 			return
 		}
 
-		resp, err := fileMetaCli.GetFileList(context.TODO(), &fileinterface.GetFileListReq{
+		resp, err := rpc.GetFileCli().GetFileList(context.TODO(), &fileinterface.GetFileListReq{
 			Username: req.Username,
 			Limit: int64(req.Limit),
 		})
@@ -113,7 +93,7 @@ func DeleteFile() gin.HandlerFunc {
 			return
 		}
 
-		resp, err := fileMetaCli.DeleteFile(context.TODO(), &fileinterface.DeleteFileReq{
+		resp, err := rpc.GetFileCli().DeleteFile(context.TODO(), &fileinterface.DeleteFileReq{
 			FileHash: req.FileHash,
 		})
 

@@ -46,20 +46,6 @@ type Config struct {
 		} `yaml:"rabbit"`
 	} `yaml:"mq"`
 
-	Store struct {
-		Ceph struct {
-			AccessKey string `yaml:"accessKey"`
-			SecretKey string `yaml:"secretKey"`
-			RegionName string `yaml:"regionName"`
-			Endpoint string `yaml:"endpoint"`
-			S3LocationConstraint bool `yaml:"S3LocationConstraint"`
-			S3LowercaseBucket bool `yaml:"S3LowercaseBucket"`
-			FileStoreBucketName string `yaml:"fileStoreBucketName"`
-			PutBinDataContentType string `yaml:"putBinDataContentType"`
-			FilePathPrefix string `yaml:"filePathPrefix"`
-		} `yaml:"ceph"`
-	} `yaml:"store"`
-
 	Business struct {
 		UploadServiceEndpoint string `yaml:"uploadServiceEndpoint"`
 		FileStorePath string `yaml:"fileStorePath"`
@@ -71,6 +57,29 @@ type Config struct {
 				Addr string `yaml:"addr"`
 			} `yaml:"consul"`
 		} `yaml:"registration"`
+
+		Client struct {
+			Auth struct {
+				ServiceName string `yaml:"serviceName"`
+			} `yaml:"auth"`
+
+			Download struct {
+				ServiceName string `yaml:"serviceName"`
+			} `yaml:"download"`
+
+			File struct {
+				ServiceName string `yaml:"serviceName"`
+			} `yaml:"file"`
+
+			Upload struct {
+				ServiceName string `yaml:"serviceName"`
+			} `yaml:"upload"`
+
+			User struct {
+				ServiceName string `yaml:"serviceName"`
+			} `yaml:"user"`
+
+		} `yaml:"client"`
 	} `yaml:"micro"`
 }
 

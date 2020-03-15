@@ -93,11 +93,9 @@
       success: function (body, textStatus, jqXHR) {
         var resp = JSON.parse(JSON.stringify(body));
 
-        console.log(resp)
-        console.log(resp.data.accessToken)
-        localStorage.setItem("token", body.data.accessToken)
+        localStorage.setItem("token", resp.data.accessToken)
         localStorage.setItem("username", username.value)
-        window.location.href = "/hom";
+        // window.location.href = "/hom";
       }
     });
   }

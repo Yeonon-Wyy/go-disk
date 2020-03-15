@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-disk/common"
 	"go-disk/common/rpcinterface/authinterface"
-	"go-disk/services/apigw/api"
+	"go-disk/services/apigw/rpc"
 	"log"
 	"net/http"
 )
@@ -22,10 +22,10 @@ func AuthorizeInterceptor() gin.HandlerFunc {
 				common.NewServiceResp(common.RespCodeBindReParamError, nil))
 			return
 		}
-		resp, err := api.AuthCli.Authentication(context.TODO(), &authinterface.AuthenticationReq{
+		resp, err := rpc.GetAuthCli().Authentication(context.TODO(), &authinterface.AuthenticationReq{
 			AccessToken: token,
 		})
-		if err != nil || -resp.Code != int64(common.RespCodeSuccess.Code) {
+		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code) {
 			log.Printf("token validate error")
 			ctx.Abort()
 			ctx.JSON(http.StatusUnauthorized,

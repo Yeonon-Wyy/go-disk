@@ -45,6 +45,12 @@ type Config struct {
 				Addr string `yaml:"addr"`
 			} `yaml:"consul"`
 		} `yaml:"registration"`
+
+		Client struct {
+			Auth struct {
+				ServiceName string `yaml:"serviceName"`
+			}
+		}
 	} `yaml:"micro"`
 }
 

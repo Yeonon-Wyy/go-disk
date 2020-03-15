@@ -31,8 +31,8 @@ func (a *AuthServiceHandler) Authentication(ctx context.Context, req *authinterf
 }
 
 func (a *AuthServiceHandler) Authorize(ctx context.Context, req *authinterface.AuthorizeReq, resp *authinterface.AuthorizeResp) error {
-	utils.Sha1([]byte(req.Password + config.Conf.Business.UserPasswordSalt))
-	userExist := db.ExistUserByUsernameAndPassword(req.Username, req.Password)
+	sha1Pwd := utils.Sha1([]byte(req.Password + config.Conf.Business.UserPasswordSalt))
+	userExist := db.ExistUserByUsernameAndPassword(req.Username, sha1Pwd)
 	if !userExist {
 		resp.Code = int64(common.RespCodeUserNotFound.Code)
 		resp.Message = common.RespCodeUserNotFound.Message
