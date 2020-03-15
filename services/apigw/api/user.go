@@ -31,7 +31,7 @@ func RegisterUser() gin.HandlerFunc {
 
 		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code) {
 			log.Printf("rpc call (user register) error : %v", err)
-			ctx.JSON(http.StatusBadRequest, *resp)
+			ctx.JSON(http.StatusInternalServerError, *resp)
 			return
 		}
 
@@ -82,7 +82,7 @@ func QueryUserInfo() gin.HandlerFunc {
 
 		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code) {
 			log.Printf("rpc call (query user info) error : %v", err)
-			ctx.JSON(http.StatusBadRequest, *resp)
+			ctx.JSON(http.StatusInternalServerError, *resp)
 			return
 		}
 

@@ -16,7 +16,7 @@ func GetDownloadServiceEndpoint() gin.HandlerFunc {
 		resp, err := rpc.GetDownloadCli().DownloadEndPoint(context.TODO(), &downloadinterface.DownloadEndpointReq{})
 		if err != nil {
 			log.Printf("rpc call (get download service endpoint) error : %v", err)
-			ctx.JSON(http.StatusBadRequest, *resp)
+			ctx.JSON(http.StatusInternalServerError, *resp)
 			return
 		}
 

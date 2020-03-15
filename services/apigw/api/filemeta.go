@@ -50,7 +50,7 @@ func UpdateFileMeta() gin.HandlerFunc {
 
 		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code){
 			log.Printf("rpc call ( update metat ) error : %v", err)
-			ctx.JSON(http.StatusBadRequest, *resp)
+			ctx.JSON(http.StatusInternalServerError, *resp)
 			return
 		}
 
@@ -75,7 +75,7 @@ func GetFileList() gin.HandlerFunc {
 
 		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code){
 			log.Printf("rpc call  get metat list) error : %v", err)
-			ctx.JSON(http.StatusBadRequest, *resp)
+			ctx.JSON(http.StatusInternalServerError, *resp)
 			return
 		}
 
@@ -99,7 +99,7 @@ func DeleteFile() gin.HandlerFunc {
 
 		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code){
 			log.Printf("rpc call  get metat list) error : %v", err)
-			ctx.JSON(http.StatusBadRequest, *resp)
+			ctx.JSON(http.StatusInternalServerError, *resp)
 			return
 		}
 

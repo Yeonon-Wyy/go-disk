@@ -15,7 +15,7 @@ func GetUploadServiceEndpoint() gin.HandlerFunc {
 		resp, err := rpc.GetUploadCli().UploadEndPoint(context.TODO(), &uploadinterface.UploadEndPointReq{})
 		if err != nil {
 			log.Printf("rpc call (get upload service endpoint) error : %v", err)
-			ctx.JSON(http.StatusBadRequest, *resp)
+			ctx.JSON(http.StatusInternalServerError, *resp)
 			return
 		}
 
