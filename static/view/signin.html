@@ -74,6 +74,7 @@
 
 <script lang="javascript">
   function onSignin() {
+    console.log(localStorage.getItem("token"))
     var username = document.getElementById('username');
     var password = document.getElementById('password');
     $.ajax({
@@ -95,7 +96,7 @@
 
         localStorage.setItem("token", resp.data.accessToken)
         localStorage.setItem("username", username.value)
-        // window.location.href = "/hom";
+        window.location.href = "/hom";
       }
     });
   }

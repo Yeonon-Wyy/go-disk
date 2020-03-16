@@ -302,18 +302,29 @@ func CompleteUpload() gin.HandlerFunc {
 			return
 		}
 
-		//TODO: 需要分块合并操作，文件名应该是config.FileStoreDir + req.Filename
-		//TODO: 分开操作执行完毕后，记得关闭文件，防止后续异步进程无法删除文件
+		//开始做分块合并操作，开启一个协程去做
+		tempFileDirPath := businessConfig.FileStorePath + req.UploadId + "/"
+		dstFileName := businessConfig.FileStorePath + req.Filename
 
-		//同步到ceph中
-		//TODO: 暂时确定文件名为这个，需要和上述合并操作联调
-		err = transFileToCeph(req.FileHash, businessConfig.FileStorePath + req.Filename)
-		if err != nil {
-			log.Printf("put data to ceph error : %v", err)
-			context.JSON(http.StatusInternalServerError,
-				common.NewServiceResp(common.RespCodePutDataToCephError, nil))
-			return
-		}
+		go func(fileHash, srcFileDirPath, dstFileName string, count int) {
+			err := mergeFilePart(tempFileDirPath, dstFileName, count)
+			if err != nil {
+				log.Printf("merge file error : %v", err)
+				return
+			}
+			//文件合并完成就可以删除了保存分块文件的文件夹了
+			os.RemoveAll(srcFileDirPath)
+
+			//同步到ceph中
+			err = transFileToCeph(fileHash, dstFileName)
+			if err != nil {
+				log.Printf("put data to ceph error : %v", err)
+				context.JSON(http.StatusInternalServerError,
+					common.NewServiceResp(common.RespCodePutDataToCephError, nil))
+				return
+			}
+		}(req.FileHash, tempFileDirPath, dstFileName, chunkCount)
+
 
 		//写入数据库
 		db.OnFileUploadFinished(
@@ -331,11 +342,8 @@ func CompleteUpload() gin.HandlerFunc {
 			req.Filename,
 			req.FileSize)
 
+		//合并和同步到ceph的操作不会用到redis里的数据，所以直接删除就行了
 		redisClient.Del("MP_" + req.UploadId)
-
-		//delete temp dir
-		fpath := businessConfig.FileStorePath + req.UploadId + "/"
-		os.RemoveAll(fpath)
 
 		context.JSON(http.StatusOK,
 			common.NewServiceResp(common.RespCodeSuccess, nil))
@@ -362,5 +370,30 @@ func transFileToCeph(fileHash string, fileLocation string) error {
 	if !suc {
 		return errors.New("push message to rabbit mq error")
 	}
+	return nil
+}
+
+func mergeFilePart(tempFileDirPath string, dstFileName string, chunkCount int) error {
+	dstFd, err := os.OpenFile(dstFileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	defer dstFd.Close()
+
+	for i := 1; i <= chunkCount; i++ {
+		fileName := tempFileDirPath + strconv.Itoa(i)
+		srcFd, err := os.OpenFile(fileName, os.O_RDONLY, os.ModePerm)
+		if err != nil {
+			return err
+		}
+
+		b, err := ioutil.ReadAll(srcFd)
+		_, err = dstFd.Write(b)
+		if err != nil {
+			return err
+		}
+		srcFd.Close()
+	}
+
 	return nil
 }
