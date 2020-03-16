@@ -24,7 +24,7 @@ func RegisterUser() gin.HandlerFunc {
 			return
 		}
 
-		resp, err := rpc.GetUserCli().UserRegister(context.TODO(), &userinterface.RegisterReq{
+		resp, err := rpc.UserCli.UserRegister(context.TODO(), &userinterface.RegisterReq{
 			Username:             req.Username,
 			Password:             req.Password,
 		})
@@ -49,7 +49,7 @@ func UserLogin() gin.HandlerFunc {
 			return
 		}
 
-		resp, err := rpc.GetAuthCli().Authorize(context.TODO(), &authinterface.AuthorizeReq{
+		resp, err := rpc.AuthCli.Authorize(context.TODO(), &authinterface.AuthorizeReq{
 			Username: req.Username,
 			Password: req.Password,
 		})
@@ -75,7 +75,7 @@ func QueryUserInfo() gin.HandlerFunc {
 			return
 		}
 
-		resp, err := rpc.GetUserCli().QueryUserInfo(context.TODO(), &userinterface.QueryUserInfoReq{
+		resp, err := rpc.UserCli.QueryUserInfo(context.TODO(), &userinterface.QueryUserInfoReq{
 			Username: req.Username,
 			AccessToken: req.Token,
 		})

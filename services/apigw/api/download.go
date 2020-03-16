@@ -13,7 +13,7 @@ import (
 
 func GetDownloadServiceEndpoint() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		resp, err := rpc.GetDownloadCli().DownloadEndPoint(context.TODO(), &downloadinterface.DownloadEndpointReq{})
+		resp, err := rpc.DownloadCli.DownloadEndPoint(context.TODO(), &downloadinterface.DownloadEndpointReq{})
 		if err != nil {
 			log.Printf("rpc call (get download service endpoint) error : %v", err)
 			ctx.JSON(http.StatusInternalServerError, *resp)

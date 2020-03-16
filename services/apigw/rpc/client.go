@@ -13,17 +13,22 @@ import (
 )
 
 var (
-	authCli authinterface.AuthService
-	downloadCli downloadinterface.DownloadService
-	fileCli fileinterface.FileService
-	uploadCli uploadinterface.UploadService
-	userCli userinterface.UserService
+	AuthCli authinterface.AuthService
+	DownloadCli downloadinterface.DownloadService
+	FileCli fileinterface.FileService
+	UploadCli uploadinterface.UploadService
+	UserCli userinterface.UserService
 )
 
-func GetAuthCli() authinterface.AuthService {
-	if authCli != nil {
-		return authCli
-	}
+func init() {
+	initAuthCli()
+	initDownloadCli()
+	initFileCli()
+	initUploadCli()
+	initUserCli()
+}
+
+func initAuthCli() {
 	reg := consul.NewRegistry(func(options *registry.Options) {
 		options.Addrs = []string{
 			config.Conf.Micro.Registration.Consul.Addr,
@@ -36,14 +41,10 @@ func GetAuthCli() authinterface.AuthService {
 
 	serv.Init()
 
-	authCli = authinterface.NewAuthService(config.Conf.Micro.Client.Auth.ServiceName, serv.Client())
-	return authCli
+	AuthCli = authinterface.NewAuthService(config.Conf.Micro.Client.Auth.ServiceName, serv.Client())
 }
 
-func GetDownloadCli() downloadinterface.DownloadService {
-	if downloadCli != nil {
-		return downloadCli
-	}
+func initDownloadCli()  {
 	reg := consul.NewRegistry(func(options *registry.Options) {
 		options.Addrs = []string{
 			config.Conf.Micro.Registration.Consul.Addr,
@@ -56,14 +57,10 @@ func GetDownloadCli() downloadinterface.DownloadService {
 
 	serv.Init()
 
-	downloadCli = downloadinterface.NewDownloadService(config.Conf.Micro.Client.Download.ServiceName, serv.Client())
-	return downloadCli
+	DownloadCli = downloadinterface.NewDownloadService(config.Conf.Micro.Client.Download.ServiceName, serv.Client())
 }
 
-func GetFileCli() fileinterface.FileService {
-	if fileCli != nil {
-		return fileCli
-	}
+func initFileCli()  {
 	reg := consul.NewRegistry(func(options *registry.Options) {
 		options.Addrs = []string{
 			config.Conf.Micro.Registration.Consul.Addr,
@@ -76,15 +73,10 @@ func GetFileCli() fileinterface.FileService {
 
 	serv.Init()
 
-	fileCli = fileinterface.NewFileService("go.micro.service.file", serv.Client())
-	return fileCli
+	FileCli = fileinterface.NewFileService("go.micro.service.file", serv.Client())
 }
 
-func GetUploadCli() uploadinterface.UploadService {
-	if uploadCli != nil {
-		return uploadCli
-	}
-
+func initUploadCli() {
 	reg := consul.NewRegistry(func(options *registry.Options) {
 		options.Addrs = []string{
 			config.Conf.Micro.Registration.Consul.Addr,
@@ -97,11 +89,10 @@ func GetUploadCli() uploadinterface.UploadService {
 
 	serv.Init()
 
-	uploadCli = uploadinterface.NewUploadService(config.Conf.Micro.Client.Upload.ServiceName, serv.Client())
-	return uploadCli
+	UploadCli = uploadinterface.NewUploadService(config.Conf.Micro.Client.Upload.ServiceName, serv.Client())
 }
 
-func GetUserCli() userinterface.UserService {
+func initUserCli()  {
 	reg := consul.NewRegistry(func(options *registry.Options) {
 		options.Addrs = []string{
 			config.Conf.Micro.Registration.Consul.Addr,
@@ -114,6 +105,5 @@ func GetUserCli() userinterface.UserService {
 
 	service.Init()
 
-	userCli = userinterface.NewUserService(config.Conf.Micro.Client.User.ServiceName, service.Client())
-	return userCli
+	UserCli = userinterface.NewUserService(config.Conf.Micro.Client.User.ServiceName, service.Client())
 }

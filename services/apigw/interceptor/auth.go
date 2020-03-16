@@ -21,11 +21,11 @@ func AuthorizeInterceptor() gin.HandlerFunc {
 				common.NewServiceResp(common.RespCodeBindReParamError, nil))
 			return
 		}
-		resp, err := rpc.GetAuthCli().Authentication(context.TODO(), &authinterface.AuthenticationReq{
+		resp, err := rpc.AuthCli.Authentication(context.TODO(), &authinterface.AuthenticationReq{
 			AccessToken: token,
 		})
 		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code) {
-			log.Printf("token validate error")
+			log.Printf("token validate error : %v", err)
 			ctx.Abort()
 			ctx.JSON(http.StatusUnauthorized,
 				common.NewServiceResp(common.RespCodeUnauthorizedError, nil))

@@ -23,7 +23,7 @@ func GetFileMeta() gin.HandlerFunc {
 			return
 		}
 
-		resp, err := rpc.GetFileCli().GetFileMeta(context.TODO(), &fileinterface.GetFileMetaReq{
+		resp, err := rpc.FileCli.GetFileMeta(context.TODO(), &fileinterface.GetFileMetaReq{
 			FileHash:             req.FileHash,
 		})
 		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code){
@@ -46,7 +46,7 @@ func UpdateFileMeta() gin.HandlerFunc {
 			return
 		}
 
-		resp, err := rpc.GetFileCli().UpdateFileMeta(context.TODO(), &fileinterface.UpdateFileMetaReq{})
+		resp, err := rpc.FileCli.UpdateFileMeta(context.TODO(), &fileinterface.UpdateFileMetaReq{})
 
 		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code){
 			log.Printf("rpc call ( update metat ) error : %v", err)
@@ -68,7 +68,7 @@ func GetFileList() gin.HandlerFunc {
 			return
 		}
 
-		resp, err := rpc.GetFileCli().GetFileList(context.TODO(), &fileinterface.GetFileListReq{
+		resp, err := rpc.FileCli.GetFileList(context.TODO(), &fileinterface.GetFileListReq{
 			Username: req.Username,
 			Limit: int64(req.Limit),
 		})
@@ -93,7 +93,7 @@ func DeleteFile() gin.HandlerFunc {
 			return
 		}
 
-		resp, err := rpc.GetFileCli().DeleteFile(context.TODO(), &fileinterface.DeleteFileReq{
+		resp, err := rpc.FileCli.DeleteFile(context.TODO(), &fileinterface.DeleteFileReq{
 			FileHash: req.FileHash,
 		})
 

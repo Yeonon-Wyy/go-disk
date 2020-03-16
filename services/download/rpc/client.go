@@ -8,12 +8,14 @@ import (
 	"go-disk/services/download/config"
 )
 
-var authCli authinterface.AuthService
+var AuthCli authinterface.AuthService
 
-func GetAuthCli() authinterface.AuthService {
-	if authCli != nil {
-		return authCli
-	}
+func init() {
+	initAuthCli()
+}
+
+
+func initAuthCli()  {
 	reg := consul.NewRegistry(func(options *registry.Options) {
 		options.Addrs = []string{
 			config.Conf.Micro.Registration.Consul.Addr,
@@ -26,7 +28,6 @@ func GetAuthCli() authinterface.AuthService {
 
 	serv.Init()
 
-	authCli = authinterface.NewAuthService(config.Conf.Micro.Client.Auth.ServiceName, serv.Client())
-	return authCli
+	AuthCli = authinterface.NewAuthService(config.Conf.Micro.Client.Auth.ServiceName, serv.Client())
 }
 
