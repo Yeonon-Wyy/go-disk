@@ -4,9 +4,7 @@ import (
 	"context"
 	"go-disk/common"
 	"go-disk/common/rpcinterface/fileinterface"
-	"go-disk/services/file/config"
 	"go-disk/services/file/db"
-	"go-disk/services/file/store/ceph"
 	"log"
 )
 
@@ -14,7 +12,6 @@ type FileService struct {
 }
 
 func (f FileService) GetFileMeta(ctx context.Context, req *fileinterface.GetFileMetaReq, resp *fileinterface.GetFileMetaResp) error {
-
 	tblFile, err := db.GetFileMeta(req.FileHash)
 	if err != nil {
 		resp.Code = int64(common.RespCodeNotFoundFileError.Code)
@@ -24,10 +21,10 @@ func (f FileService) GetFileMeta(ctx context.Context, req *fileinterface.GetFile
 	resp.Code = int64(common.RespCodeSuccess.Code)
 	resp.Message = common.RespCodeSuccess.Message
 	resp.Data = &fileinterface.GetFileMetaResp_Data{
-		FileSha1: tblFile.FileSha1,
-		Filename: tblFile.Filename,
+		FileSha1: tblFile.FileHash,
+		Filename: tblFile.FileName,
 		FileSize: tblFile.FileSize,
-		Location: tblFile.FileLocation,
+		Location: tblFile.FileAddr,
 		UploadAt: tblFile.CreateAt.String(),
 		UpdateAt: tblFile.UpdateAt.String(),
 		Status:   int64(tblFile.Status),
@@ -46,10 +43,10 @@ func (f FileService) UpdateFileMeta(ctx context.Context, req *fileinterface.Upda
 	}
 
 	if req.Filename != "" {
-		tblFile.Filename = req.Filename
+		tblFile.FileName = req.Filename
 		db.OnFileUpdateFinished(
-			tblFile.FileSha1,
-			tblFile.Filename,
+			tblFile.FileHash,
+			tblFile.FileName,
 			)
 
 		//更新到user file关联表
@@ -81,7 +78,7 @@ func (f FileService) GetFileList(ctx context.Context, req *fileinterface.GetFile
 	for _, userFile := range userFiles {
 		data := &fileinterface.GetFileListResp_Data{
 			Username:             userFile.Username,
-			Filename:             userFile.Filename,
+			Filename:             userFile.FileName,
 			FileHash:             userFile.FileHash,
 			FileSize:             userFile.FileSize,
 			UploadAt:             userFile.UploadAt.String(),
@@ -100,24 +97,17 @@ func (f FileService) GetFileList(ctx context.Context, req *fileinterface.GetFile
 
 func (f FileService) DeleteFile(ctx context.Context, req *fileinterface.DeleteFileReq, resp *fileinterface.DeleteFileResp) error {
 
-	tblFile, err := db.GetFileMeta(req.FileHash)
+	_, err := db.GetFileMeta(req.FileHash)
 	if err != nil {
 		resp.Code = int64(common.RespCodeNotFoundFileError.Code)
 		resp.Message = common.RespCodeNotFoundFileError.Message
 		return nil
 	}
 
-	bucket := ceph.GetCephBucket(config.Conf.Store.Ceph.FileStoreBucketName)
-	err = bucket.Del(config.Conf.Store.Ceph.FilePathPrefix + tblFile.FileSha1)
-
-
-	if err != nil {
+	if suc := db.DeleteFileMeta(req.FileHash, req.Username); !suc {
 		resp.Code = int64(common.RespCodeRemoveFileError.Code)
 		resp.Message = common.RespCodeRemoveFileError.Message
-		return nil
 	}
-
-	db.DeleteFileMeta(req.FileHash)
 
 	resp.Code = int64(common.RespCodeSuccess.Code)
 	resp.Message = common.RespCodeSuccess.Message

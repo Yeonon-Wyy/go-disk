@@ -35,7 +35,7 @@ func fileMetaServiceRoute(group *gin.RouterGroup) {
 	group.PUT("/meta", api.UpdateFileMeta())
 	group.POST("/meta", api.GetFileList())
 
-	group.DELETE("/delete", api.DeleteFile())
+	group.DELETE("/meta", api.DeleteFile())
 }
 
 func downloadServiceRoute(group *gin.RouterGroup) {

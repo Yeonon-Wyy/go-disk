@@ -3,45 +3,33 @@ package db
 import (
 	"go-disk/services/file/dao"
 	mydb "go-disk/services/file/db/mysql"
-	"log"
-)
-
-const (
-	updateUserFilenameStatement = "UPDATE tbl_user_file SET file_name = ? WHERE user_name = ? AND file_sha1 = ?"
-
-	QueryUserFileStatement = "SELECT file_sha1,file_size,file_name,upload_at,last_update FROM tbl_user_file WHERE user_name=? LIMIT ?"
+	"time"
 )
 
 func UpdateUserFilename(username, fileHash, filename string) bool {
-	return execSql(updateUserFilenameStatement, filename, username, fileHash)
+
+	res := mydb.GetConn().
+		Table(dao.UserFileDao{}.TableName()).
+		Where(&dao.UserFileDao{Username:username, FileHash:fileHash}).
+		Updates(map[string]interface{}{
+		"file_name": filename,
+		"last_update": time.Now(),
+	}).Error
+
+	return res != nil
 }
 
 func QueryUserFileMetas(username string, limit int) ([]dao.UserFileDao, bool) {
-	statement, err := mydb.DBConn().Prepare(QueryUserFileStatement)
-	if err != nil {
-		log.Printf("Failed to prepare statement : %v", err)
-		return nil, false
-	}
-
-	rows, err := statement.Query(username, limit)
-	if err != nil {
-		log.Printf("Failed to query : %v", err)
-		return nil, false
-	}
-
 	var userFiles []dao.UserFileDao
-	for rows.Next() {
-		userFile := dao.UserFileDao{}
-		err := rows.Scan(&userFile.FileHash, &userFile.FileSize, &userFile.Filename, &userFile.UploadAt, &userFile.LastUpdate)
-		if err != nil {
-			log.Printf("Failed to scan row : %v", err)
-			break
-		}
-
-		userFile.Username = username
-		userFiles = append(userFiles, userFile)
-	}
-
+	mydb.GetConn().Limit(limit).Where(&dao.UserFileDao{Username:username}).Find(&userFiles)
 	return userFiles, true
+}
 
+func DeleteFileMeta(sha1 string, username string) bool {
+	err := mydb.GetConn().
+		Table(dao.UserFileDao{}.TableName()).
+		Where(&dao.UserFileDao{FileHash:sha1, Username:username}).
+		Update("status", 0).Error
+
+	return err != nil
 }

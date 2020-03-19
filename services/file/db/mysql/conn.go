@@ -1,12 +1,13 @@
 package mysql
 
 import (
-	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/jinzhu/gorm"
 	"go-disk/services/file/config"
 	"log"
 	"net/url"
+	"os"
 )
 
 const (
@@ -14,28 +15,29 @@ const (
 )
 
 var (
-
 	DSConfig = config.Conf.DataSource
+	mysqlDB *gorm.DB
+)
 
-	dbUrl = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&loc=%s&parseTime=true",
+func GetConn() *gorm.DB {
+	if mysqlDB != nil {
+		return mysqlDB
+	}
+
+	dbUrl := fmt.Sprintf("%s:%s@(%s:%d)/%s?charset=utf8&parseTime=True&loc=%s",
 		DSConfig.Mysql.Username,
 		DSConfig.Mysql.Password,
 		DSConfig.Mysql.Host,
 		DSConfig.Mysql.Port,
 		DSConfig.Mysql.Database,
 		url.QueryEscape(DSConfig.Mysql.TimeLoc))
-)
 
-func DBConn() *sql.DB {
-	db, err := sql.Open(DriverName, dbUrl)
+	mysqlDB, err := gorm.Open(DriverName, dbUrl)
 	if err != nil {
-		log.Fatalf("open mysql connection error : %v", err)
+		log.Printf("connect to mysql error : %v", err)
+		os.Exit(1)
 	}
-	//log.Println(db)
-	db.SetMaxOpenConns(1000)
-	err = db.Ping()
-	if err != nil {
-		log.Fatalf("ping mysql connection error : %v", err)
-	}
-	return db
+
+	return mysqlDB
+
 }

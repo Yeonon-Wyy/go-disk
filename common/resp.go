@@ -24,6 +24,7 @@ var (
 	RespCodeWriteFileError = RespCode{113, "write file error"}
 	RespCodePutDataToCephError = RespCode{114, "put data to ceph error"}
 
+
 	//user service code (200 ~ 299)
 	RespCodeUserRegisterError = RespCode{200, "user register error"}
 	RespCodeUserNotFound = RespCode{201, "user not found error"}

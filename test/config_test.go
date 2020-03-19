@@ -3,16 +3,51 @@ package test
 import (
 	"fmt"
 	"gopkg.in/yaml.v2"
+	"io"
 	"io/ioutil"
 	"log"
+	"os"
 	"testing"
 )
 
+
+func TestGenCode(t *testing.T) {
+
+	content := "package test\n\n"
+
+	content += "type User" + " struct {\n"
+	fieldJson := `json:"id"`
+
+	content += "	"+"id"+" "+"int64"+" `"+fieldJson+"` "+"\n"
+
+	content += "}"
+
+	filename := "gen1.go"
+	f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModePerm) //打开文件
+	if err != nil {
+		log.Printf("open file error : %v", err)
+		return
+	}
+
+	n, err := io.WriteString(f, content)
+	if err != nil {
+		log.Printf("%v", err)
+		return
+	}
+
+	log.Printf("success : %d", n)
+
+	f.Close()
+}
+
 func TestYamlConf(t *testing.T) {
-	var c conf
-	con := c.getConf()
-	fmt.Println(c)
-	fmt.Println(con.DataSource.Mysql)
+	yamlFile, err := ioutil.ReadFile("config.yaml")
+	if err != nil {
+		log.Println(err)
+	}
+
+	fmt.Println(yamlFile)
+
 }
 
 type conf struct {
