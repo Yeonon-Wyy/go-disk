@@ -331,7 +331,7 @@ func CompleteUpload() gin.HandlerFunc {
 			req.Filename,
 			"",
 			req.FileSize,
-			constant.UserStatusAvailable,
+			constant.FileStatusAvailable,
 			)
 
 		db.InsertUserFile(
