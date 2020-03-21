@@ -31,6 +31,7 @@ func processTransfer(msg []byte) bool {
 	fd, err := os.Open(msgData.SrcLocation)
 	if err != nil {
 		log.Printf("open file error : %v", err)
+		fd.Close()
 		return false
 	}
 	//upload file to ceph
@@ -44,12 +45,14 @@ func processTransfer(msg []byte) bool {
 	err = bucket.Put(msgData.DstLocation, fileData, storeConfig.Ceph.PutBinDataContentType, s3.PublicReadWrite)
 	if err != nil {
 		log.Printf("upload file to ceph error : %v", err)
+		fd.Close()
 		return false
 	}
 	//update file meta to file_table
 
 	if suc := mydb.UpdateFileLocation(msgData.FileHash, msgData.DstLocation); !suc {
 		log.Printf("update file location error")
+		fd.Close()
 		return false
 	}
 

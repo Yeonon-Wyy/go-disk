@@ -4,7 +4,7 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
-	"go-disk/services/file/config"
+	"go-disk/services/upload/config"
 	"log"
 	"net/url"
 	"os"

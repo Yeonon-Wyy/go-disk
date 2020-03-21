@@ -15,7 +15,7 @@ func AuthorizeInterceptor() gin.HandlerFunc {
 		token := ctx.GetHeader("Authorization")
 
 		if token == "" {
-			log.Printf("request param error")
+			log.Printf("token can't empty")
 			ctx.Abort()
 			ctx.JSON(http.StatusBadRequest,
 				common.NewServiceResp(common.RespCodeBindReParamError, nil))

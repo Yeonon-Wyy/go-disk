@@ -30,13 +30,21 @@ import (
 
 var (
 	businessConfig = config.Conf.Business
-	storeConfig = config.Conf.Store
-	mqConfig = config.Conf.Mq
+	storeConfig    = config.Conf.Store
+	mqConfig       = config.Conf.Mq
 )
 
 func UploadFile() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		fh, err := context.FormFile("file")
+		filePath := context.PostForm("file_path")
+		username := context.PostForm("username")
+
+		if filePath == "" || username == "" {
+			log.Printf("file path or username can't empty")
+			context.JSON(http.StatusBadRequest, common.NewServiceResp(common.RespCodeBindReParamError, nil))
+			return
+		}
 
 		if err != nil {
 			log.Printf("read from file error : %v", err)
@@ -77,26 +85,23 @@ func UploadFile() gin.HandlerFunc {
 				return
 			}
 
-
-
 			_, fName := filepath.Split(newFile.Name())
 
 			//手动关闭 file，防止异步进程无法删除文件
 			newFile.Close()
 
+
 			//set file meta
-			tblFile := dao.TableFile{
-				FileSha1:     fileHash,
-				Filename:     fName,
-				FileSize:     fileSize,
-				FileLocation: businessConfig.FileStorePath + fName,
-				CreateAt:     time.Now(),
-				UpdateAt:     time.Now(),
-				Status:       constant.FileStatusAvailable,
+			tblFile := dao.TableFileDao{
+				FileHash: fileHash,
+				Filename: fName,
+				FileSize: fileSize,
+				FileAddr: businessConfig.FileStorePath + fName,
+				Status:   constant.FileStatusAvailable,
 			}
 
 			//同步到ceph中
-			err = transFileToCeph(fileHash, tblFile.FileLocation)
+			err = transFileToCeph(fileHash, tblFile.FileAddr)
 			if err != nil {
 				log.Printf("put data to ceph error : %v", err)
 				context.JSON(http.StatusInternalServerError,
@@ -105,18 +110,16 @@ func UploadFile() gin.HandlerFunc {
 			}
 
 			db.OnFileUploadFinished(
-				tblFile.FileSha1,
+				tblFile.FileHash,
 				tblFile.Filename,
-				tblFile.FileLocation,
+				tblFile.FileAddr,
 				tblFile.FileSize,
 				tblFile.Status,
-				tblFile.UpdateAt,
-				tblFile.UpdateAt,
-				)
+			)
 
 		}
 
-		//如果file已经上传过了，那么久需要修改文件名，避免重名
+		//如果file已经上传过了，那么久需要修改文件名，避免重名，同时状态需要和唯一文件表里的状态一样
 		if exist {
 			idx := strings.Index(filename, ".")
 			if idx == -1 {
@@ -127,8 +130,8 @@ func UploadFile() gin.HandlerFunc {
 		}
 
 		//写入userfile 表里
-		username := context.Query("username")
-		ok := db.InsertUserFile(username, fileHash, filename, fileSize)
+		status := db.GetStatus(fileHash)
+		ok := db.InsertUserFile(username, fileHash, filename, filePath, fileSize, status)
 		if !ok {
 			log.Printf("upload file failed, file hash is : %s", fileHash)
 			context.JSON(http.StatusInternalServerError,
@@ -157,7 +160,7 @@ func TryFastUpload() gin.HandlerFunc {
 			return
 		}
 
-		ok := db.InsertUserFile(req.Username, req.FileHash, req.Filename, req.FileSize)
+		ok := db.InsertUserFile(req.Username, req.FileHash, req.Filename, req.FilePath, req.FileSize, constant.FileStatusAvailable)
 		if !ok {
 			context.JSON(http.StatusInternalServerError,
 				common.NewServiceResp(common.RespCodeUploadFileError, nil))
@@ -193,11 +196,11 @@ func InitialMultipartUpload() gin.HandlerFunc {
 			FileSize:   req.FileSize,
 			UploadId:   req.Username + fmt.Sprintf("%x", time.Now().UnixNano()),
 			ChunkSize:  constant.FileMPUploadChunkSize,
-			ChunkCount: int(math.Ceil(float64(req.FileSize)/constant.FileMPUploadChunkSize)),
+			ChunkCount: int(math.Ceil(float64(req.FileSize) / constant.FileMPUploadChunkSize)),
 		}
-		redisClient.HSet("MP_" + mpUploadInfo.UploadId, "chunk_count", mpUploadInfo.ChunkCount)
-		redisClient.HSet("MP_" + mpUploadInfo.UploadId, "file_hash", mpUploadInfo.FileHash)
-		redisClient.HSet("MP_" + mpUploadInfo.UploadId, "file_size", mpUploadInfo.FileSize)
+		redisClient.HSet("MP_"+mpUploadInfo.UploadId, "chunk_count", mpUploadInfo.ChunkCount)
+		redisClient.HSet("MP_"+mpUploadInfo.UploadId, "file_hash", mpUploadInfo.FileHash)
+		redisClient.HSet("MP_"+mpUploadInfo.UploadId, "file_size", mpUploadInfo.FileSize)
 
 		context.JSON(http.StatusOK,
 			common.NewServiceResp(common.RespCodeSuccess, mpUploadInfo))
@@ -251,8 +254,7 @@ func UploadPart() gin.HandlerFunc {
 		}
 		log.Printf("write to file success size : n = %d byte", n)
 
-
-		redisClient.HSet("MP_" + uploadId, "chkidx_" + index, 1)
+		redisClient.HSet("MP_"+uploadId, "chkidx_"+index, 1)
 
 		context.JSON(http.StatusOK,
 			common.NewServiceResp(common.RespCodeSuccess, nil))
@@ -289,7 +291,7 @@ func CompleteUpload() gin.HandlerFunc {
 		totalCount, chunkCount := 0, 0
 		for key, value := range result {
 			if key == "chunk_count" {
-				totalCount,_ = strconv.Atoi(value)
+				totalCount, _ = strconv.Atoi(value)
 			} else if strings.HasPrefix(key, "chkidx_") && value == "1" {
 				chunkCount++
 			}
@@ -319,12 +321,9 @@ func CompleteUpload() gin.HandlerFunc {
 			err = transFileToCeph(fileHash, dstFileName)
 			if err != nil {
 				log.Printf("put data to ceph error : %v", err)
-				context.JSON(http.StatusInternalServerError,
-					common.NewServiceResp(common.RespCodePutDataToCephError, nil))
 				return
 			}
 		}(req.FileHash, tempFileDirPath, dstFileName, chunkCount)
-
 
 		//写入数据库
 		db.OnFileUploadFinished(
@@ -333,14 +332,15 @@ func CompleteUpload() gin.HandlerFunc {
 			"",
 			req.FileSize,
 			constant.UserStatusAvailable,
-			time.Now(),
-			time.Now())
+			)
 
 		db.InsertUserFile(
 			req.Username,
 			req.FileHash,
 			req.Filename,
-			req.FileSize)
+			req.FilePath,
+			req.FileSize,
+			constant.FileStatusAvailable)
 
 		//合并和同步到ceph的操作不会用到redis里的数据，所以直接删除就行了
 		redisClient.Del("MP_" + req.UploadId)

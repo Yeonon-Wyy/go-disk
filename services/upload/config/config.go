@@ -32,6 +32,9 @@ type Config struct {
 			Port int `yaml:"port"`
 			TimeLoc string `yaml:"timeLoc"`
 			Database string `yaml:"database"`
+			MaxIdle int `yaml:"maxIdle"`
+			MaxOpenConn int `yaml:"maxOpenConn"`
+			MaxLifeTime int `yaml:"maxLifeTime"`
 		} `yaml:"mysql"`
 
 

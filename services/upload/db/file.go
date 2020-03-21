@@ -1,22 +1,38 @@
 package db
 
 import (
+	"go-disk/services/upload/dao"
+	mydb "go-disk/services/upload/db/mysql"
 	"time"
 )
 
-const (
-	FileTableName = "tbl_file"
+func OnFileUploadFinished(sha1, filename, location string, size int64, status int) bool {
+	//TODO: 状态值需要做成枚举，否则难以维护
+	now := time.Now()
+	tf := dao.TableFileDao{
+		FileHash: sha1,
+		Filename: filename,
+		FileSize: size,
+		FileAddr: location,
+		CreateAt: &now,
+		UpdateAt: &now,
+		Status:   status,
+	}
 
-	insertFileStatement = "INSERT INTO tbl_file(`file_sha1`,`file_name`,`file_size`," +
-		"`file_addr`,`status`,`create_at`,`update_at`) VALUES(?,?,?,?,?,?,?)"
+	err := mydb.GetConn().Create(&tf).Error
 
-	existFileStatement = "SELECT COUNT(1) AS count FROM tbl_file WHERE file_sha1 = ?"
-)
+	return err == nil
 
-func OnFileUploadFinished(sha1, filename, location string, size int64, status int, uploadAt, updateAt time.Time) bool {
-	return execSql(insertFileStatement, FileTableName, sha1, filename, size, location, status, uploadAt, updateAt)
+}
+
+func GetStatus(sha1 string) int {
+	tf := dao.TableFileDao{}
+	mydb.GetConn().Where(&dao.TableFileDao{FileHash: sha1}).Select("status").First(&tf)
+	return tf.Status
 }
 
 func ExistFile(sha1 string) bool {
-	return exist(existFileStatement, sha1)
+	tf := dao.TableFileDao{}
+	mydb.GetConn().Where(&dao.TableFileDao{FileHash:sha1}).Select("id").First(&tf)
+	return tf.Id > 0
 }

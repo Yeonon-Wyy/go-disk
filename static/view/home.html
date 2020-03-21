@@ -68,7 +68,7 @@
   window.onload = function () {
     var username = document.getElementById('username');
     if (localStorage.getItem("username") == null) {
-      // window.location.href = "/static/view/signup.html"
+      window.location.href = "/static/view/signup.html"
       return
     }
     $.ajax({
@@ -78,10 +78,10 @@
         request.setRequestHeader("Authorization", localStorage.getItem("token"));
       },
       error: function (jqXHR, textStatus, errorThrown) {
-        // if (jqXHR.status === 400 || jqXHR.status === 401) {
-        //   // window.location.href = "/static/view/signin.html"
-        //   return
-        // }
+        if (jqXHR.status === 400 || jqXHR.status === 401) {
+          window.location.href = "/static/view/signin.html"
+          return
+        }
         if (textStatus == "error") {
           alert(textStatus + " : " + errorThrown);
         } else {
@@ -104,10 +104,10 @@
         "Authorization" : localStorage.getItem("token")
       },
       error: function (jqXHR, textStatus, errorThrown) {
-        // if (jqXHR.status === 400 || jqXHR.status === 401) {
-        //   // window.location.href = "/static/view/signin.html"
-        //   return
-        // }
+        if (jqXHR.status === 400 || jqXHR.status === 401) {
+          window.location.href = "/static/view/signin.html"
+          return
+        }
         if (textStatus == "error") {
           alert(textStatus + " : " + errorThrown);
         } else {
@@ -127,10 +127,10 @@
         "Authorization" : localStorage.getItem("token")
       },
       error: function (jqXHR, textStatus, errorThrown) {
-        // if (jqXHR.status === 400 || jqXHR.status === 401) {
-        //   // window.location.href = "/static/view/signin.html"
-        //   return
-        // }
+        if (jqXHR.status === 400 || jqXHR.status === 401) {
+          window.location.href = "/static/view/signin.html"
+          return
+        }
         if (textStatus == "error") {
           alert(textStatus + " : " + errorThrown);
         } else {
@@ -203,7 +203,7 @@
   function toUploadFile() {
     var endPoint = localStorage.getItem("uploadEndPoint")
 
-    // window.location.href = endPoint + '/files/upload?' + queryParams();
+    window.location.href = endPoint + '/files/upload?' + queryParams();
   }
 
   function downloadFile(durl) {

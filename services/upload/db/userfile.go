@@ -1,18 +1,26 @@
 package db
 
 import (
+	"go-disk/services/upload/dao"
+	mydb "go-disk/services/upload/db/mysql"
 	"time"
 )
 
-const (
-	userFileTableName = "tbl_user_file"
+func InsertUserFile(username, fileHash, filename, filePath string, fileSize int64, status int) bool {
+	now := time.Now()
+	uf := dao.UserFileDao{
+		Username:   username,
+		FileHash:   fileHash,
+		FileSize:   fileSize,
+		FileName:   filename,
+		FilePath:   filePath,
+		UploadAt:   &now,
+		LastUpdate: &now,
+		Status:     status,
+	}
+	err := mydb.GetConn().Create(&uf).Error
 
-	insertUserFileStatement = "INSERT INTO tbl_user_file(`user_name`,`file_sha1`,`file_name`,`file_size`, `upload_at`)" +
-		"VALUES(?,?,?,?,?)"
-)
-
-func InsertUserFile(username, fileHash, filename string, fileSize int64) bool {
-	return execSql(insertUserFileStatement, userFileTableName, username, fileHash, filename, fileSize, time.Now())
+	return err == nil
 }
 
 

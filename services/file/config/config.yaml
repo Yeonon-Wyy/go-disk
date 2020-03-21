@@ -8,7 +8,7 @@ dataSource:
     database: fileserver
     maxIdel: 10
     maxOpenConn: 100
-    MaxLifeTime: 720
+    maxLifeTime: 720
 
 store:
   ceph:

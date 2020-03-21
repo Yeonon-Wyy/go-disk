@@ -6,6 +6,9 @@ dataSource:
     port: 3306
     timeLoc: Asia/Shanghai
     database: fileserver
+    maxIdel: 10
+    maxOpenConn: 100
+    maxLifeTime: 720
   redis:
     addr: localhost:6379
     password: ""

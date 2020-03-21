@@ -104,7 +104,7 @@ func (f FileService) DeleteFile(ctx context.Context, req *fileinterface.DeleteFi
 		return nil
 	}
 
-	if suc := db.DeleteFileMeta(req.FileHash, req.Username); !suc {
+	if suc := db.DeleteFileMeta(req.FileHash, req.Filename, req.Username); !suc {
 		resp.Code = int64(common.RespCodeRemoveFileError.Code)
 		resp.Message = common.RespCodeRemoveFileError.Message
 	}

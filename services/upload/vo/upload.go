@@ -5,6 +5,7 @@ type FastUploadReq struct {
 	FileSize int64 `form:"file_size" bind:"required"`
 	FileHash string `form:"file_hash" bind:"required"`
 	Filename string `form:"filename" bind:"required"`
+	FilePath string `form:"file_path" bind:"required"`
 }
 
 //for multipart upload
@@ -33,5 +34,6 @@ type MPUploadCompleteReq struct {
 	FileSize int64 `form:"file_size" bind:"required"`
 	FileHash string `form:"file_hash" bind:"required"`
 	Filename string `form:"filename" bind:"required"`
+	FilePath string `form:"file_path" bind:"required"`
 }
 

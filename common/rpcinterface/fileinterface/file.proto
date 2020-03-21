@@ -67,7 +67,8 @@ message GetFileListResp {
 
 message DeleteFileReq {
     string fileHash = 1;
-    string username = 2;
+    string filename = 2;
+    string username = 3;
 }
 
 message DeleteFileResp {

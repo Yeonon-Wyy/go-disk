@@ -16,6 +16,7 @@ type UpdateFileMetaReq struct {
 type DeleteFileReq struct {
 	FileHash string `form:"file_hash" bind:"required"`
 	Username string `form:"username" bind:"required"`
+	Filename string `form:"filename" bind:"filename"`
 }
 
 type UserFileResp struct {

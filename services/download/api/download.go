@@ -16,15 +16,15 @@ func DownloadHandler() gin.HandlerFunc {
 
 		tblFile, err := db.GetFileMeta(fileHash)
 		if err != nil {
-			context.JSON(http.StatusOK, common.NewServiceResp(common.RespCodeSuccess, nil))
+			context.JSON(http.StatusInternalServerError, common.NewServiceResp(common.RespCodeNotFoundFileError, nil))
 			return
 		}
 
 		bucket := ceph.GetCephBucket(config.Conf.Store.Ceph.FileStoreBucketName)
-		fileData, _ := bucket.Get(tblFile.FileLocation)
+		fileData, _ := bucket.Get(tblFile.FileAddr)
 
 		context.Writer.Header().Set("Content-Type", "application/octet-stream")
-		context.Writer.Header().Set("Content-Disposition", "attachment; filename=\""+tblFile.Filename+"\"")
+		context.Writer.Header().Set("Content-Disposition", "attachment; filename=\""+tblFile.FileName+"\"")
 		context.Writer.Header().Set("Content-Length", strconv.Itoa(len(fileData)))
 		context.Writer.Write(fileData)
 
