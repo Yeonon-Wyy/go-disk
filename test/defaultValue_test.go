@@ -1,31 +1,11 @@
-package config
+package test
 
 import (
 	"fmt"
 	"go-disk/common/utils"
-	"gopkg.in/yaml.v2"
-	"io/ioutil"
-	"log"
 	"reflect"
+	"testing"
 )
-
-var Conf *Config
-
-func init() {
-	yamlFile, err := ioutil.ReadFile("./config/config.yaml")
-	if err != nil {
-		log.Println(err)
-	}
-
-	err = yaml.Unmarshal(yamlFile, &Conf)
-	if err != nil {
-		fmt.Println(err)
-	}
-	ct := reflect.TypeOf(*Conf)
-	elements := reflect.ValueOf(Conf)
-	utils.SetConfigDefaultValue(ct, elements)
-	log.Println(Conf)
-}
 
 type Config struct {
 
@@ -64,5 +44,17 @@ type Config struct {
 	} `yaml:"micro"`
 }
 
+type Test struct {
+	A struct {
+		Name string `yaml:"userPasswordSalt" default:"haha"`
+	}
+}
 
+func TestDefaultValue(_ *testing.T) {
+	conf := &Config{}
+	ct := reflect.TypeOf(*conf)
+	elements := reflect.ValueOf(conf)
 
+	utils.SetConfigDefaultValue(ct, elements)
+	fmt.Println(*conf)
+}

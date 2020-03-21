@@ -38,19 +38,10 @@ func GetConn() *gorm.DB {
 		log.Printf("connect to mysql error : %v", err)
 		os.Exit(1)
 	}
-
-	if mysqlConfig.MaxIdle > 0 {
-		mysqlDB.DB().SetMaxIdleConns(mysqlConfig.MaxIdle)
-	}
-
-	if mysqlConfig.MaxOpenConn > 0 {
-		mysqlDB.DB().SetMaxOpenConns(mysqlConfig.MaxOpenConn)
-	}
-
-	if mysqlConfig.MaxLifeTime > 0 {
-		d := time.Duration(mysqlConfig.MaxLifeTime) * time.Second
-		mysqlDB.DB().SetConnMaxLifetime(d)
-	}
+	log.Printf("[DEBUG] mysqlConfig.MaxOpenConn = %d", mysqlConfig.MaxOpenConn)
+	mysqlDB.DB().SetMaxOpenConns(mysqlConfig.MaxOpenConn)
+	mysqlDB.DB().SetConnMaxLifetime(time.Duration(mysqlConfig.MaxLifeTime) * time.Second)
+	mysqlDB.DB().SetMaxIdleConns(mysqlConfig.MaxIdle)
 
 	return mysqlDB
 

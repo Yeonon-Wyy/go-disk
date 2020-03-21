@@ -2,9 +2,11 @@ package config
 
 import (
 	"fmt"
+	"go-disk/common/utils"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
+	"reflect"
 )
 
 var Conf *Config
@@ -19,6 +21,8 @@ func init() {
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	utils.SetConfigDefaultValue(reflect.TypeOf(Conf), reflect.ValueOf(&Conf))
 }
 
 type Config struct {
@@ -32,9 +36,9 @@ type Config struct {
 			Port int `yaml:"port"`
 			TimeLoc string `yaml:"timeLoc"`
 			Database string `yaml:"database"`
-			MaxIdle int `yaml:"maxIdle"`
-			MaxOpenConn int `yaml:"maxOpenConn"`
-			MaxLifeTime int `yaml:"maxLifeTime"`
+			MaxIdle int `yaml:"maxIdle" default:"10"`
+			MaxOpenConn int `yaml:"maxOpenConn" default:"100"`
+			MaxLifeTime int `yaml:"maxLifeTime" default:"720"`
 		} `yaml:"mysql"`
 
 

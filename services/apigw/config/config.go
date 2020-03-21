@@ -2,9 +2,11 @@ package config
 
 import (
 	"fmt"
+	"go-disk/common/utils"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
+	"reflect"
 )
 
 var Conf *Config
@@ -19,6 +21,8 @@ func init() {
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	utils.SetConfigDefaultValue(reflect.TypeOf(Conf), reflect.ValueOf(&Conf))
 }
 
 type Config struct {
