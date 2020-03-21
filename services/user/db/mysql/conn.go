@@ -1,12 +1,14 @@
 package mysql
 
 import (
-	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/jinzhu/gorm"
 	"go-disk/services/user/config"
 	"log"
 	"net/url"
+	"os"
+	"time"
 )
 
 const (
@@ -14,29 +16,42 @@ const (
 )
 
 var (
-
-	DSConfig = config.Conf.DataSource
-
-	dbUrl = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&loc=%s&parseTime=true",
-		DSConfig.Mysql.Username,
-		DSConfig.Mysql.Password,
-		DSConfig.Mysql.Host,
-		DSConfig.Mysql.Port,
-		DSConfig.Mysql.Database,
-		url.QueryEscape(DSConfig.Mysql.TimeLoc))
+	mysqlConfig = config.Conf.DataSource.Mysql
+	mysqlDB *gorm.DB
 )
 
-func DBConn() *sql.DB {
+func GetConn() *gorm.DB {
+	if mysqlDB != nil {
+		return mysqlDB
+	}
 
-	db, err := sql.Open(DriverName, dbUrl)
+	dbUrl := fmt.Sprintf("%s:%s@(%s:%d)/%s?charset=utf8&parseTime=True&loc=%s",
+		mysqlConfig.Username,
+		mysqlConfig.Password,
+		mysqlConfig.Host,
+		mysqlConfig.Port,
+		mysqlConfig.Database,
+		url.QueryEscape(mysqlConfig.TimeLoc))
+
+	mysqlDB, err := gorm.Open(DriverName, dbUrl)
 	if err != nil {
-		log.Fatalf("open mysql connection error : %v", err)
+		log.Printf("connect to mysql error : %v", err)
+		os.Exit(1)
 	}
-	//log.Println(db)
-	db.SetMaxOpenConns(1000)
-	err = db.Ping()
-	if err != nil {
-		log.Fatalf("ping mysql connection error : %v", err)
+
+	if mysqlConfig.MaxIdle > 0 {
+		mysqlDB.DB().SetMaxIdleConns(mysqlConfig.MaxIdle)
 	}
-	return db
+
+	if mysqlConfig.MaxOpenConn > 0 {
+		mysqlDB.DB().SetMaxOpenConns(mysqlConfig.MaxOpenConn)
+	}
+
+	if mysqlConfig.MaxLifeTime > 0 {
+		d := time.Duration(mysqlConfig.MaxLifeTime) * time.Second
+		mysqlDB.DB().SetConnMaxLifetime(d)
+	}
+
+	return mysqlDB
+
 }

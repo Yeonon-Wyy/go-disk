@@ -1,44 +1,42 @@
 package db
 
 import (
+	"errors"
 	"go-disk/common/constant"
 	userdao "go-disk/services/user/dao"
 	mysqldb "go-disk/services/user/db/mysql"
-	"log"
 	"time"
 )
 
-const (
-	userTableName = "tbl_user"
-
-	insertUserStatement = "INSERT INTO tbl_user(`user_name`,`user_pwd`, `signup_at`, `status`) " +
-		"VALUES(?,?,?,?)"
-
-	existUserByUsernameStatement = "SELECT COUNT(1) AS count FROM tbl_user WHERE user_name = ?"
-
-	queryBriefUserInfoStatement = "SELECT signup_at FROM tbl_user WHERE user_name = ?"
-)
-
 func InsertUser(username, password string) bool {
-	return execSql(insertUserStatement, userTableName, username, password, time.Now(), constant.UserStatusAvailable)
+	now := time.Now()
+	user := userdao.UserDao{
+		Username: username,
+		Password: password,
+		SignupAt: &now,
+		LastActive: &now,
+		Status: constant.UserStatusAvailable,
+	}
+	err := mysqldb.GetConn().Create(&user).Error
+	return err == nil
 }
 
 func ExistUserByUsername(username string) bool {
-	return exist(existUserByUsernameStatement, username)
+	user := userdao.UserDao{}
+	rowsAffect := mysqldb.GetConn().
+		Where(&userdao.UserDao{Username:username}).
+		Select("id").First(&user).RowsAffected
+	return rowsAffect > 0
 }
 
-
-func QueryUser(username string) (*userdao.UserQueryDao, error){
-	statement, err := mysqldb.DBConn().Prepare(queryBriefUserInfoStatement)
-	if err != nil {
-		log.Printf("Failed to prepare statement : %v", err)
-		return nil, err
+func QueryUser(username string) (*userdao.UserDao, error) {
+	user := userdao.UserDao{}
+	rows := mysqldb.GetConn().
+		Where(&userdao.UserDao{Username:username}).
+		First(&user).RowsAffected
+	if rows <= 0 {
+		return nil, errors.New("can't found this user")
 	}
-	defer statement.Close()
 
-	var resp userdao.UserQueryDao
-	statement.QueryRow(username).Scan(&resp.SignupAt)
-	resp.Username = username
-
-	return &resp, nil
+	return &user, nil
 }

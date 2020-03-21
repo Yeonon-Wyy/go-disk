@@ -36,6 +36,8 @@ message QueryUserInfoResp {
         string profile = 4;
         string lastActive = 5;
         string signupAt = 6;
+        bool emailValidated = 7;
+        bool phoneValidated = 8;
     }
 
     Data data = 3;

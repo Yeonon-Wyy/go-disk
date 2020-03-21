@@ -10,10 +10,7 @@ import (
 )
 
 type UserHandler struct {
-
 }
-
-
 
 func (u UserHandler) UserRegister(ctx context.Context, req *userrpcinterface.RegisterReq, resp *userrpcinterface.RegisterResp) error {
 
@@ -48,12 +45,14 @@ func (u UserHandler) QueryUserInfo(ctx context.Context, req *userrpcinterface.Qu
 	resp.Code = int64(common.RespCodeSuccess.Code)
 	resp.Message = common.RespCodeSuccess.Message
 	resp.Data = &userrpcinterface.QueryUserInfoResp_Data{
-		Username:             result.Username,
-		Email:                result.Email,
-		Phone:                result.Phone,
-		Profile:              result.Profile,
-		LastActive:           result.LastActive,
-		SignupAt:             result.SignupAt.String(),
+		Username:       result.Username,
+		Email:          result.Email,
+		Phone:          result.Phone,
+		Profile:        result.Profile,
+		LastActive:     result.LastActive.String(),
+		SignupAt:       result.SignupAt.String(),
+		EmailValidated: result.EmailValidated,
+		PhoneValidated: result.PhoneValidated,
 	}
 
 	return nil
