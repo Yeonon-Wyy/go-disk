@@ -1,10 +1,15 @@
 package db
 
-const (
-
-	existUserByUsernameAndPasswordStatement = "SELECT COUNT(1) AS count FROM tbl_user WHERE user_name = ? AND user_pwd = ?"
+import (
+	"go-disk/services/auth/dao"
+	mydb "go-disk/services/auth/db/mysql"
 )
 
 func ExistUserByUsernameAndPassword(username, password string) bool {
-	return exist(existUserByUsernameAndPasswordStatement, username, password)
+	user := dao.UserDao{}
+	rowAffect := mydb.GetConn().
+		Where(&dao.UserDao{Username:username, Password:password}).
+		Select("id").
+		First(&user).RowsAffected
+	return rowAffect > 0
 }

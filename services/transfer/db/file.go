@@ -1,14 +1,16 @@
 package db
 
-const (
-
-	tableName = "tbl_file"
-
-	updateFileLocationStatement = "UPDATE tbl_file SET file_addr = ? WHERE file_sha1 = ?"
-
+import (
+	"go-disk/services/transfer/dao"
+	mydb "go-disk/services/transfer/db/mysql"
 )
 
+
+
 func UpdateFileLocation(fileHash, location string) bool {
-	return execSql(updateFileLocationStatement, tableName, location, fileHash)
+	rowAffect := mydb.GetConn().Table(dao.TableFileDao{}.TableName()).
+		Where(&dao.TableFileDao{FileHash:fileHash}).
+		Update(map[string]interface{}{"file_addr" : location}).RowsAffected
+	return rowAffect > 0
 }
 

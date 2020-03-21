@@ -23,29 +23,6 @@ func init() {
 
 type Config struct {
 
-	//db
-	DataSource struct {
-		Mysql struct {
-			Username string `yaml:"username"`
-			Password string `yaml:"password"`
-			Host string `yaml:"host"`
-			Port int `yaml:"port"`
-			TimeLoc string `yaml:"timeLoc"`
-			Database string `yaml:"database"`
-		} `yaml:"mysql"`
-	} `yaml:"dataSource"`
-
-	Mq struct {
-		Rabbit struct {
-			Url string `yaml:"url"`
-			ExchangeName string `yaml:"exchangeName"`
-			CephQueueName string `yaml:"cephQueueName"`
-			CephErrQueueName string `yaml:"cephErrQueueName"`
-			CephRoutingKey string `yaml:"cephRoutingKey"`
-			CephErrRoutingKey string `yaml:"cephErrRoutingKey"`
-		} `yaml:"rabbit"`
-	} `yaml:"mq"`
-
 	Business struct {
 		UploadServiceEndpoint string `yaml:"uploadServiceEndpoint"`
 		FileStorePath string `yaml:"fileStorePath"`

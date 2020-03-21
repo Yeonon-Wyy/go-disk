@@ -96,7 +96,6 @@ func existToken(username string) bool {
 	}
 	defer redisClient.Close()
 	val := redisClient.Exists(username).Val()
-	log.Printf("[DEBUG] val = %d", val)
 	return val > 0
 }
 

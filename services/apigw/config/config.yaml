@@ -1,21 +1,3 @@
-dataSource:
-  mysql:
-    username: root
-    password: 124563
-    host: 127.0.0.1
-    port: 3306
-    timeLoc: Asia/Shanghai
-    database: fileserver
-
-mq:
-  rabbit:
-    url: amqp://guest:guest@192.168.47.132:5672/
-    exchangeName: uploadserver.trans
-    cephQueueName: uploadserver.trans.ceph
-    cephErrQueueName: uploadserver.trans.ceph.err
-    cephRoutingKey: ceph
-    cephErrRoutingKey: ceph.err
-
 business:
   uploadServiceEndpoint: http://localhost:9000
   fileStorePath: E:/go/go-disk/filestore/
