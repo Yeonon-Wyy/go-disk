@@ -6,7 +6,6 @@ import (
 	"go-disk/common/utils"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	"log"
 	"reflect"
 )
 
@@ -26,14 +25,12 @@ func init() {
 		fmt.Println(err)
 	}
 
-
 }
 
 type Config struct {
-
 	Business struct {
 		UploadServiceEndpoint string `yaml:"uploadServiceEndpoint"`
-		FileStorePath string `yaml:"fileStorePath"`
+		FileStorePath         string `yaml:"fileStorePath"`
 	} `yaml:"business"`
 
 	Micro struct {
@@ -63,10 +60,6 @@ type Config struct {
 			User struct {
 				ServiceName string `yaml:"serviceName"`
 			} `yaml:"user"`
-
 		} `yaml:"client"`
 	} `yaml:"micro"`
 }
-
-
-

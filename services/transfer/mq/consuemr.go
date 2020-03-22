@@ -6,9 +6,8 @@ import (
 	"go-disk/services/transfer/config"
 )
 
-
 var (
-	channel *amqp.Channel
+	channel      *amqp.Channel
 	consumerDone chan struct{}
 
 	mqConfig = config.Conf.Mq
@@ -39,7 +38,6 @@ func RabbitConsume(queueName string, consumerName string, callBack func([]byte) 
 		return
 	}
 
-
 	msgChannel, err := channel.Consume(
 		queueName,
 		consumerName,
@@ -69,4 +67,3 @@ func RabbitConsume(queueName string, consumerName string, callBack func([]byte) 
 	//close rabbit channel
 	channel.Close()
 }
-

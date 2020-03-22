@@ -7,7 +7,6 @@ import (
 )
 
 const (
-
 	publicKey = `-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3Rr47NWSHIzP5Rm5AZRA
 JPSGoX0wG34IqhEfh/92ztEM4ltIAJQq0QM2CvaviqXxLtjhqqOt2c5PoT797XN8
@@ -49,8 +48,7 @@ kW8eUWbLK+vHnehiCR+aeYqnz3udWICdmz3qpTK50+p+jt6UXOcifw==
 
 //internal function
 
-
-func GenToken(payload map[string]interface{}) (string, error){
+func GenToken(payload map[string]interface{}) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims(payload))
 	securityKey, err := jwt.ParseRSAPrivateKeyFromPEM([]byte(privateKey))
 	if err != nil {
@@ -91,7 +89,3 @@ func GetToken(tokenString string) (*jwt.Token, bool) {
 
 	return token, token.Valid
 }
-
-
-
-

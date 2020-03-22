@@ -29,5 +29,3 @@ func initAuthCli() {
 
 	AuthCli = authinterface.NewAuthService(config.Conf.Micro.Client.Auth.ServiceName, serv.Client())
 }
-
-

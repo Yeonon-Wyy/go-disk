@@ -10,7 +10,6 @@ import (
 	"net/http"
 )
 
-
 func GetDownloadServiceEndpoint() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		resp, err := rpc.DownloadCli.DownloadEndPoint(context.TODO(), &downloadinterface.DownloadEndpointReq{})

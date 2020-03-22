@@ -10,7 +10,6 @@ import (
 	"testing"
 )
 
-
 func TestGenCode(t *testing.T) {
 
 	content := "package test\n\n"
@@ -18,7 +17,7 @@ func TestGenCode(t *testing.T) {
 	content += "type User" + " struct {\n"
 	fieldJson := `json:"id"`
 
-	content += "	"+"id"+" "+"int64"+" `"+fieldJson+"` "+"\n"
+	content += "	" + "id" + " " + "int64" + " `" + fieldJson + "` " + "\n"
 
 	content += "}"
 
@@ -51,14 +50,12 @@ func TestYamlConf(t *testing.T) {
 }
 
 type conf struct {
-	DataSource struct{
+	DataSource struct {
 		Mysql struct {
 			Username string `yaml:"username"`
 		} `yaml:"mysql"`
 	} `yaml:"dataSource"`
 }
-
-
 
 func (c *conf) getConf() *conf {
 	yamlFile, err := ioutil.ReadFile("config.yaml")

@@ -4,7 +4,7 @@ syntax = "proto3";
 package uploadinterface;
 
 service UploadService {
-    rpc UploadEndPoint(UploadEndPointReq) returns(UploadEndPointResp);
+    rpc UploadEndPoint (UploadEndPointReq) returns (UploadEndPointResp);
 }
 
 message UploadEndPointReq {

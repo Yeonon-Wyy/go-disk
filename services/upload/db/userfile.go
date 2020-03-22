@@ -22,5 +22,3 @@ func InsertUserFile(username, fileHash, filename, filePath string, fileSize int6
 
 	return err == nil
 }
-
-

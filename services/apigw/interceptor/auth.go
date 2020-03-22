@@ -35,5 +35,3 @@ func AuthorizeInterceptor() gin.HandlerFunc {
 		ctx.Next()
 	}
 }
-
-

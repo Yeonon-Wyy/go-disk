@@ -9,7 +9,7 @@ import (
 
 func TestGenToken(t *testing.T) {
 	tokenString, err := jwt.GenToken(map[string]interface{}{
-		"username" : "yeonon",
+		"username": "yeonon",
 	})
 
 	if err != nil {

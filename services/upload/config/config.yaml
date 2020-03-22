@@ -27,7 +27,7 @@ store:
   ceph:
     accessKey: H891OGRD30U25YW3FX77
     secretKey: bXX9xl5JfVyQd8SsD36bUPz30afV0wQrgKMEl6qN
-    regionName : default
+    regionName: default
     endpoint: http://192.168.47.132:9080
     S3LocationConstraint: false
     S3LowercaseBucket: false

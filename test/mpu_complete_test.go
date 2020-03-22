@@ -11,7 +11,7 @@ import (
 func TestFileMerge(t *testing.T) {
 	fii, err := os.OpenFile("E:/444.zip", os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModePerm)
 	if err != nil {
- 		log.Printf("open file error : %v", err)
+		log.Printf("open file error : %v", err)
 		return
 	}
 

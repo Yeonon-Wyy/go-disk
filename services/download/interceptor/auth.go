@@ -7,7 +7,6 @@ import (
 	"go-disk/common/log4disk"
 	"go-disk/common/rpcinterface/authinterface"
 	"go-disk/services/upload/rpc"
-	"log"
 	"net/http"
 )
 
@@ -35,5 +34,3 @@ func AuthorizeInterceptor() gin.HandlerFunc {
 		ctx.Next()
 	}
 }
-
-

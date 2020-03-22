@@ -26,7 +26,6 @@ func Authorize() gin.HandlerFunc {
 			Password: req.Password,
 		})
 
-
 		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code) {
 			log4disk.E("rpc call (user login) error : %v", err)
 			ctx.JSON(http.StatusInternalServerError, *resp)
@@ -48,7 +47,7 @@ func UnAuthorize() gin.HandlerFunc {
 		}
 
 		resp, err := rpc.AuthCli.UnAuthorize(context.TODO(), &authinterface.UnAuthorizeReq{
-			Username:             req.Username,
+			Username: req.Username,
 		})
 
 		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code) {

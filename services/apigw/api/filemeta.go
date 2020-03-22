@@ -8,7 +8,6 @@ import (
 	"go-disk/common/rpcinterface/fileinterface"
 	"go-disk/services/apigw/rpc"
 	"go-disk/services/apigw/vo"
-	"log"
 	"net/http"
 	"strconv"
 )

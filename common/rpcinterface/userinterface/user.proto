@@ -6,8 +6,8 @@ package userinterface;
 //protoc.exe --proto_path=common/rpcinterface/userinterface --go_out=common/rpcinterface/userinterface --micro_out=common/rpcinterface/userinterface common/rpcinterface/userinterface/user.proto
 
 service UserService {
-    rpc UserRegister(RegisterReq) returns (RegisterResp);
-    rpc QueryUserInfo(QueryUserInfoReq) returns(QueryUserInfoResp);
+    rpc UserRegister (RegisterReq) returns (RegisterResp);
+    rpc QueryUserInfo (QueryUserInfoReq) returns (QueryUserInfoResp);
 }
 
 message RegisterReq {

@@ -8,7 +8,6 @@ import (
 	"go-disk/common/rpcinterface/userinterface"
 	"go-disk/services/apigw/rpc"
 	"go-disk/services/apigw/vo"
-	"log"
 	"net/http"
 )
 
@@ -23,8 +22,8 @@ func RegisterUser() gin.HandlerFunc {
 		}
 
 		resp, err := rpc.UserCli.UserRegister(context.TODO(), &userinterface.RegisterReq{
-			Username:             req.Username,
-			Password:             req.Password,
+			Username: req.Username,
+			Password: req.Password,
 		})
 
 		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code) {
@@ -57,6 +56,6 @@ func QueryUserInfo() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK,*resp)
+		ctx.JSON(http.StatusOK, *resp)
 	}
 }

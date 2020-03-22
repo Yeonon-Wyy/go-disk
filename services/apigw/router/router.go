@@ -2,9 +2,9 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-disk/services/apigw/interceptor"
-	"go-disk/services/apigw/cors"
 	"go-disk/services/apigw/api"
+	"go-disk/services/apigw/cors"
+	"go-disk/services/apigw/interceptor"
 )
 
 func Router() *gin.Engine {
@@ -63,5 +63,3 @@ func userServiceRoute(group *gin.RouterGroup) {
 	group.Use(interceptor.AuthorizeInterceptor())
 	group.GET("/:username", api.QueryUserInfo())
 }
-
-

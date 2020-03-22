@@ -14,7 +14,6 @@ import (
 )
 
 type AuthServiceHandler struct {
-
 }
 
 func (a *AuthServiceHandler) Authentication(ctx context.Context, req *authinterface.AuthenticationReq, resp *authinterface.AuthenticationResp) error {

@@ -82,5 +82,3 @@ func W(fmt string, args ...interface{}) {
 func E(fmt string, args ...interface{}) {
 	error.Printf(fmt, args)
 }
-
-

@@ -5,6 +5,6 @@ type AuthorizeReq struct {
 	Password string `form:"password" bind:"required"`
 }
 
-type 	UnAuthorizeReq struct {
+type UnAuthorizeReq struct {
 	Username string `uri:"username" bind:"required"`
 }

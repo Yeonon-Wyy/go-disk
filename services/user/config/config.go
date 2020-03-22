@@ -1,12 +1,10 @@
 package config
 
 import (
-	"fmt"
 	"go-disk/common/log4disk"
 	"go-disk/common/utils"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	"log"
 	"reflect"
 )
 
@@ -28,19 +26,18 @@ func init() {
 }
 
 type Config struct {
-
 	//db
 	DataSource struct {
 		Mysql struct {
-			Username string `yaml:"username"`
-			Password string `yaml:"password"`
-			Host string `yaml:"host"`
-			Port int `yaml:"port"`
-			TimeLoc string `yaml:"timeLoc"`
-			Database string `yaml:"database"`
-			MaxIdle int `yaml:"maxIdle" default:"10"`
-			MaxOpenConn int `yaml:"maxOpenConn" default:"100"`
-			MaxLifeTime int `yaml:"maxLifeTime" default:"720"`
+			Username    string `yaml:"username"`
+			Password    string `yaml:"password"`
+			Host        string `yaml:"host"`
+			Port        int    `yaml:"port"`
+			TimeLoc     string `yaml:"timeLoc"`
+			Database    string `yaml:"database"`
+			MaxIdle     int    `yaml:"maxIdle" default:"10"`
+			MaxOpenConn int    `yaml:"maxOpenConn" default:"100"`
+			MaxLifeTime int    `yaml:"maxLifeTime" default:"720"`
 		} `yaml:"mysql"`
 	} `yaml:"dataSource"`
 
@@ -62,6 +59,3 @@ type Config struct {
 		}
 	} `yaml:"micro"`
 }
-
-
-

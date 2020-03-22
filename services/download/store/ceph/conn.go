@@ -28,18 +28,18 @@ func Conn() *s3.S3 {
 	secretKey := CephConfig.SecretKey
 
 	auth := aws.Auth{
-		AccessKey:accessKey,
-		SecretKey:secretKey,
+		AccessKey: accessKey,
+		SecretKey: secretKey,
 	}
 
 	region := aws.Region{
-		Name: CephConfig.RegionName,
-		EC2Endpoint: CephConfig.Endpoint,
-		S3Endpoint: CephConfig.Endpoint,
-		S3BucketEndpoint: "",
+		Name:                 CephConfig.RegionName,
+		EC2Endpoint:          CephConfig.Endpoint,
+		S3Endpoint:           CephConfig.Endpoint,
+		S3BucketEndpoint:     "",
 		S3LocationConstraint: CephConfig.S3LocationConstraint,
-		S3LowercaseBucket: CephConfig.S3LowercaseBucket,
-		Sign: aws.SignV2,
+		S3LowercaseBucket:    CephConfig.S3LowercaseBucket,
+		Sign:                 aws.SignV2,
 	}
 
 	return s3.New(auth, region)
@@ -49,9 +49,9 @@ func GetCephBucket(bucket string) *s3.Bucket {
 	return Conn().Bucket(bucket)
 }
 
-func createCephBucket(bucketName string)  {
+func createCephBucket(bucketName string) {
 	bucket := GetCephBucket(bucketName)
-	_, err := bucket.List("","","", 100)
+	_, err := bucket.List("", "", "", 100)
 	if err == nil {
 		log4disk.W("the bucket {%s} already exist, no need create", bucketName)
 		return
@@ -63,5 +63,3 @@ func createCephBucket(bucketName string)  {
 		os.Exit(1)
 	}
 }
-
-

@@ -6,7 +6,6 @@ import (
 	"go-disk/common/log4disk"
 	"go-disk/common/rpcinterface/fileinterface"
 	"go-disk/services/file/db"
-	"log"
 )
 
 type FileService struct {
@@ -19,7 +18,6 @@ func (f FileService) GetFileMeta(ctx context.Context, req *fileinterface.GetFile
 		resp.Message = common.RespCodeNotFoundFileError.Message
 		return nil
 	}
-
 
 	tblFile, err := db.GetFileMeta(req.FileHash)
 	if err != nil {
@@ -83,12 +81,12 @@ func (f FileService) GetFileList(ctx context.Context, req *fileinterface.GetFile
 
 	for _, userFile := range userFiles {
 		data := &fileinterface.GetFileListResp_Data{
-			Username:             userFile.Username,
-			Filename:             userFile.FileName,
-			FileHash:             userFile.FileHash,
-			FileSize:             userFile.FileSize,
-			UploadAt:             userFile.UploadAt.String(),
-			LastUpdate:           userFile.LastUpdate.String(),
+			Username:   userFile.Username,
+			Filename:   userFile.FileName,
+			FileHash:   userFile.FileHash,
+			FileSize:   userFile.FileSize,
+			UploadAt:   userFile.UploadAt.String(),
+			LastUpdate: userFile.LastUpdate.String(),
 		}
 
 		dataList = append(dataList, data)

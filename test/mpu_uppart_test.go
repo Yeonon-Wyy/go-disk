@@ -47,7 +47,7 @@ func multipartUpload(filename string, targetURL string, chunkSize int, token str
 			client := &http.Client{}
 			fmt.Printf("upload_size: %d\n", len(b))
 			request, err := http.NewRequest("POST",
-				targetURL + "&uploadid=yeonon15fe43447f1e0760" + "&index=" + strconv.Itoa(curIdx),
+				targetURL+"&uploadid=yeonon15fe43447f1e0760"+"&index="+strconv.Itoa(curIdx),
 				bytes.NewReader(b),
 			)
 

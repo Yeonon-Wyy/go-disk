@@ -8,7 +8,6 @@ import (
 )
 
 type Download struct {
-
 }
 
 func (d *Download) DownloadEndPoint(ctx context.Context, req *downloadinterface.DownloadEndpointReq, resp *downloadinterface.DownloadEndpointResp) error {
@@ -17,4 +16,3 @@ func (d *Download) DownloadEndPoint(ctx context.Context, req *downloadinterface.
 	resp.Data = &downloadinterface.DownloadEndpointResp_Data{Endpoint: config.Conf.Business.DownloadServiceEndpoint}
 	return nil
 }
-

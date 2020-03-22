@@ -2,7 +2,6 @@ package utils
 
 import (
 	"go-disk/common/log4disk"
-	"log"
 	"reflect"
 	"strconv"
 )

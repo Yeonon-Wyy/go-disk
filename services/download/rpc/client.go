@@ -14,8 +14,7 @@ func init() {
 	initAuthCli()
 }
 
-
-func initAuthCli()  {
+func initAuthCli() {
 	reg := consul.NewRegistry(func(options *registry.Options) {
 		options.Addrs = []string{
 			config.Conf.Micro.Registration.Consul.Addr,
@@ -30,4 +29,3 @@ func initAuthCli()  {
 
 	AuthCli = authinterface.NewAuthService(config.Conf.Micro.Client.Auth.ServiceName, serv.Client())
 }
-

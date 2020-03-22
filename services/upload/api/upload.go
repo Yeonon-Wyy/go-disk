@@ -18,7 +18,6 @@ import (
 	"go-disk/services/upload/vo"
 	"io"
 	"io/ioutil"
-	"log"
 	"math"
 	"net/http"
 	"os"
@@ -90,7 +89,6 @@ func UploadFile() gin.HandlerFunc {
 
 			//手动关闭 file，防止异步进程无法删除文件
 			newFile.Close()
-
 
 			//set file meta
 			tblFile := dao.TableFileDao{
@@ -333,7 +331,7 @@ func CompleteUpload() gin.HandlerFunc {
 			"",
 			req.FileSize,
 			constant.FileStatusAvailable,
-			)
+		)
 
 		db.InsertUserFile(
 			req.Username,

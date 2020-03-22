@@ -4,7 +4,6 @@ import (
 	"github.com/streadway/amqp"
 	"go-disk/common/log4disk"
 	"go-disk/services/upload/config"
-	"log"
 )
 
 var (
@@ -43,7 +42,7 @@ func RabbitPublish(exchange string, routingKey string, msg []byte) bool {
 		false,
 		amqp.Publishing{
 			ContentType: "text/plain",
-			Body: msg,
+			Body:        msg,
 		})
 
 	if err != nil {

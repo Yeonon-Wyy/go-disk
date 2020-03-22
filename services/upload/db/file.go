@@ -35,7 +35,7 @@ func ExistFile(sha1 string) bool {
 	var count int
 	mydb.GetConn().
 		Table(dao.TableFileDao{}.TableName()).
-		Where(&dao.TableFileDao{FileHash:sha1}).
+		Where(&dao.TableFileDao{FileHash: sha1}).
 		Count(&count)
 	return count > 0
 }

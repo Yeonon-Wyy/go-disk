@@ -13,11 +13,11 @@ import (
 )
 
 var (
-	AuthCli authinterface.AuthService
+	AuthCli     authinterface.AuthService
 	DownloadCli downloadinterface.DownloadService
-	FileCli fileinterface.FileService
-	UploadCli uploadinterface.UploadService
-	UserCli userinterface.UserService
+	FileCli     fileinterface.FileService
+	UploadCli   uploadinterface.UploadService
+	UserCli     userinterface.UserService
 )
 
 func init() {
@@ -44,7 +44,7 @@ func initAuthCli() {
 	AuthCli = authinterface.NewAuthService(config.Conf.Micro.Client.Auth.ServiceName, serv.Client())
 }
 
-func initDownloadCli()  {
+func initDownloadCli() {
 	reg := consul.NewRegistry(func(options *registry.Options) {
 		options.Addrs = []string{
 			config.Conf.Micro.Registration.Consul.Addr,
@@ -60,7 +60,7 @@ func initDownloadCli()  {
 	DownloadCli = downloadinterface.NewDownloadService(config.Conf.Micro.Client.Download.ServiceName, serv.Client())
 }
 
-func initFileCli()  {
+func initFileCli() {
 	reg := consul.NewRegistry(func(options *registry.Options) {
 		options.Addrs = []string{
 			config.Conf.Micro.Registration.Consul.Addr,
@@ -92,7 +92,7 @@ func initUploadCli() {
 	UploadCli = uploadinterface.NewUploadService(config.Conf.Micro.Client.Upload.ServiceName, serv.Client())
 }
 
-func initUserCli()  {
+func initUserCli() {
 	reg := consul.NewRegistry(func(options *registry.Options) {
 		options.Addrs = []string{
 			config.Conf.Micro.Registration.Consul.Addr,

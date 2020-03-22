@@ -9,7 +9,6 @@ import (
 	"net/http"
 )
 
-
 func GetUploadServiceEndpoint() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		resp, err := rpc.UploadCli.UploadEndPoint(context.TODO(), &uploadinterface.UploadEndPointReq{})

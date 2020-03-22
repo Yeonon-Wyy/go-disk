@@ -4,9 +4,9 @@ syntax = "proto3";
 package authinterface;
 
 service AuthService {
-    rpc Authentication(AuthenticationReq) returns(AuthenticationResp);
-    rpc Authorize(AuthorizeReq) returns(AuthorizeResp);
-    rpc UnAuthorize(UnAuthorizeReq) returns(UnAuthorizeResp);
+    rpc Authentication (AuthenticationReq) returns (AuthenticationResp);
+    rpc Authorize (AuthorizeReq) returns (AuthorizeResp);
+    rpc UnAuthorize (UnAuthorizeReq) returns (UnAuthorizeResp);
 }
 
 message AuthenticationReq {

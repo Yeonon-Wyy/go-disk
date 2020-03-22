@@ -11,9 +11,9 @@ var (
 
 func AuthConn() (*redis.Client, error) {
 	client := redis.NewClient(&redis.Options{
-		Addr: redisConfig.Addr,
+		Addr:     redisConfig.Addr,
 		Password: redisConfig.Password,
-		DB: redisConfig.Database,
+		DB:       redisConfig.Database,
 	})
 
 	_, err := client.Ping().Result()

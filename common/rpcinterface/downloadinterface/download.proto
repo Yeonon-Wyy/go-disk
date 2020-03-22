@@ -5,7 +5,7 @@ syntax = "proto3";
 package downloadinterface;
 
 service DownloadService {
-    rpc DownloadEndPoint(DownloadEndpointReq) returns(DownloadEndpointResp);
+    rpc DownloadEndPoint (DownloadEndpointReq) returns (DownloadEndpointResp);
 }
 
 message DownloadEndpointReq {

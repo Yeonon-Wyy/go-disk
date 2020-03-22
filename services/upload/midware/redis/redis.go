@@ -11,9 +11,9 @@ var (
 
 func FSConn() (*redis.Client, error) {
 	client := redis.NewClient(&redis.Options{
-		Addr: DSConfig.Redis.Addr,
+		Addr:     DSConfig.Redis.Addr,
 		Password: DSConfig.Redis.Password,
-		DB: DSConfig.Redis.Database,
+		DB:       DSConfig.Redis.Database,
 	})
 
 	_, err := client.Ping().Result()

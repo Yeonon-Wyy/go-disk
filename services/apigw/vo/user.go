@@ -5,8 +5,6 @@ type UserRegisterReq struct {
 	Password string `form:"password" bind:"required"`
 }
 
-
 type UserQueryReq struct {
 	Username string `uri:"username" bind:"required"`
 }
-

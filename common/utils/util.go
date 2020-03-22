@@ -44,9 +44,6 @@ func MultipartFileSha1(file *multipart.File) string {
 	return hex.EncodeToString(_sha1.Sum(nil))
 }
 
-
-
-
 func MD5(data []byte) string {
 	_md5 := md5.New()
 	_md5.Write(data)

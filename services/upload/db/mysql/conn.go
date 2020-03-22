@@ -16,7 +16,7 @@ const (
 
 var (
 	mysqlConfig = config.Conf.DataSource.Mysql
-	mysqlDB *gorm.DB
+	mysqlDB     *gorm.DB
 )
 
 func GetConn() *gorm.DB {

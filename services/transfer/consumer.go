@@ -10,12 +10,11 @@ import (
 	"go-disk/services/transfer/store/ceph"
 	"gopkg.in/amz.v1/s3"
 	"io/ioutil"
-	"log"
 	"os"
 )
 
 var (
-	mqConfig = config.Conf.Mq
+	mqConfig    = config.Conf.Mq
 	storeConfig = config.Conf.Store
 )
 
