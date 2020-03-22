@@ -44,10 +44,9 @@ func DeleteFileMeta(sha1 string, filename, username string) bool {
 }
 
 func ExistByFileHashAndUsername(fileHash string, username string) bool {
-	userFile := dao.UserFileDao{}
-	rowAffect := mydb.GetConn().
+	var count int
+	mydb.GetConn().
 		Where(&dao.UserFileDao{Username:username, FileHash:fileHash}).
-		Select("id").
-		First(&userFile).RowsAffected
-	return rowAffect > 0
+		Count(&count)
+	return count > 0
 }

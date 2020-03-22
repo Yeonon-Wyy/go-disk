@@ -22,11 +22,11 @@ func InsertUser(username, password string) bool {
 }
 
 func ExistUserByUsername(username string) bool {
-	user := userdao.UserDao{}
-	rowsAffect := mysqldb.GetConn().
+	var count int
+	mysqldb.GetConn().
 		Where(&userdao.UserDao{Username:username}).
-		Select("id").First(&user).RowsAffected
-	return rowsAffect > 0
+		Count(&count)
+	return count > 0
 }
 
 func QueryUser(username string) (*userdao.UserDao, error) {

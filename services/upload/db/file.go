@@ -32,7 +32,8 @@ func GetStatus(sha1 string) int {
 }
 
 func ExistFile(sha1 string) bool {
-	tf := dao.TableFileDao{}
-	mydb.GetConn().Where(&dao.TableFileDao{FileHash:sha1}).Select("id").First(&tf)
-	return tf.Id > 0
+	var count int
+	mydb.GetConn().Where(&dao.TableFileDao{FileHash:sha1}).
+		Count(&count)
+	return count > 0
 }
