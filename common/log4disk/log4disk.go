@@ -1,6 +1,7 @@
 package log4disk
 
 import (
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -63,22 +64,23 @@ func OpenAllLogger(writer io.Writer) {
 	//Verbose need handled separately
 }
 
-func V(fmt string, args ...interface{}) {
-	verbose.Printf(fmt, args)
+func V(format string, args ...interface{}) {
+	verbose.Output(2, fmt.Sprintf(format, args...))
 }
 
-func I(fmt string, args ...interface{}) {
-	info.Printf(fmt, args)
+func I(format string, args ...interface{}) {
+	info.Output(2, fmt.Sprintf(format, args...))
 }
 
-func D(fmt string, args ...interface{}) {
-	debug.Printf(fmt, args)
+func D(format string, args ...interface{}) {
+	debug.Output(2, fmt.Sprintf(format, args...))
 }
 
-func W(fmt string, args ...interface{}) {
-	warn.Printf(fmt, args)
+func W(format string, args ...interface{}) {
+	warn.Output(2, fmt.Sprintf(format, args...))
 }
 
-func E(fmt string, args ...interface{}) {
-	error.Printf(fmt, args)
+
+func E(format string, args ...interface{}) {
+	error.Output(2, fmt.Sprintf(format, args...))
 }

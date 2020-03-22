@@ -8,7 +8,6 @@ import (
 
 //这里第一个参数不要传递的时候不要取地址(类似&val)，而第二个参数必须要取地址(&val)
 func SetConfigDefaultValue(ct reflect.Type, cv reflect.Value) {
-
 	if ct.Kind() != reflect.Struct {
 		log4disk.E("not support not-struct")
 		return
