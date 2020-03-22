@@ -9,13 +9,14 @@ import (
 	"go-disk/services/apigw/vo"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 func GetFileMeta() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req vo.GetFileMetaReq
 
-		if err := ctx.ShouldBind(&req); err != nil {
+		if err := ctx.ShouldBindUri(&req); err != nil {
 			log.Printf("bind request parameters error %v", err)
 			ctx.JSON(http.StatusBadRequest,
 				common.NewServiceResp(common.RespCodeBindReParamError, nil))
@@ -39,14 +40,20 @@ func GetFileMeta() gin.HandlerFunc {
 func UpdateFileMeta() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req vo.UpdateFileMetaReq
-		if err := ctx.ShouldBind(&req); err != nil {
+
+		if err := ctx.ShouldBindUri(&req); err != nil {
 			log.Printf("bind request parameters error %v", err)
 			ctx.JSON(http.StatusBadRequest,
 				common.NewServiceResp(common.RespCodeBindReParamError, nil))
 			return
 		}
+		req.Filename = ctx.PostForm("filename")
 
-		resp, err := rpc.FileCli.UpdateFileMeta(context.TODO(), &fileinterface.UpdateFileMetaReq{})
+		resp, err := rpc.FileCli.UpdateFileMeta(context.TODO(), &fileinterface.UpdateFileMetaReq{
+			Username: req.Username,
+			FileHash: req.FileHash,
+			Filename: req.Filename,
+		})
 
 		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code) {
 			log.Printf("rpc call ( update metat ) error : %v", err)
@@ -61,12 +68,21 @@ func UpdateFileMeta() gin.HandlerFunc {
 func GetFileList() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req vo.UserFileReq
-		if err := ctx.ShouldBind(&req); err != nil {
+		if err := ctx.ShouldBindUri(&req); err != nil {
 			log.Printf("bind request parameters error %v", err)
 			ctx.JSON(http.StatusBadRequest,
 				common.NewServiceResp(common.RespCodeBindReParamError, nil))
 			return
 		}
+
+		limit, err := strconv.Atoi(ctx.Query("limit"))
+		if err != nil {
+			log.Printf("bind request parameters error %v", err)
+			ctx.JSON(http.StatusBadRequest,
+				common.NewServiceResp(common.RespCodeBindReParamError, nil))
+			return
+		}
+		req.Limit = limit
 
 		resp, err := rpc.FileCli.GetFileList(context.TODO(), &fileinterface.GetFileListReq{
 			Username: req.Username,
@@ -86,15 +102,19 @@ func GetFileList() gin.HandlerFunc {
 func DeleteFile() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req vo.DeleteFileReq
-		if err := ctx.ShouldBind(&req); err != nil {
+		if err := ctx.ShouldBindUri(&req); err != nil {
 			log.Printf("bind request parameters error %v", err)
 			ctx.JSON(http.StatusBadRequest,
 				common.NewServiceResp(common.RespCodeBindReParamError, nil))
 			return
 		}
 
+		req.Filename = ctx.Query("filename")
+
 		resp, err := rpc.FileCli.DeleteFile(context.TODO(), &fileinterface.DeleteFileReq{
 			FileHash: req.FileHash,
+			Filename: req.Filename,
+			Username: req.Username,
 		})
 
 		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code) {

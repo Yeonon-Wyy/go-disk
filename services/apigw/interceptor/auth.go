@@ -31,6 +31,7 @@ func AuthorizeInterceptor() gin.HandlerFunc {
 				common.NewServiceResp(common.RespCodeUnauthorizedError, nil))
 			return
 		}
+
 		ctx.Next()
 	}
 }

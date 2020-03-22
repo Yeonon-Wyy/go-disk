@@ -12,6 +12,9 @@ import (
 var Conf *Config
 
 func init() {
+	Conf = &Config{}
+	utils.SetConfigDefaultValue(reflect.TypeOf(*Conf), reflect.ValueOf(Conf))
+
 	yamlFile, err := ioutil.ReadFile("./config/config.yaml")
 	if err != nil {
 		log.Println(err)
@@ -21,10 +24,6 @@ func init() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	ct := reflect.TypeOf(*Conf)
-	elements := reflect.ValueOf(Conf)
-	utils.SetConfigDefaultValue(ct, elements)
-	log.Println(Conf)
 }
 
 type Config struct {

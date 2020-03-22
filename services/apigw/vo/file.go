@@ -4,19 +4,18 @@ import "time"
 
 type GetFileMetaReq struct {
 	FileHash string `uri:"file_hash" bind:"required"`
-	Username string `form:"username" bind:"required"`
+	Username string `uri:"username" bind:"required"`
 }
 
 type UpdateFileMetaReq struct {
-	Username string `form:"username" bind:"required"`
-	FileHash string `form:"file_hash" bind:"required"`
+	Username string `uri:"username" bind:"required"`
+	FileHash string `uri:"file_hash" bind:"required"`
 	Filename string `form:"filename" bind:"required"`
-	Status string `form:"status"`
 }
 
 type DeleteFileReq struct {
-	FileHash string `form:"file_hash" bind:"required"`
-	Username string `form:"username" bind:"required"`
+	FileHash string `uri:"file_hash" bind:"required"`
+	Username string `uri:"username" bind:"required"`
 	Filename string `form:"filename" bind:"filename"`
 }
 

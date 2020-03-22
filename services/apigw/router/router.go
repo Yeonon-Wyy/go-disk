@@ -30,12 +30,12 @@ func Router() *gin.Engine {
 
 func fileMetaServiceRoute(group *gin.RouterGroup) {
 	group.Use(interceptor.AuthorizeInterceptor())
-	group.GET("/meta/:file_hash", api.GetFileMeta())
+	group.GET("/meta/:username/:file_hash", api.GetFileMeta())
 
-	group.PUT("/meta", api.UpdateFileMeta())
-	group.POST("/meta", api.GetFileList())
+	group.PUT("/meta/:username/:file_hash", api.UpdateFileMeta())
+	group.GET("/meta/:username", api.GetFileList())
 
-	group.DELETE("/meta", api.DeleteFile())
+	group.DELETE("/meta/:username/:file_hash", api.DeleteFile())
 }
 
 func downloadServiceRoute(group *gin.RouterGroup) {

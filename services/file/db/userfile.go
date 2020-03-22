@@ -28,24 +28,25 @@ func QueryUserFileMetas(username string, limit int) ([]dao.UserFileDao, bool) {
 
 func DeleteFileMeta(sha1 string, filename, username string) bool {
 
-	id := -1
+	uf := dao.UserFileDao{}
 	rowAffect := mydb.GetConn().
 		Where(&dao.UserFileDao{FileHash:sha1, Username:username, FileName:filename}).
 		Select("id").
-		Find(&id).RowsAffected
-	if rowAffect <= 0 || id < 0{
+		Find(&uf).RowsAffected
+	if rowAffect <= 0 || uf.Id < 0{
 		log.Printf("can't find this record")
 		return false
 	}
 
 	err := mydb.GetConn().
-		Delete(dao.TableFileDao{Id: uint(id)})
+		Delete(&dao.UserFileDao{Id: uint(uf.Id)})
 	return err == nil
 }
 
 func ExistByFileHashAndUsername(fileHash string, username string) bool {
 	var count int
 	mydb.GetConn().
+		Table(dao.UserFileDao{}.TableName()).
 		Where(&dao.UserFileDao{Username:username, FileHash:fileHash}).
 		Count(&count)
 	return count > 0

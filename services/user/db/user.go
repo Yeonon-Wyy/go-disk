@@ -24,6 +24,7 @@ func InsertUser(username, password string) bool {
 func ExistUserByUsername(username string) bool {
 	var count int
 	mysqldb.GetConn().
+		Table(userdao.UserDao{}.TableName()).
 		Where(&userdao.UserDao{Username:username}).
 		Count(&count)
 	return count > 0

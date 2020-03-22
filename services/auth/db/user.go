@@ -6,10 +6,10 @@ import (
 )
 
 func ExistUserByUsernameAndPassword(username, password string) bool {
-	user := dao.UserDao{}
-	rowAffect := mydb.GetConn().
+	var count int
+	mydb.GetConn().
+		Table(dao.UserDao{}.TableName()).
 		Where(&dao.UserDao{Username:username, Password:password}).
-		Select("id").
-		First(&user).RowsAffected
-	return rowAffect > 0
+		Count(&count)
+	return count > 0
 }

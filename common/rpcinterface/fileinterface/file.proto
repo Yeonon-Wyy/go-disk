@@ -37,7 +37,6 @@ message UpdateFileMetaReq {
     string username = 1;
     string fileHash = 2;
     string filename = 3;
-    int64 status = 4;
 }
 
 message UpdateFileMetaResp {
