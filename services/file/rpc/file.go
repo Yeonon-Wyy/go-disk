@@ -44,10 +44,11 @@ func (f FileService) UpdateFileMeta(ctx context.Context, req *fileinterface.Upda
 
 	if req.Filename != "" {
 		tblFile.FileName = req.Filename
-		db.OnFileUpdateFinished(
-			tblFile.FileHash,
-			tblFile.FileName,
-			)
+		//唯一文件表不需要也不应该修改文件名，文件hash与文件名无关
+		//db.OnFileUpdateFinished(
+		//	tblFile.FileHash,
+		//	tblFile.FileName,
+		//	)
 
 		//更新到user file关联表
 		db.UpdateUserFilename(req.Username, req.FileHash, req.Filename)
