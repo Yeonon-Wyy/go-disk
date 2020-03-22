@@ -2,6 +2,7 @@ package mq
 
 import (
 	"github.com/streadway/amqp"
+	"go-disk/common/log4disk"
 	"go-disk/services/upload/config"
 	"log"
 )
@@ -17,13 +18,13 @@ func initChannel() bool {
 
 	conn, err := amqp.Dial(config.Conf.Mq.Rabbit.Url)
 	if err != nil {
-		log.Printf("failed to connect to rabbit mq server : %v", err)
+		log4disk.E("failed to connect to rabbit mq server : %v", err)
 		return false
 	}
 
 	channel, err = conn.Channel()
 	if err != nil {
-		log.Printf("failed to get rabbit mq channel : %v", err)
+		log4disk.E("failed to get rabbit mq channel : %v", err)
 		return false
 	}
 
@@ -46,7 +47,7 @@ func RabbitPublish(exchange string, routingKey string, msg []byte) bool {
 		})
 
 	if err != nil {
-		log.Printf("publish message error : %v", err)
+		log4disk.E("publish message error : %v", err)
 		return false
 	}
 	return true

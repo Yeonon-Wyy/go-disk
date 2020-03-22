@@ -1,9 +1,9 @@
 package db
 
 import (
+	"go-disk/common/log4disk"
 	"go-disk/services/file/dao"
 	mydb "go-disk/services/file/db/mysql"
-	"log"
 	"time"
 )
 
@@ -34,7 +34,7 @@ func DeleteFileMeta(sha1 string, filename, username string) bool {
 		Select("id").
 		Find(&uf).RowsAffected
 	if rowAffect <= 0 || uf.Id < 0{
-		log.Printf("can't find this record")
+		log4disk.E("can't find this record")
 		return false
 	}
 

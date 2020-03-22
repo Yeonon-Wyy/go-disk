@@ -5,7 +5,6 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"go-disk/services/file/config"
-	"log"
 	"net/url"
 	"os"
 	"time"
@@ -35,7 +34,7 @@ func GetConn() *gorm.DB {
 
 	mysqlDB, err := gorm.Open(DriverName, dbUrl)
 	if err != nil {
-		log.Printf("connect to mysql error : %v", err)
+		log4disk.E("connect to mysql error : %v", err)
 		os.Exit(1)
 	}
 

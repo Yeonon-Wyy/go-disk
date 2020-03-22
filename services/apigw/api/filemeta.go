@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/gin-gonic/gin"
 	"go-disk/common"
+	"go-disk/common/log4disk"
 	"go-disk/common/rpcinterface/fileinterface"
 	"go-disk/services/apigw/rpc"
 	"go-disk/services/apigw/vo"
@@ -17,7 +18,7 @@ func GetFileMeta() gin.HandlerFunc {
 		var req vo.GetFileMetaReq
 
 		if err := ctx.ShouldBindUri(&req); err != nil {
-			log.Printf("bind request parameters error %v", err)
+			log4disk.E("bind request parameters error %v", err)
 			ctx.JSON(http.StatusBadRequest,
 				common.NewServiceResp(common.RespCodeBindReParamError, nil))
 			return
@@ -28,7 +29,7 @@ func GetFileMeta() gin.HandlerFunc {
 			Username: req.Username,
 		})
 		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code) {
-			log.Printf("rpc call (get metat ) error : %v", err)
+			log4disk.E("rpc call (get metat ) error : %v", err)
 			ctx.JSON(http.StatusBadRequest, *resp)
 			return
 		}
@@ -42,7 +43,7 @@ func UpdateFileMeta() gin.HandlerFunc {
 		var req vo.UpdateFileMetaReq
 
 		if err := ctx.ShouldBindUri(&req); err != nil {
-			log.Printf("bind request parameters error %v", err)
+			log4disk.E("bind request parameters error %v", err)
 			ctx.JSON(http.StatusBadRequest,
 				common.NewServiceResp(common.RespCodeBindReParamError, nil))
 			return
@@ -56,7 +57,7 @@ func UpdateFileMeta() gin.HandlerFunc {
 		})
 
 		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code) {
-			log.Printf("rpc call ( update metat ) error : %v", err)
+			log4disk.E("rpc call ( update metat ) error : %v", err)
 			ctx.JSON(http.StatusInternalServerError, *resp)
 			return
 		}
@@ -69,7 +70,7 @@ func GetFileList() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req vo.UserFileReq
 		if err := ctx.ShouldBindUri(&req); err != nil {
-			log.Printf("bind request parameters error %v", err)
+			log4disk.E("bind request parameters error %v", err)
 			ctx.JSON(http.StatusBadRequest,
 				common.NewServiceResp(common.RespCodeBindReParamError, nil))
 			return
@@ -77,7 +78,7 @@ func GetFileList() gin.HandlerFunc {
 
 		limit, err := strconv.Atoi(ctx.Query("limit"))
 		if err != nil {
-			log.Printf("bind request parameters error %v", err)
+			log4disk.E("bind request parameters error %v", err)
 			ctx.JSON(http.StatusBadRequest,
 				common.NewServiceResp(common.RespCodeBindReParamError, nil))
 			return
@@ -90,7 +91,7 @@ func GetFileList() gin.HandlerFunc {
 		})
 
 		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code) {
-			log.Printf("rpc call  get metat list) error : %v", err)
+			log4disk.E("rpc call  get metat list) error : %v", err)
 			ctx.JSON(http.StatusInternalServerError, *resp)
 			return
 		}
@@ -103,7 +104,7 @@ func DeleteFile() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req vo.DeleteFileReq
 		if err := ctx.ShouldBindUri(&req); err != nil {
-			log.Printf("bind request parameters error %v", err)
+			log4disk.E("bind request parameters error %v", err)
 			ctx.JSON(http.StatusBadRequest,
 				common.NewServiceResp(common.RespCodeBindReParamError, nil))
 			return
@@ -118,7 +119,7 @@ func DeleteFile() gin.HandlerFunc {
 		})
 
 		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code) {
-			log.Printf("rpc call  get metat list) error : %v", err)
+			log4disk.E("rpc call  get metat list) error : %v", err)
 			ctx.JSON(http.StatusInternalServerError, *resp)
 			return
 		}

@@ -1,10 +1,10 @@
 package ceph
 
 import (
+	"go-disk/common/log4disk"
 	"go-disk/services/transfer/config"
 	"gopkg.in/amz.v1/aws"
 	"gopkg.in/amz.v1/s3"
-	"log"
 )
 
 var (
@@ -52,13 +52,13 @@ func createCephBucket(bucketName string)  {
 	bucket := GetCephBucket(bucketName)
 	_, err := bucket.List("","","", 100)
 	if err == nil {
-		log.Printf("the bucket {%s} already exist, no need create", bucketName)
+		log4disk.W("the bucket {%s} already exist, no need create", bucketName)
 		return
 	}
 
 	err = bucket.PutBucket(s3.PublicRead)
 	if err != nil {
-		log.Printf("failed to create bucket {%s} : %v", bucketName, err)
+		log4disk.E("failed to create bucket {%s} : %v", bucketName, err)
 		panic("failed to create bucket")
 	}
 }

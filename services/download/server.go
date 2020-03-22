@@ -4,11 +4,11 @@ import (
 	"github.com/micro/go-micro"
 	"github.com/micro/go-micro/registry"
 	"github.com/micro/go-micro/registry/consul"
+	"go-disk/common/log4disk"
 	"go-disk/common/rpcinterface/downloadinterface"
 	"go-disk/services/download/config"
 	"go-disk/services/download/router"
 	"go-disk/services/download/rpc"
-	"log"
 )
 
 func main() {
@@ -44,5 +44,5 @@ func startRpcService() {
 		panic(err)
 	}
 
-	log.Printf("start upload service success")
+	log4disk.I("start upload service success")
 }

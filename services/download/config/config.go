@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"go-disk/common/log4disk"
 	"go-disk/common/utils"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
@@ -16,12 +17,12 @@ func init() {
 	utils.SetConfigDefaultValue(reflect.TypeOf(*Conf), reflect.ValueOf(Conf))
 	yamlFile, err := ioutil.ReadFile("./config/config.yaml")
 	if err != nil {
-		log.Println(err)
+		log4disk.E("read file error : %v", err)
 	}
 
 	err = yaml.Unmarshal(yamlFile, &Conf)
 	if err != nil {
-		fmt.Println(err)
+		log4disk.E("Unmarshal error : %v", err)
 	}
 }
 

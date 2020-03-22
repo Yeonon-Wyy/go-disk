@@ -4,12 +4,12 @@ import (
 	"context"
 	"go-disk/common"
 	"go-disk/common/jwt"
+	"go-disk/common/log4disk"
 	"go-disk/common/rpcinterface/authinterface"
 	"go-disk/common/utils"
 	"go-disk/services/auth/config"
 	"go-disk/services/auth/db"
 	redisconn "go-disk/services/auth/redis"
-	"log"
 	"time"
 )
 
@@ -79,7 +79,7 @@ func genToken(username string) (string, error) {
 	redisClient, err := redisconn.AuthConn()
 	defer redisClient.Close()
 	if err != nil {
-		log.Printf("failed to connect redis server : %v", err)
+		log4disk.E("failed to connect redis server : %v", err)
 		return "", err
 	}
 
@@ -91,7 +91,7 @@ func genToken(username string) (string, error) {
 func existToken(username string) bool {
 	redisClient, err := redisconn.AuthConn()
 	if err != nil {
-		log.Printf("failed to connect redis server : %v", err)
+		log4disk.E("failed to connect redis server : %v", err)
 		return false
 	}
 	defer redisClient.Close()
@@ -109,7 +109,7 @@ func validateToken(ReqTokenStr string) bool {
 	username := payload["username"].(string)
 
 	if !existToken(username) {
-		log.Printf("the user not login!")
+		log4disk.E("the user not login!")
 		return false
 	}
 	return true
@@ -119,7 +119,7 @@ func validateToken(ReqTokenStr string) bool {
 func deleteToken(username string) bool {
 	redisClient, err := redisconn.AuthConn()
 	if err != nil {
-		log.Printf("failed to connect redis server : %v", err)
+		log4disk.E("failed to connect redis server : %v", err)
 		return false
 	}
 	defer redisClient.Close()

@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-disk/common"
 	"go-disk/common/constant"
+	"go-disk/common/log4disk"
 	"go-disk/common/mqproto"
 	"go-disk/common/utils"
 	"go-disk/services/upload/config"
@@ -41,20 +42,20 @@ func UploadFile() gin.HandlerFunc {
 		username := context.PostForm("username")
 
 		if filePath == "" || username == "" {
-			log.Printf("file path or username can't empty")
+			log4disk.E("file path or username can't empty")
 			context.JSON(http.StatusBadRequest, common.NewServiceResp(common.RespCodeBindReParamError, nil))
 			return
 		}
 
 		if err != nil {
-			log.Printf("read from file error : %v", err)
+			log4disk.E("read from file error : %v", err)
 			context.JSON(http.StatusInternalServerError, common.NewServiceResp(common.RespCodeReadFileError, nil))
 			return
 		}
 
 		file, err := fh.Open()
 		if err != nil {
-			log.Printf("open file error : %v", err)
+			log4disk.E("open file error : %v", err)
 			context.JSON(http.StatusInternalServerError, common.NewServiceResp(common.RespCodeOpenFileError, nil))
 			return
 		}
@@ -70,7 +71,7 @@ func UploadFile() gin.HandlerFunc {
 		if !exist {
 			newFile, err := os.Create(businessConfig.FileStorePath + fh.Filename)
 			if err != nil {
-				log.Printf("create file error : %v", err)
+				log4disk.E("create file error : %v", err)
 				context.JSON(http.StatusInternalServerError, common.NewServiceResp(common.RespCodeCreateFileError, nil))
 				return
 			}
@@ -80,7 +81,7 @@ func UploadFile() gin.HandlerFunc {
 			_, err = io.Copy(newFile, file)
 
 			if err != nil {
-				log.Printf("copy file error : %v", err)
+				log4disk.E("copy file error : %v", err)
 				context.JSON(http.StatusInternalServerError, common.NewServiceResp(common.RespCodeCopyFileError, nil))
 				return
 			}
@@ -103,7 +104,7 @@ func UploadFile() gin.HandlerFunc {
 			//同步到ceph中
 			err = transFileToCeph(fileHash, tblFile.FileAddr)
 			if err != nil {
-				log.Printf("put data to ceph error : %v", err)
+				log4disk.E("put data to ceph error : %v", err)
 				context.JSON(http.StatusInternalServerError,
 					common.NewServiceResp(common.RespCodePutDataToCephError, nil))
 				return
@@ -133,12 +134,12 @@ func UploadFile() gin.HandlerFunc {
 		status := db.GetStatus(fileHash)
 		ok := db.InsertUserFile(username, fileHash, filename, filePath, fileSize, status)
 		if !ok {
-			log.Printf("upload file failed, file hash is : %s", fileHash)
+			log4disk.E("upload file failed, file hash is : %s", fileHash)
 			context.JSON(http.StatusInternalServerError,
 				common.NewServiceResp(common.RespCodeUploadFileError, nil))
 			return
 		}
-		log.Printf("upload file success, file hash is : %s", fileHash)
+		log4disk.E("upload file success, file hash is : %s", fileHash)
 		context.JSON(http.StatusOK, common.NewServiceResp(common.RespCodeSuccess, nil))
 	}
 }
@@ -147,14 +148,14 @@ func TryFastUpload() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		var req vo.FastUploadReq
 		if err := context.ShouldBind(&req); err != nil {
-			log.Printf("bind request parameters error %v", err)
+			log4disk.E("bind request parameters error %v", err)
 			context.JSON(http.StatusBadRequest,
 				common.NewServiceResp(common.RespCodeBindReParamError, nil))
 			return
 		}
 
 		if exist := db.ExistFile(req.FileHash); !exist {
-			log.Printf("not exist this file %s, failed to fast upload", req.FileHash)
+			log4disk.E("not exist this file %s, failed to fast upload", req.FileHash)
 			context.JSON(http.StatusNoContent,
 				common.NewServiceResp(common.RespCodeFastUploadFailed, nil))
 			return
@@ -176,7 +177,7 @@ func InitialMultipartUpload() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		var req vo.MPUploadInitReq
 		if err := context.ShouldBind(&req); err != nil {
-			log.Printf("bind request parameters error %v", err)
+			log4disk.E("bind request parameters error %v", err)
 			context.JSON(http.StatusBadRequest,
 				common.NewServiceResp(common.RespCodeBindReParamError, nil))
 			return
@@ -184,7 +185,7 @@ func InitialMultipartUpload() gin.HandlerFunc {
 
 		redisClient, err := redisconn.FSConn()
 		if err != nil {
-			log.Printf("failed to connect redis server : %v", err)
+			log4disk.E("failed to connect redis server : %v", err)
 			context.JSON(http.StatusInternalServerError,
 				common.NewServiceResp(common.RespCodeConnectFSRedisServerError, nil))
 			return
@@ -212,7 +213,7 @@ func UploadPart() gin.HandlerFunc {
 		uploadId := context.Query("uploadid")
 		index := context.Query("index")
 		if len(uploadId) == 0 || len(index) == 0 {
-			log.Printf("bind request parameters error")
+			log4disk.E("bind request parameters error")
 			context.JSON(http.StatusBadRequest,
 				common.NewServiceResp(common.RespCodeBindReParamError, nil))
 			return
@@ -220,7 +221,7 @@ func UploadPart() gin.HandlerFunc {
 
 		redisClient, err := redisconn.FSConn()
 		if err != nil {
-			log.Printf("failed to connect redis server : %v", err)
+			log4disk.E("failed to connect redis server : %v", err)
 			context.JSON(http.StatusInternalServerError,
 				common.NewServiceResp(common.RespCodeConnectFSRedisServerError, nil))
 			return
@@ -231,7 +232,7 @@ func UploadPart() gin.HandlerFunc {
 		os.MkdirAll(path.Dir(fpath), 0777)
 		fd, err := os.Create(fpath)
 		if err != nil {
-			log.Printf("create file error : %v", err)
+			log4disk.E("create file error : %v", err)
 			context.JSON(http.StatusInternalServerError,
 				common.NewServiceResp(common.RespCodeOpenFileError, nil))
 			return
@@ -240,19 +241,19 @@ func UploadPart() gin.HandlerFunc {
 		//buf := make([]byte, 1024 * 1024)
 		data, err := ioutil.ReadAll(context.Request.Body)
 		if err != nil {
-			log.Printf("read request data error : %v", err)
+			log4disk.E("read request data error : %v", err)
 			context.JSON(http.StatusInternalServerError,
 				common.NewServiceResp(common.RespCodeReadDataError, nil))
 			return
 		}
 		n, err := fd.Write(data)
 		if err != nil {
-			log.Printf("write data to file error : %v", err)
+			log4disk.E("write data to file error : %v", err)
 			context.JSON(http.StatusInternalServerError,
 				common.NewServiceResp(common.RespCodeWriteFileError, nil))
 			return
 		}
-		log.Printf("write to file success size : n = %d byte", n)
+		log4disk.E("write to file success size : n = %d byte", n)
 
 		redisClient.HSet("MP_"+uploadId, "chkidx_"+index, 1)
 
@@ -265,7 +266,7 @@ func CompleteUpload() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		var req vo.MPUploadCompleteReq
 		if err := context.ShouldBind(&req); err != nil {
-			log.Printf("bind request parameters error %v", err)
+			log4disk.E("bind request parameters error %v", err)
 			context.JSON(http.StatusBadRequest,
 				common.NewServiceResp(common.RespCodeBindReParamError, nil))
 			return
@@ -273,7 +274,7 @@ func CompleteUpload() gin.HandlerFunc {
 
 		redisClient, err := redisconn.FSConn()
 		if err != nil {
-			log.Printf("failed to connect redis server : %v", err)
+			log4disk.E("failed to connect redis server : %v", err)
 			context.JSON(http.StatusInternalServerError,
 				common.NewServiceResp(common.RespCodeConnectFSRedisServerError, nil))
 			return
@@ -282,7 +283,7 @@ func CompleteUpload() gin.HandlerFunc {
 
 		result, err := redisClient.HGetAll("MP_" + req.UploadId).Result()
 		if err != nil {
-			log.Printf("failed to get value from redis server : %v", err)
+			log4disk.E("failed to get value from redis server : %v", err)
 			context.JSON(http.StatusInternalServerError,
 				common.NewServiceResp(common.RespCodeCompleteUploadError, nil))
 			return
@@ -298,7 +299,7 @@ func CompleteUpload() gin.HandlerFunc {
 		}
 
 		if totalCount != chunkCount {
-			log.Printf("invaild request")
+			log4disk.E("invaild request")
 			context.JSON(http.StatusBadRequest,
 				common.NewServiceResp(common.RespCodeBindReParamError, nil))
 			return
@@ -311,7 +312,7 @@ func CompleteUpload() gin.HandlerFunc {
 		go func(fileHash, srcFileDirPath, dstFileName string, count int) {
 			err := mergeFilePart(tempFileDirPath, dstFileName, count)
 			if err != nil {
-				log.Printf("merge file error : %v", err)
+				log4disk.E("merge file error : %v", err)
 				return
 			}
 			//文件合并完成就可以删除了保存分块文件的文件夹了
@@ -320,7 +321,7 @@ func CompleteUpload() gin.HandlerFunc {
 			//同步到ceph中
 			err = transFileToCeph(fileHash, dstFileName)
 			if err != nil {
-				log.Printf("put data to ceph error : %v", err)
+				log4disk.E("put data to ceph error : %v", err)
 				return
 			}
 		}(req.FileHash, tempFileDirPath, dstFileName, chunkCount)

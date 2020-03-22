@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/gin-gonic/gin"
 	"go-disk/common"
+	"go-disk/common/log4disk"
 	"go-disk/common/rpcinterface/authinterface"
 	"go-disk/services/upload/rpc"
 	"log"
@@ -15,7 +16,7 @@ func AuthorizeInterceptor() gin.HandlerFunc {
 		token := ctx.GetHeader("Authorization")
 
 		if token == "" {
-			log.Printf("request param error")
+			log4disk.E("request param error")
 			ctx.Abort()
 			ctx.JSON(http.StatusBadRequest,
 				common.NewServiceResp(common.RespCodeBindReParamError, nil))
@@ -25,7 +26,7 @@ func AuthorizeInterceptor() gin.HandlerFunc {
 			AccessToken: token,
 		})
 		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code) {
-			log.Printf("token validate error")
+			log4disk.E("token validate error")
 			ctx.Abort()
 			ctx.JSON(http.StatusUnauthorized,
 				common.NewServiceResp(common.RespCodeUnauthorizedError, nil))

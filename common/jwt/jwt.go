@@ -3,11 +3,10 @@ package jwt
 import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
-	"log"
+	"go-disk/common/log4disk"
 )
 
 const (
-	signKey = "11104459"
 
 	publicKey = `-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3Rr47NWSHIzP5Rm5AZRA
@@ -86,7 +85,7 @@ func GetToken(tokenString string) (*jwt.Token, bool) {
 	})
 
 	if err != nil {
-		log.Printf("parse token error : %v", err)
+		log4disk.E("parse token error : %v", err)
 		return nil, false
 	}
 

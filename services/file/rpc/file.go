@@ -3,6 +3,7 @@ package rpc
 import (
 	"context"
 	"go-disk/common"
+	"go-disk/common/log4disk"
 	"go-disk/common/rpcinterface/fileinterface"
 	"go-disk/services/file/db"
 	"log"
@@ -62,7 +63,7 @@ func (f FileService) UpdateFileMeta(ctx context.Context, req *fileinterface.Upda
 		return nil
 	}
 
-	log.Printf("filename cann't equals empty")
+	log4disk.E("filename cann't equals empty")
 	resp.Code = int64(common.RespCodeSuccess.Code)
 	resp.Message = common.RespCodeSuccess.Message
 	return nil

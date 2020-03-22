@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"go-disk/common/log4disk"
 	"log"
 	"reflect"
 	"strconv"
@@ -8,8 +9,9 @@ import (
 
 //这里第一个参数不要传递的时候不要取地址(类似&val)，而第二个参数必须要取地址(&val)
 func SetConfigDefaultValue(ct reflect.Type, cv reflect.Value) {
+
 	if ct.Kind() != reflect.Struct {
-		log.Printf("not support not-struct")
+		log4disk.E("not support not-struct")
 		return
 	}
 	elements := cv.Elem()
@@ -38,7 +40,7 @@ func SetConfigDefaultValue(ct reflect.Type, cv reflect.Value) {
 		case reflect.Struct:
 			SetConfigDefaultValue(ct.Field(i).Type, element.Addr())
 		default:
-			log.Printf("not support this type: %s", filed.Type.Kind().String())
+			log4disk.W("not support this type: %s", filed.Type.Kind().String())
 		}
 	}
 }

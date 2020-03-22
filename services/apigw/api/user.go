@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/gin-gonic/gin"
 	"go-disk/common"
+	"go-disk/common/log4disk"
 	"go-disk/common/rpcinterface/userinterface"
 	"go-disk/services/apigw/rpc"
 	"go-disk/services/apigw/vo"
@@ -15,7 +16,7 @@ func RegisterUser() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req vo.UserRegisterReq
 		if err := ctx.ShouldBind(&req); err != nil {
-			log.Printf("request parameters error : %v", err)
+			log4disk.E("request parameters error : %v", err)
 			ctx.JSON(http.StatusBadRequest,
 				common.NewServiceResp(common.RespCodeBindReParamError, nil))
 			return
@@ -27,7 +28,7 @@ func RegisterUser() gin.HandlerFunc {
 		})
 
 		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code) {
-			log.Printf("rpc call (user register) error : %v", err)
+			log4disk.E("rpc call (user register) error : %v", err)
 			ctx.JSON(http.StatusInternalServerError, *resp)
 			return
 		}
@@ -40,7 +41,7 @@ func QueryUserInfo() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req vo.UserQueryReq
 		if err := ctx.ShouldBindUri(&req); err != nil {
-			log.Printf("request parameters error : %v", err)
+			log4disk.E("request parameters error : %v", err)
 			ctx.JSON(http.StatusBadRequest,
 				common.NewServiceResp(common.RespCodeBindReParamError, nil))
 			return
@@ -51,7 +52,7 @@ func QueryUserInfo() gin.HandlerFunc {
 		})
 
 		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code) {
-			log.Printf("rpc call (query user info) error : %v", err)
+			log4disk.E("rpc call (query user info) error : %v", err)
 			ctx.JSON(http.StatusInternalServerError, *resp)
 			return
 		}
