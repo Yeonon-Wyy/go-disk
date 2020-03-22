@@ -56,7 +56,7 @@ func (a *AuthServiceHandler) Authorize(ctx context.Context, req *authinterface.A
 }
 
 func (a *AuthServiceHandler) UnAuthorize(ctx context.Context, req *authinterface.UnAuthorizeReq, resp *authinterface.UnAuthorizeResp) error {
-	if ok := deleteToken(req.AccessToken); ok {
+	if ok := deleteToken(req.Username); ok {
 		resp.Code = int64(common.RespCodeSuccess.Code)
 		resp.Message = common.RespCodeSuccess.Message
 	} else {
@@ -116,20 +116,13 @@ func validateToken(ReqTokenStr string) bool {
 
 }
 
-func deleteToken(accessToken string) bool {
+func deleteToken(username string) bool {
 	redisClient, err := redisconn.AuthConn()
 	if err != nil {
 		log.Printf("failed to connect redis server : %v", err)
 		return false
 	}
 	defer redisClient.Close()
-
-	payload, suc := jwt.GetPayload(accessToken)
-	if !suc {
-		return false
-	}
-
-	username := payload["username"].(string)
 
 	res := redisClient.Del(username).Val()
 	return res > 0

@@ -22,7 +22,6 @@ message RegisterResp {
 
 message QueryUserInfoReq {
     string username = 1;
-    string accessToken = 2;
 }
 
 message QueryUserInfoResp {

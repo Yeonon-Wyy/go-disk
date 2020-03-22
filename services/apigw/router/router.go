@@ -20,12 +20,21 @@ func Router() *gin.Engine {
 	uploadGroup := router.Group("/files/upload")
 	downloadGroup := router.Group("/files/download")
 	fileMetaGroup := router.Group("/files")
+	authGroup := router.Group("/token")
 
 	userServiceRoute(userGroup)
 	uploadServiceRoute(uploadGroup)
 	downloadServiceRoute(downloadGroup)
 	fileMetaServiceRoute(fileMetaGroup)
+	authServiceRoute(authGroup)
 	return router
+}
+
+func authServiceRoute(group *gin.RouterGroup) {
+	group.POST("/", api.Authorize())
+
+	group.Use(interceptor.AuthorizeInterceptor())
+	group.DELETE("/:username", api.UnAuthorize())
 }
 
 func fileMetaServiceRoute(group *gin.RouterGroup) {
@@ -49,11 +58,10 @@ func uploadServiceRoute(group *gin.RouterGroup) {
 }
 
 func userServiceRoute(group *gin.RouterGroup) {
-	group.POST("/register", api.RegisterUser())
-	group.POST("/login", api.UserLogin())
+	group.POST("/", api.RegisterUser())
 
 	group.Use(interceptor.AuthorizeInterceptor())
-	group.GET("/info", api.QueryUserInfo())
+	group.GET("/:username", api.QueryUserInfo())
 }
 
 

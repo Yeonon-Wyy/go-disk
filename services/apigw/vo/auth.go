@@ -1,12 +1,10 @@
 package vo
 
-type UserRegisterReq struct {
+type AuthorizeReq struct {
 	Username string `form:"username" bind:"required"`
 	Password string `form:"password" bind:"required"`
 }
 
-
-type UserQueryReq struct {
+type 	UnAuthorizeReq struct {
 	Username string `uri:"username" bind:"required"`
 }
-

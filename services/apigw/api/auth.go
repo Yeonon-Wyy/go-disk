@@ -4,16 +4,16 @@ import (
 	"context"
 	"github.com/gin-gonic/gin"
 	"go-disk/common"
-	"go-disk/common/rpcinterface/userinterface"
+	"go-disk/common/rpcinterface/authinterface"
 	"go-disk/services/apigw/rpc"
 	"go-disk/services/apigw/vo"
 	"log"
 	"net/http"
 )
 
-func RegisterUser() gin.HandlerFunc {
+func Authorize() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var req vo.UserRegisterReq
+		var req vo.AuthorizeReq
 		if err := ctx.ShouldBind(&req); err != nil {
 			log.Printf("request parameters error : %v", err)
 			ctx.JSON(http.StatusBadRequest,
@@ -21,13 +21,14 @@ func RegisterUser() gin.HandlerFunc {
 			return
 		}
 
-		resp, err := rpc.UserCli.UserRegister(context.TODO(), &userinterface.RegisterReq{
-			Username:             req.Username,
-			Password:             req.Password,
+		resp, err := rpc.AuthCli.Authorize(context.TODO(), &authinterface.AuthorizeReq{
+			Username: req.Username,
+			Password: req.Password,
 		})
 
+
 		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code) {
-			log.Printf("rpc call (user register) error : %v", err)
+			log.Printf("rpc call (user login) error : %v", err)
 			ctx.JSON(http.StatusInternalServerError, *resp)
 			return
 		}
@@ -36,9 +37,9 @@ func RegisterUser() gin.HandlerFunc {
 	}
 }
 
-func QueryUserInfo() gin.HandlerFunc {
+func UnAuthorize() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var req vo.UserQueryReq
+		var req vo.UnAuthorizeReq
 		if err := ctx.ShouldBindUri(&req); err != nil {
 			log.Printf("request parameters error : %v", err)
 			ctx.JSON(http.StatusBadRequest,
@@ -46,16 +47,16 @@ func QueryUserInfo() gin.HandlerFunc {
 			return
 		}
 
-		resp, err := rpc.UserCli.QueryUserInfo(context.TODO(), &userinterface.QueryUserInfoReq{
-			Username: req.Username,
+		resp, err := rpc.AuthCli.UnAuthorize(context.TODO(), &authinterface.UnAuthorizeReq{
+			Username:             req.Username,
 		})
 
 		if err != nil || resp.Code != int64(common.RespCodeSuccess.Code) {
-			log.Printf("rpc call (query user info) error : %v", err)
+			log.Printf("rpc call (user login) error : %v", err)
 			ctx.JSON(http.StatusInternalServerError, *resp)
 			return
 		}
 
-		ctx.JSON(http.StatusOK,*resp)
+		ctx.JSON(http.StatusOK, *resp)
 	}
 }
