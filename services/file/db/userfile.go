@@ -42,3 +42,12 @@ func DeleteFileMeta(sha1 string, filename, username string) bool {
 		Delete(dao.TableFileDao{Id: uint(id)})
 	return err == nil
 }
+
+func ExistByFileHashAndUsername(fileHash string, username string) bool {
+	userFile := dao.UserFileDao{}
+	rowAffect := mydb.GetConn().
+		Where(&dao.UserFileDao{Username:username, FileHash:fileHash}).
+		Select("id").
+		First(&userFile).RowsAffected
+	return rowAffect > 0
+}

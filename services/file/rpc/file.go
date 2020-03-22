@@ -12,6 +12,14 @@ type FileService struct {
 }
 
 func (f FileService) GetFileMeta(ctx context.Context, req *fileinterface.GetFileMetaReq, resp *fileinterface.GetFileMetaResp) error {
+
+	if existInUserFile := db.ExistByFileHashAndUsername(req.FileHash, req.Username); !existInUserFile {
+		resp.Code = int64(common.RespCodeNotFoundFileError.Code)
+		resp.Message = common.RespCodeNotFoundFileError.Message
+		return nil
+	}
+
+
 	tblFile, err := db.GetFileMeta(req.FileHash)
 	if err != nil {
 		resp.Code = int64(common.RespCodeNotFoundFileError.Code)
@@ -45,10 +53,6 @@ func (f FileService) UpdateFileMeta(ctx context.Context, req *fileinterface.Upda
 	if req.Filename != "" {
 		tblFile.FileName = req.Filename
 		//唯一文件表不需要也不应该修改文件名，文件hash与文件名无关
-		//db.OnFileUpdateFinished(
-		//	tblFile.FileHash,
-		//	tblFile.FileName,
-		//	)
 
 		//更新到user file关联表
 		db.UpdateUserFilename(req.Username, req.FileHash, req.Filename)

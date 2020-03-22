@@ -3,7 +3,8 @@ package vo
 import "time"
 
 type GetFileMetaReq struct {
-	FileHash string `form:"file_hash" bind:"required"`
+	FileHash string `uri:"file_hash" bind:"required"`
+	Username string `form:"username" bind:"required"`
 }
 
 type UpdateFileMetaReq struct {
